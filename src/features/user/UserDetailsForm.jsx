@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { z } from 'zod';
 import Modal from '../../components/Modal';
-import Form, { FormField, FormInput, FormSelect, FormActions, FormButton } from '../../components/form';
+import Form, { FormField, FormInput, FormSelect, FormActions, FormButton } from '../../components/Form';
 
 const userSchema = z.object({
   name: z.string().min(2, 'Name is required'),
