@@ -22,5 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
- git config --global user.email "lakshayjeetsingh@bringon.info"
-git config --global user.name "lakshay"
