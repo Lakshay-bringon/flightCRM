@@ -1,0 +1,74 @@
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { 
+  LayoutDashboard, TicketsPlane, Search, Users, UserCircle, 
+  FileInput, PieChart, Settings, Clock, Phone 
+} from 'lucide-react';
+
+function NavLink({ to, children, iconOnly }) {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+  
+  const childrenWithProps = React.Children.map(children, (child, idx) => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, {
+        className: `w-5 h-5 ${isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'} ${iconOnly ? '' : 'mr-2'}`
+      });
+    }
+    if (!iconOnly && typeof child === 'string') {
+      return child;
+    }
+    return null;
+  });
+  
+  return (
+    <Link 
+      to={to} 
+      className={`flex items-center ${iconOnly ? 'justify-center' : ''} px-3 py-2 text-sm rounded-lg transition-all duration-200 group
+        ${isActive 
+          ? 'bg-gray-700 text-white shadow-md border border-gray-600' 
+          : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+        }`}
+    >
+      {childrenWithProps}
+    </Link>
+  );
+}
+
+function Navigation({ iconOnly = false }) {
+  return (
+    <nav className="mt-2 h-[calc(100vh-152px)] overflow-y-auto">
+      <div className="px-2 space-y-1">
+        <NavLink to="/" iconOnly={iconOnly}>
+          <LayoutDashboard/> Dashboard
+        </NavLink>
+        <NavLink to="/create-pnr" iconOnly={iconOnly}>
+          <TicketsPlane />
+          CREATE PNR
+        </NavLink>
+        <NavLink to="/find-bookings" iconOnly={iconOnly}>
+          <Search />
+          FIND BOOKINGS 
+        </NavLink>
+        <NavLink to="/user-management" iconOnly={iconOnly}>
+          <UserCircle />
+          USER MGMT
+        </NavLink>
+        <NavLink to="/data-management" iconOnly={iconOnly}>
+          <FileInput />
+          DATA MGMT
+        </NavLink>
+        <NavLink to="/revenue" iconOnly={iconOnly}>
+          <PieChart />
+          REVENUE
+        </NavLink>
+        <NavLink to="/ip-setting" iconOnly={iconOnly}>
+          <Settings />
+          IP SETTING
+        </NavLink>
+      </div>
+    </nav>
+  );
+}
+
+export default Navigation;
