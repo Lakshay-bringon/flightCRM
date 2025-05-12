@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, PenSquare, Trash, X, Search, Plane, CreditCard, Briefcase, Globe } from 'lucide-react';
 import { StatsCard } from '../features/dashboard/widgets/StatsCard';
+import Modal from './Modal';
 
 function DataMGMT() {
   const [activeSection, setActiveSection] = useState(null);
@@ -304,7 +305,10 @@ function DataMGMT() {
       providers: [
         { name: 'name', label: 'Provider Name', type: 'text' },
         { name: 'logo', label: 'Logo', type: 'file' },
-        { name: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }
+        { name: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] },
+        { name: 'smtpHost', label: 'SMTP Hostname', type: 'text' },
+        { name: 'smtpEmail', label: 'SMTP Email Address', type: 'email' },
+        { name: 'smtpPassword', label: 'SMTP Password', type: 'password' }
       ]
     };
 
@@ -324,11 +328,30 @@ function DataMGMT() {
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
+            ) : field.type === 'file' ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="file"
+                  className="hidden"
+                  id={`file-${field.name}`}
+                  accept="image/*"
+                />
+                <label
+                  htmlFor={`file-${field.name}`}
+                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white hover:bg-gray-600 cursor-pointer transition-colors duration-200"
+                >
+                  Choose File
+                </label>
+                <span className="text-sm text-gray-400">
+                  {editData?.[field.name] ? 'File selected' : 'No file chosen'}
+                </span>
+              </div>
             ) : (
               <input
                 type={field.type}
                 className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 defaultValue={editData?.[field.name]}
+                placeholder={`Enter ${field.label.toLowerCase()}`}
               />
             )}
           </div>
@@ -420,41 +443,35 @@ function DataMGMT() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-          <div className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-md">
-            <div className="p-6 border-b border-gray-700 flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-white">
-                {modalType === 'add' ? 'Add New' : 'Edit'} {sections.find(s => s.id === activeSection)?.title}
-              </h3>
-              <button 
+        <Modal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          title={`${modalType === 'add' ? 'Add New' : 'Edit'} ${sections.find(s => s.id === activeSection)?.title}`}
+          maxWidth="md"
+        >
+          <div className="flex flex-col h-[80vh]">
+            <div className="flex-1 overflow-y-auto pr-2">
+              {renderForm()}
+            </div>
+            <div className="mt-6 flex gap-4 pt-4 border-t border-gray-700">
+              <button
                 onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-gray-700 rounded-lg"
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200"
               >
-                <X className="w-5 h-5 text-gray-400" />
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  // Handle save logic here
+                  setShowModal(false);
+                }}
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg text-white hover:opacity-90 transition-all duration-200"
+              >
+                Save
               </button>
             </div>
-            <div className="p-6">
-              {renderForm()}
-              <div className="mt-6 flex gap-4">
-                <button
-                  onClick={() => {
-                    // Handle save logic here
-                    setShowModal(false);
-                  }}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg text-white hover:opacity-90 transition-all duration-200"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-all duration-200"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

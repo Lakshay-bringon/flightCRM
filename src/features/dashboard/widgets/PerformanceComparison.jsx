@@ -7,7 +7,7 @@ function ComparisonCard({ title, currentValue, topValue, percentage, isNegative 
   const difference = ((percentage - 100) * topValue / 100).toFixed(0);
 
   return (
-    <div className="p-4 rounded-lg bg-gray-700/50 border border-gray-600">
+    <div className="p-4 rounded-lg border border-gray-600">
       <p className="text-sm text-gray-400 mb-3">{title}</p>
       
       <div className="space-y-2">

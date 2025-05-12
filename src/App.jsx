@@ -8,8 +8,6 @@ import DataMGMT from './components/DataMGMT';
 import Revenue from './components/Revenue';
 import RevenueDetails from './features/revenue/RevenueDetails';
 import IPSetting from './components/IPSetting';
-// import TimeManagement from './components/TimeManagement';
-// import CallDetails from './components/CallDetails';
 import Sidebar from './components/Sidebar';
 import UserProfile from './features/user/UserProfile';
 import Login from './pages/Login';

@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Plus, X } from 'lucide-react'
 
 function BookingConfirmation({ initialData, onBack }) {
+  const [passengers, setPassengers] = useState([{ id: 1 }])
+
   const { register, handleSubmit } = useForm({
     defaultValues: {
       pnr: '',
@@ -11,19 +14,27 @@ function BookingConfirmation({ initialData, onBack }) {
       chargeAmount: '',
       airline: '',
       date: new Date().toISOString().split('T')[0],
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      dob: '',
       email: '',
       phone: '',
       billingAddress: '',
       paymentMethod: 'VISA',
       charge1Amount: '',
       charge1Merchant: '',
-      authorizer: 'MARTIN F HOFFMAN'
+      authorizer: 'MARTIN F HOFFMAN',
+      passengers: [{}]
     }
   })
+
+  const addPassenger = () => {
+    const newId = passengers.length + 1
+    setPassengers([...passengers, { id: newId }])
+  }
+
+  const removePassenger = (index) => {
+    if (passengers.length > 1) {
+      setPassengers(passengers.filter((_, i) => i !== index))
+    }
+  }
 
   const onSubmit = (data) => {
     console.log(data)
@@ -66,28 +77,88 @@ function BookingConfirmation({ initialData, onBack }) {
             </div>
 
             <div className="p-3 border border-gray-700 rounded-lg">
-              <h3 className="font-semibold mb-2">Passenger Details</h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold">Passenger Details</h3>
+                <button
+                  type="button"
+                  onClick={addPassenger}
+                  className="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Passenger
+                </button>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="text-left">
-                      <th className="pr-2">S. No.</th>
-                      <th className="px-2">Type</th>
-                      <th className="px-2">First Name</th>
-                      <th className="px-2">Middle Name</th>
-                      <th className="px-2">Last Name</th>
-                      <th className="pl-2">DOB</th>
+                    <tr className="text-left border-b border-gray-700">
+                      <th className="pr-2 pb-2">S. No.</th>
+                      <th className="px-2 pb-2">Type</th>
+                      <th className="px-2 pb-2">First Name</th>
+                      <th className="px-2 pb-2">Middle Name</th>
+                      <th className="px-2 pb-2">Last Name</th>
+                      <th className="pl-2 pb-2">DOB</th>
+                      <th className="pl-2 pb-2"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>ADT</td>
-                      <td><input {...register('firstName')} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></td>
-                      <td><input {...register('middleName')} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></td>
-                      <td><input {...register('lastName')} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></td>
-                      <td><input type="date" {...register('dob')} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></td>
-                    </tr>
+                    {passengers.map((passenger, index) => (
+                      <tr key={passenger.id} className="border-b border-gray-700/50">
+                        <td className="py-2">{index + 1}</td>
+                        <td className="py-2">
+                          <select
+                            {...register(`passengers.${index}.type`)}
+                            className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full cursor-pointer"
+                          >
+                            <option value="ADT">Adult</option>
+                            <option value="CHD">Child</option>
+                            <option value="INF">Infant</option>
+                          </select>
+                        </td>
+                        <td className="py-2">
+                          <input
+                            {...register(`passengers.${index}.firstName`)}
+                            className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
+                            placeholder="First Name"
+                          />
+                        </td>
+                        <td className="py-2">
+                          <input
+                            {...register(`passengers.${index}.middleName`)}
+                            className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
+                            placeholder="Middle Name"
+                          />
+                        </td>
+                        <td className="py-2">
+                          <input
+                            {...register(`passengers.${index}.lastName`)}
+                            className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
+                            placeholder="Last Name"
+                          />
+                        </td>
+                        <td className="py-2">
+                          <div className="relative">
+                            <input
+                              type="date"
+                              {...register(`passengers.${index}.dob`)}
+                              className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full cursor-pointer"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          </div>
+                        </td>
+                        <td className="py-2 pl-2">
+                          {index > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => removePassenger(index)}
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

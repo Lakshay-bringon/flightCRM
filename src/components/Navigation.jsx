@@ -40,7 +40,7 @@ function Navigation({ iconOnly = false }) {
     <nav className="mt-2 h-[calc(100vh-152px)] overflow-y-auto">
       <div className="px-2 space-y-1">
         <NavLink to="/" iconOnly={iconOnly}>
-          <LayoutDashboard/> Dashboard
+          <LayoutDashboard/> DASHBOARD
         </NavLink>
         <NavLink to="/create-pnr" iconOnly={iconOnly}>
           <TicketsPlane />

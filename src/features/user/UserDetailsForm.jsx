@@ -90,125 +90,135 @@ export default function UserDetailsForm({ user = null, teams = [], onSubmit: onS
       isOpen={true}
       onClose={onClose}
       title={user ? 'Edit User Details' : 'Add User Details'}
+      maxWidth="md"
     >
-      <Form
-        schema={userSchema}
-        defaultValues={initialData}
-        onSubmit={(data) => onSubmitProp?.({ ...data, photo: photoPreview })}
-        className="space-y-3 overflow-y-auto pr-6"
-        style={{ maxHeight: 'calc(90vh - 3rem)' }}
-      >
-        {({ register, formState: { errors }, setValue }) => (
-          <>
-            <div className="flex flex-col md:flex-row gap-4 mb-2">
-              <div className="flex-1 space-y-2">
-                <FormField error={errors.name?.message}>
-                  <FormInput {...register('name')} placeholder="Name" />
-                </FormField>
+      <div className="flex flex-col h-[80vh]">
+        <div className="flex-1 overflow-y-auto pr-2">
+          <Form
+            schema={userSchema}
+            defaultValues={initialData}
+            onSubmit={(data) => onSubmitProp?.({ ...data, photo: photoPreview })}
+            className="space-y-3"
+          >
+            {({ register, formState: { errors }, setValue }) => (
+              <>
+                <div className="flex flex-col md:flex-row gap-4 mb-2">
+                  <div className="flex-1 space-y-2">
+                    <FormField error={errors.name?.message}>
+                      <FormInput {...register('name')} placeholder="Name" />
+                    </FormField>
 
-                <FormField error={errors.alias?.message}>
-                  <FormInput {...register('alias')} placeholder="Alias" />
-                </FormField>
+                    <FormField error={errors.alias?.message}>
+                      <FormInput {...register('alias')} placeholder="Alias" />
+                    </FormField>
 
-                <FormField error={errors.phone?.message}>
-                  <FormInput {...register('phone')} placeholder="Phone Number" />
-                </FormField>
+                    <FormField error={errors.phone?.message}>
+                      <FormInput {...register('phone')} placeholder="Phone Number" />
+                    </FormField>
 
-                <FormField error={errors.role?.message}>
-                  <FormSelect 
-                    {...register('role')} 
-                    value={selectedRole} 
-                    onChange={e => {
-                      setSelectedRole(e.target.value);
-                      setValue('role', e.target.value);
-                    }}
-                  >
-                    <option value="">Select Role</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Leader">Leader</option>
-                    <option value="Agent">Agent</option>
-                  </FormSelect>
-                </FormField>
+                    <FormField error={errors.role?.message}>
+                      <FormSelect 
+                        {...register('role')} 
+                        value={selectedRole} 
+                        onChange={e => {
+                          setSelectedRole(e.target.value);
+                          setValue('role', e.target.value);
+                        }}
+                      >
+                        <option value="">Select Role</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Leader">Leader</option>
+                        <option value="Agent">Agent</option>
+                      </FormSelect>
+                    </FormField>
 
-                {selectedRole === 'Agent' && (
-                  <FormField error={errors.team?.message}>
-                    <FormSelect {...register('team')}>
-                      <option value="">Select Team</option>
-                      {teams.map(team => (
-                        <option key={team} value={team}>{team}</option>
-                      ))}
-                    </FormSelect>
-                  </FormField>
-                )}
-              </div>
+                    {selectedRole === 'Agent' && (
+                      <FormField error={errors.team?.message}>
+                        <FormSelect {...register('team')}>
+                          <option value="">Select Team</option>
+                          {teams.map(team => (
+                            <option key={team} value={team}>{team}</option>
+                          ))}
+                        </FormSelect>
+                      </FormField>
+                    )}
+                  </div>
 
-              <div className="flex flex-col items-center justify-center min-w-[100px]">
-                <div
-                  className={`relative w-24 h-24 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer bg-gray-700 ${
-                    dragActive ? 'border-blue-400 bg-blue-900/30' : 'border-gray-500'
-                  }`}
-                  onClick={openFileDialog}
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  tabIndex={0}
-                  role="button"
-                  aria-label="Upload Photo"
-                >
-                  {photoPreview ? (
-                    <img src={photoPreview} alt="Preview" className="object-cover w-full h-full rounded-full" />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-gray-400">
-                      <svg className="w-8 h-8 mb-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4a1 1 0 011-1h8a1 1 0 011 1v12m-4 4h-4a1 1 0 01-1-1v-1a1 1 0 011-1h4a1 1 0 011 1v1a1 1 0 01-1 1z" />
-                      </svg>
-                      <span className="text-[10px] text-center">
-                        Click or Drag & Drop
-                        <br />
-                        to upload
-                      </span>
+                  <div className="flex flex-col items-center justify-center min-w-[100px]">
+                    <div
+                      className={`relative w-24 h-24 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer bg-gray-700 ${
+                        dragActive ? 'border-blue-400 bg-blue-900/30' : 'border-gray-500'
+                      }`}
+                      onClick={openFileDialog}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      tabIndex={0}
+                      role="button"
+                      aria-label="Upload Photo"
+                    >
+                      {photoPreview ? (
+                        <img src={photoPreview} alt="Preview" className="object-cover w-full h-full rounded-full" />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-gray-400">
+                          <svg className="w-8 h-8 mb-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4a1 1 0 011-1h8a1 1 0 011 1v12m-4 4h-4a1 1 0 01-1-1v-1a1 1 0 011-1h4a1 1 0 011 1v1a1 1 0 01-1 1z" />
+                          </svg>
+                          <span className="text-[10px] text-center">
+                            Click or Drag & Drop
+                            <br />
+                            to upload
+                          </span>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={inputFileRef}
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        style={{ display: 'none' }}
+                        onChange={handleFileInput}
+                        tabIndex={-1}
+                      />
                     </div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={inputFileRef}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    style={{ display: 'none' }}
-                    onChange={handleFileInput}
-                    tabIndex={-1}
-                  />
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <FormField error={errors.email?.message}>
-              <FormInput {...register('email')} placeholder="Email" />
-            </FormField>
+                <FormField error={errors.email?.message}>
+                  <FormInput {...register('email')} placeholder="Email" />
+                </FormField>
 
-            <FormField error={errors.confirmEmail?.message}>
-              <FormInput {...register('confirmEmail')} placeholder="Confirm Email" />
-            </FormField>
+                <FormField error={errors.confirmEmail?.message}>
+                  <FormInput {...register('confirmEmail')} placeholder="Confirm Email" />
+                </FormField>
 
-            <FormField error={errors.password?.message}>
-              <FormInput type="password" {...register('password')} placeholder="Password" />
-            </FormField>
+                <FormField error={errors.password?.message}>
+                  <FormInput type="password" {...register('password')} placeholder="Password" />
+                </FormField>
 
-            <FormField error={errors.confirmPassword?.message}>
-              <FormInput type="password" {...register('confirmPassword')} placeholder="Confirm Password" />
-            </FormField>
-
-            <FormActions>
-              <FormButton type="button" variant="danger" onClick={onClose}>
-                Cancel
-              </FormButton>
-              <FormButton type="submit">
-                {user ? 'Update User' : 'Save User'}
-              </FormButton>
-            </FormActions>
-          </>
-        )}
-      </Form>
+                <FormField error={errors.confirmPassword?.message}>
+                  <FormInput type="password" {...register('confirmPassword')} placeholder="Confirm Password" />
+                </FormField>
+              </>
+            )}
+          </Form>
+        </div>
+        <div className="mt-6 flex gap-4 pt-4 border-t border-gray-700">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="user-form"
+            className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg text-white hover:opacity-90 transition-all duration-200"
+          >
+            {user ? 'Update User' : 'Save User'}
+          </button>
+        </div>
+      </div>
     </Modal>
   );
 }
