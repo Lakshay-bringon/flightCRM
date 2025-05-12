@@ -3,6 +3,7 @@ import Logo from './Logo';
 import Navigation from './Navigation';
 import UserProfile from '../features/user/UserProfile';
 import { ChevronLeft, ChevronRight, Plane } from 'lucide-react';
+import logo from '../assets/SkylineTravelLLC-logo.png';
 
 function Sidebar({ collapsed, onToggleCollapse }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -48,7 +49,7 @@ function Sidebar({ collapsed, onToggleCollapse }) {
         {collapsed ? (
           <div className="p-2 bg-gray-700 rounded-lg">
             <img 
-              src="/src/assets/SkylineTravelLLC-logo.png" 
+              src={logo}
               alt="Skyline Travel LLC" 
               className="w-8 h-8 brightness-0 invert" 
             />
@@ -56,7 +57,7 @@ function Sidebar({ collapsed, onToggleCollapse }) {
         ) : (
           <div className="w-full flex justify-center items-center">
             <img 
-              src="/src/assets/SkylineTravelLLC.png" 
+              src={logo}
               alt="Skyline Travel LLC" 
               className="h-12 brightness-0 invert" 
             />

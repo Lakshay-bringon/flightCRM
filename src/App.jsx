@@ -12,27 +12,25 @@ import Sidebar from './components/Sidebar';
 import UserProfile from './features/user/UserProfile';
 import Login from './pages/Login';
 import Profile from './features/user/Profile';
-import UserDetailsForm from './features/user/UserDetailsForm';
 import BookingDetails from './features/booking/BookingDetails';
 
 // Protected route wrapper component
 const ProtectedRoute = ({ children }) => {
-  // TODO: Replace with actual auth check
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  // return isAuthenticated ? children : <Navigate to="/login" />;
-  return children;
+  return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
 function App() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
   const handleSidebarToggle = () => setSidebarCollapsed((prev) => !prev);
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
         <Route
           path="/*"
           element={

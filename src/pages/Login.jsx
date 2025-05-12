@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import logo from '../assets/SkylineTravelLLC-logo.png';
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,7 +11,9 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isResetMode) {
-      // TODO: Implement actual login logic
+      // Set authentication state
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('userRole', 'admin'); // or whatever role is appropriate
       navigate('/');
     } else {
       // TODO: Implement password reset logic
@@ -24,7 +27,9 @@ function Login() {
         <div className="text-center mb-8">
           <div className="flex justify-center items-center mb-2">
             <img 
-              src="/src/assets/SkylineTravelLLC.png" 
+              src={logo
+    
+              }
               alt="Skyline Travel LLC" 
               className="h-16 brightness-0 invert" 
             />

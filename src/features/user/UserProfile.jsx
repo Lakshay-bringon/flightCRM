@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { User, Settings, LogOut, Mail, Phone, Shield } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ChangePasswordModal from './ChangePasswordModal';
 
 function UserProfile({ showMenu, setShowMenu }) {
   const menuRef = useRef(null);
+  const navigate = useNavigate();
   const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
@@ -16,6 +17,16 @@ function UserProfile({ showMenu, setShowMenu }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [setShowMenu]);
+
+  const handleLogout = () => {
+    // Clear authentication state
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    // Any other auth-related items to clear
+    setShowMenu(false);
+    // Redirect to login
+    navigate('/login');
+  };
 
   return (
     <div className="relative" ref={menuRef}>
@@ -46,7 +57,10 @@ function UserProfile({ showMenu, setShowMenu }) {
           </button>
           
           <div className="border-t border-gray-700 mt-1">
-            <button className="w-full px-4 py-2 text-sm text-red-400 hover:bg-gray-700 flex items-center">
+            <button 
+              onClick={handleLogout}
+              className="w-full px-4 py-2 text-sm text-red-400 hover:bg-gray-700 flex items-center"
+            >
               <LogOut className="w-4 h-4 mr-2" />
               Logout
             </button>
