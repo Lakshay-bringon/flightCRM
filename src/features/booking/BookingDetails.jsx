@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Edit, PenSquare } from 'lucide-react';
+import { RefreshCcw, PenSquare} from 'lucide-react';
 
 export default function BookingDetails() {
   const { id } = useParams();
@@ -77,15 +77,15 @@ export default function BookingDetails() {
       <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-lg font-semibold text-white">PROVIDER DETAILS</h2>
-          <div className="space-x-2">
-            <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+          <div className="flex  items-center gap-2">
+            <button className="bg-red-500 h-full text-white px-4 py-2 rounded hover:bg-red-600">
               CLOSE BOOKING
             </button>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            <button className="bg-blue-500 h-full text-white px-4 py-2 rounded hover:bg-blue-600">
               AUTH
             </button>
-            <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-              G
+            <button className="bg-green-500 h-full text-white px-4 py-2 rounded hover:bg-green-600">
+              <RefreshCcw className="h-full transition-transform duration-1000 rotate-180" />
             </button>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function BookingDetails() {
       <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-lg font-semibold text-white">PRICE DETAILS</h2>
-          <button className="p-1 hover:bg-gray-600 rounded">
+          <button className="p-1 hover:bg-gray-600 rounded text-blue-400">
             <PenSquare className="w-4 h-4" />
           </button>
         </div>
@@ -155,7 +155,7 @@ export default function BookingDetails() {
       <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-lg font-semibold text-white">CHARGING DETAILS</h2>
-          <button className="p-1 hover:bg-gray-600 rounded">
+          <button className="p-1 hover:bg-gray-600 rounded text-blue-400">
             <PenSquare className="w-4 h-4" />
           </button>
         </div>
@@ -164,20 +164,25 @@ export default function BookingDetails() {
             <thead>
               <tr className="text-gray-400 text-sm">
                 <th className="text-left py-2">TYPE</th>
+                <th className="text-left py-2">TRANSACTION ID</th>
                 <th className="text-left py-2">AMOUNT</th>
                 <th className="text-left py-2">STATUS</th>
                 <th className="text-left py-2">CHARGED ON</th>
                 <th className="text-left py-2">CHARGED BY</th>
+                <th className="text-left py-2">MERCHANT NAME</th>
               </tr>
             </thead>
             <tbody>
               {bookingData.chargingDetails.map((charge, index) => (
                 <tr key={index} className="text-white">
                   <td className="py-2">{charge.type}</td>
+                  <td className="py-2">{charge.transactionId|| "123"}</td>
                   <td className="py-2">{charge.amount}</td>
                   <td className="py-2">{charge.status || "N/A"}</td>
                   <td className="py-2">{charge.chargedOn || "N/A"}</td>
                   <td className="py-2">{charge.chargedBy || "N/A"}</td>
+                  <td className="py-2">{charge.merchantName || "N/A"}</td>
+
                 </tr>
               ))}
             </tbody>
@@ -189,7 +194,7 @@ export default function BookingDetails() {
       <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-lg font-semibold text-white">BILLING DETAILS</h2>
-          <button className="p-1 hover:bg-gray-600 rounded">
+          <button className="p-1 hover:bg-gray-600 rounded text-blue-400">
             <PenSquare className="w-4 h-4" />
           </button>
         </div>
@@ -253,7 +258,7 @@ export default function BookingDetails() {
       <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-lg font-semibold text-white">PASSENGER DETAILS</h2>
-          <button className="p-1 hover:bg-gray-600 rounded">
+          <button className="p-1 hover:bg-gray-600 rounded text-blue-400">
             <PenSquare className="w-4 h-4" />
           </button>
         </div>

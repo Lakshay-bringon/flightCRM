@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import logo from '../assets/SkylineTravelLLC-logo.png';
+import logoFull from '../assets/SkylineTravelLLC.png';
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,9 +27,7 @@ function Login() {
         <div className="text-center mb-8">
           <div className="flex justify-center items-center mb-2">
             <img 
-              src={logo
-    
-              }
+              src={logoFull}
               alt="Skyline Travel LLC" 
               className="h-16 brightness-0 invert" 
             />

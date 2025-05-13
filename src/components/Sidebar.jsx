@@ -4,6 +4,8 @@ import Navigation from './Navigation';
 import UserProfile from '../features/user/UserProfile';
 import { ChevronLeft, ChevronRight, Plane } from 'lucide-react';
 import logo from '../assets/SkylineTravelLLC-logo.png';
+import logoFull from '../assets/SkylineTravelLLC.png';
+
 
 function Sidebar({ collapsed, onToggleCollapse }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -57,7 +59,7 @@ function Sidebar({ collapsed, onToggleCollapse }) {
         ) : (
           <div className="w-full flex justify-center items-center">
             <img 
-              src={logo}
+              src={logoFull}
               alt="Skyline Travel LLC" 
               className="h-12 brightness-0 invert" 
             />
