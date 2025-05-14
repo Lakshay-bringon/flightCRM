@@ -1305,10 +1305,7 @@ export default function BookingDetails() {
         {/* Refund Details Section */}
         <Section
           title="Refund Details"
-          editable={true}
-          onEditStart={() => setIsAnySectionEditing(true)}
-          onEditCancel={() => setIsAnySectionEditing(false)}
-          onEditSave={() => setIsAnySectionEditing(false)}
+
         >
           {(isEditing) => (
             < div  className="p-4 space-y-6">
@@ -1354,10 +1351,7 @@ export default function BookingDetails() {
         {/* Chargeback Details Section */}
         <Section
           title="Chargeback Details"
-          editable={true}
-          onEditStart={() => setIsAnySectionEditing(true)}
-          onEditCancel={() => setIsAnySectionEditing(false)}
-          onEditSave={() => setIsAnySectionEditing(false)}
+        
         >
           {(isEditing) => (
             <div className="p-4 space-y-6">

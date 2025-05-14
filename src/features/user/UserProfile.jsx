@@ -1,11 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { User, Settings, LogOut, Mail, Phone, Shield } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
+import { logout } from '../../utils/auth';
 import ChangePasswordModal from './ChangePasswordModal';
 
 function UserProfile({ showMenu, setShowMenu }) {
   const menuRef = useRef(null);
   const navigate = useNavigate();
+  const { user, clearUser } = useUser();
   const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
@@ -17,15 +20,15 @@ function UserProfile({ showMenu, setShowMenu }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleLogout = () => {
-    // Clear authentication state
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userRole');
-    // Any other auth-related items to clear
-    setShowMenu(false);
-    // Redirect to login
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      clearUser();
+      setShowMenu(false);
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -41,9 +44,8 @@ function UserProfile({ showMenu, setShowMenu }) {
         <div
           className="absolute left-0 mt-2 w-64 rounded-lg bg-gray-800 border border-gray-700 shadow-xl py-1 z-[1000] max-h-[calc(100vh-80px)] overflow-y-auto"
           onMouseLeave={() => setShowMenu(false)}
-        >
-          <Link 
-            to="/details/user/:id"
+        >          <Link 
+            to={`/details/user/${user?.id}`}
             className="w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex items-center"
             onClick={() => setShowMenu(false)}
           >

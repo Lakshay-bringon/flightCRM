@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState } from 'react';
+import { UserProvider, useUser } from './context/UserContext';
 import Dashboard from './components/Dashboard';
 import CreatePNR from './components/CreatePNR';
 import EmailPreviewPage from './pages/EmailPreviewPage';
@@ -17,21 +18,21 @@ import BookingDetails from './features/booking/BookingDetails';
 
 // Protected route wrapper component
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  const { user } = useUser();
+  return user ? children : <Navigate to="/login" />;
 };
 
-function App() {
+function AppContent() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const { user } = useUser();
 
   const handleSidebarToggle = () => setSidebarCollapsed((prev) => !prev);
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
+        <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
         <Route
           path="/*"
           element={
@@ -74,6 +75,14 @@ function App() {
         />
       </Routes>
     </Router>
+  );
+}
+
+function App() {
+  return (
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
   );
 }
 

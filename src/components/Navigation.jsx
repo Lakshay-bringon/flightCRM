@@ -4,6 +4,8 @@ import {
   LayoutDashboard, TicketsPlane, Search, Users, UserCircle, 
   FileInput, PieChart, Settings, Clock, Phone 
 } from 'lucide-react';
+import { useUser } from '../context/UserContext';
+import { ROLES, hasPermission } from '../utils/auth';
 
 function NavLink({ to, children, iconOnly }) {
   const location = useLocation();
@@ -36,8 +38,11 @@ function NavLink({ to, children, iconOnly }) {
 }
 
 function Navigation({ iconOnly = false }) {
-  const userRole = localStorage.getItem('userRole');
-  const isAgent = userRole === 'agent';
+  const { user } = useUser();
+  const isAgent = user?.role === ROLES.AGENT;
+  const canManageUsers = hasPermission('manage_users');
+  const canManageData = hasPermission('edit_all');
+  const canViewRevenue = hasPermission('view_reports');
 
   return (
     <nav className="mt-2 h-[calc(100vh-152px)] overflow-y-auto">
@@ -52,26 +57,29 @@ function Navigation({ iconOnly = false }) {
         <NavLink to="/find-bookings" iconOnly={iconOnly}>
           <Search />
           FIND BOOKINGS 
-        </NavLink>
+        </NavLink>        {canManageUsers && (
+          <NavLink to="/user-management" iconOnly={iconOnly}>
+            <UserCircle />
+            USER MGMT
+          </NavLink>
+        )}
+        {canManageData && (
+          <NavLink to="/data-management" iconOnly={iconOnly}>
+            <FileInput />
+            DATA MGMT
+          </NavLink>
+        )}
+        {canViewRevenue && (
+          <NavLink to="/revenue" iconOnly={iconOnly}>
+            <PieChart />
+            REVENUE
+          </NavLink>
+        )}
         {!isAgent && (
-          <>
-            <NavLink to="/user-management" iconOnly={iconOnly}>
-              <UserCircle />
-              USER MGMT
-            </NavLink>
-            <NavLink to="/data-management" iconOnly={iconOnly}>
-              <FileInput />
-              DATA MGMT
-            </NavLink>
-            <NavLink to="/revenue" iconOnly={iconOnly}>
-              <PieChart />
-              REVENUE
-            </NavLink>
-            <NavLink to="/ip-setting" iconOnly={iconOnly}>
-              <Settings />
-          IP SETTING
-        </NavLink>
-        </>
+          <NavLink to="/ip-setting" iconOnly={iconOnly}>
+            <Settings />
+            IP SETTING
+          </NavLink>
         )}
       </div>
     </nav>

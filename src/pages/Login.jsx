@@ -2,19 +2,37 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import logoFull from '../assets/SkylineTravelLLC.png';
+import { login } from '../utils/auth';
+import { useUser } from '../context/UserContext';
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isResetMode, setIsResetMode] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  const handleSubmit = (e) => {
+  const { updateUser } = useUser();
+    
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     if (!isResetMode) {
-      // Set authentication state
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userRole', 'agent'); // or whatever role is appropriate
-      navigate('/');
+      try {
+        // Extract username from email (before @)
+        const username = email.split('@')[0];
+        const response = await login(username, password);
+        
+        if (response.success) {
+          updateUser(response.user);
+          navigate('/');
+        } else {
+          setError(response.error);
+        }
+      } catch (err) {
+        setError('An error occurred during login');
+      }
     } else {
       // TODO: Implement password reset logic
       setIsResetMode(false);
@@ -36,8 +54,7 @@ function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {!isResetMode ? (
-            <>
-              <div>
+            <>              <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">
                   Email Address
                 </label>
@@ -46,6 +63,8 @@ function Login() {
                   <input
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
                     placeholder="Enter your email"
                   />
@@ -57,10 +76,11 @@ function Login() {
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
-                  <input
+                  <Lock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />                  <input
                     type={showPassword ? "text" : "password"}
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-12 pr-12 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
                     placeholder="Enter your password"
                   />
@@ -73,6 +93,12 @@ function Login() {
                   </button>
                 </div>
               </div>
+
+              {error && (
+                <div className="text-red-500 text-sm mt-2">
+                  {error}
+                </div>
+              )}
 
               <button
                 type="submit"

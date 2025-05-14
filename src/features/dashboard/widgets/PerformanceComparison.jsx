@@ -2,9 +2,8 @@ import React from "react";
 import { DollarSign, TrendingUp, TrendingDown, Target, User, AlertTriangle } from "lucide-react";
 import { currencyFormatter, numberFormatter } from "../../../utils/formatters";
 
-function ComparisonCard({ title, currentValue, topValue, percentage, isNegative = false }) {
-  const isPositive = isNegative ? percentage <= 100 : percentage >= 100;
-  const difference = ((percentage - 100) * topValue / 100).toFixed(0);
+function ComparisonCard({ title, currentValue, topValue = false }) {
+
 
   return (
     <div className="p-4 rounded-lg border border-gray-600">
@@ -28,24 +27,12 @@ function ComparisonCard({ title, currentValue, topValue, percentage, isNegative 
           </div>
           <span className="text-green-400 font-medium">{topValue}</span>
         </div>
-
-        {/* Difference */}
-        <div className={`flex items-center justify-end gap-1 text-xs ${
-          isPositive ? 'text-green-400' : 'text-red-400'
-        }`}>
-          {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-          <span>{isPositive ? '+' : ''}{difference}</span>
-        </div>
       </div>
     </div>
   );
 }
 
 export function PerformanceComparison({ agentData, topPerformer }) {
-  // Calculate percentages
-  const mcoPercentage = ((agentData.revenue / topPerformer.revenue) * 100).toFixed(1);
-  const bookingPercentage = ((agentData.bookings / topPerformer.bookings) * 100).toFixed(1);
-  const chargebackPercentage = ((agentData.chargeback / topPerformer.chargeback) * 100).toFixed(1);
 
   return (
     <div className="px-4 py-3 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-gray-700/50">
@@ -62,25 +49,25 @@ export function PerformanceComparison({ agentData, topPerformer }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
         <ComparisonCard
           title="Monthly MCO"
           currentValue={currencyFormatter.format(agentData.revenue)}
           topValue={currencyFormatter.format(topPerformer.revenue)}
-          percentage={mcoPercentage}
+      
         />
         <ComparisonCard
           title="Monthly Bookings"
           currentValue={numberFormatter.format(agentData.bookings)}
           topValue={numberFormatter.format(topPerformer.bookings)}
-          percentage={bookingPercentage}
+        
         />
         <ComparisonCard
           title="Monthly CB + Refund"
           currentValue={currencyFormatter.format(agentData.chargeback)}
           topValue={currencyFormatter.format(topPerformer.chargeback)}
-          percentage={chargebackPercentage}
-          isNegative={true}
+    
+      
         />
       </div>
     </div>

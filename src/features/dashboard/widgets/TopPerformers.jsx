@@ -36,14 +36,10 @@ const defaultData = [
     role: "Travel Agent",
     revenue: 158000,
     bookings: 132,
+    badge: "🌟 High Achiever",
   },
 ];
 
-const positionColors = {
-  0: "from-blue-500/10 to-blue-600/10 border-blue-500/20 text-blue-400",
-  1: "from-purple-500/10 to-purple-600/10 border-purple-500/20 text-purple-400",
-  2: "from-green-500/10 to-green-600/10 border-green-500/20 text-green-400",
-};
 
 const medalIcons = [
   <Trophy className="w-5 h-5 text-blue-400" />,
@@ -51,32 +47,44 @@ const medalIcons = [
   <Sparkles className="w-5 h-5 text-green-400" />
 ];
 
-const Badges = ["Top Performer", "Rising Star", "High Achiever"];
-
 function PerformerCard({ performer, index, isBottom = false }) {
   return (
-    <div
-      className={`relative flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-br border ${positionColors[index]} transition-all duration-200`}
-    >
-      <div className="flex items-center gap-2">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-800/50 text-lg">
+    <div className="p-4 rounded-lg border border-gray-600">
+      <div className="text-sm text-gray-400 mb-3 flex items-center gap-2">
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-800/50">
           {isBottom ? <TrendingDown className="w-5 h-5 text-red-400" /> : medalIcons[index]}
         </div>
-        <div className="min-w-0">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h4 className="font-medium text-white truncate">
-              {performer.name}
-            </h4>
+            <span className="text-gray-200 font-medium">{performer.name}</span>
+            {performer.badge && (
+              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                index === 0 ? 'bg-blue-500/20 text-blue-400' : 
+                index === 1 ? 'bg-purple-500/20 text-purple-400' : 
+                'bg-green-500/20 text-green-400'
+              }`}>
+                {performer.badge}
+              </span>
+            )}
           </div>
-          <p className="text-sm text-gray-400 truncate">{performer.role}</p>
-          <div className="flex gap-4 mt-1">
-            <div className="text-sm text-gray-400">
-              <span className="font-semibold text-green-400">{currencyFormatter.format(performer.revenue)}</span>
-            </div>
-            <div className="text-sm text-gray-400">
-              <span className="font-semibold text-blue-400">{numberFormatter.format(performer.bookings)}</span> bookings
-            </div>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-green-400" />
+            <span className="text-sm text-gray-400">MCO Revenue</span>
           </div>
+          <span className="text-white font-medium">{currencyFormatter.format(performer.revenue)}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Plane className="w-4 h-4 text-blue-400" />
+            <span className="text-sm text-gray-400">Total Bookings</span>
+          </div>
+          <span className="text-white font-medium">{numberFormatter.format(performer.bookings)}</span>
         </div>
       </div>
     </div>

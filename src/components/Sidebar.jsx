@@ -3,18 +3,14 @@ import Logo from './Logo';
 import Navigation from './Navigation';
 import UserProfile from '../features/user/UserProfile';
 import { ChevronLeft, ChevronRight, Plane } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 import logo from '../assets/SkylineTravelLLC-logo.png';
 import logoFull from '../assets/SkylineTravelLLC.png';
 
 
 function Sidebar({ collapsed, onToggleCollapse }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-
-  // TODO: Replace with actual user data
-  const userData = {
-    alias: "Alias",
-    role: "user role"
-  };
+  const { user } = useUser();
 
   return (
     <div className={`relative h-full flex flex-col bg-gray-800 bg-opacity-50 backdrop-blur-lg border-r border-gray-700 shadow-lg transition-all duration-200 ${collapsed ? 'w-20' : 'w-64'}`} style={{ zIndex: 50 }}>
@@ -25,9 +21,8 @@ function Sidebar({ collapsed, onToggleCollapse }) {
             <UserProfile showMenu={showProfileMenu} setShowMenu={setShowProfileMenu} />
           </div>
           {!collapsed && (
-            <div className="flex flex-col ml-3">
-              <span className="text-sm font-medium text-white">{userData.alias}</span>
-              <span className="text-xs text-gray-400">{userData.role}</span>
+            <div className="flex flex-col ml-3">              <span className="text-sm font-medium text-white">{user?.firstName} {user?.lastName}</span>
+              <span className="text-xs text-gray-400">{user?.role}</span>
             </div>
           )}
         </div>
