@@ -13,7 +13,7 @@ import IPSetting from './components/IPSetting';
 import Sidebar from './components/Sidebar';
 import UserProfile from './features/user/UserProfile';
 import Login from './pages/Login';
-import Profile from './features/user/Profile';
+import ProfilePage from './features/user/ProfilePage';
 import BookingDetails from './features/booking/BookingDetails';
 
 // Protected route wrapper component
@@ -54,7 +54,7 @@ function AppContent() {
                         <Route path="find-bookings" element={<FindBookings />} />
                         <Route path="details/booking/:id" element={<BookingDetails />} />
                         <Route path="user-management" element={<UserMGMT />} />
-                        <Route path="details/user/:id" element={<Profile />} />
+                        <Route path="details/user/:id" element={<ProfilePage />} />
                         <Route path="data-management" element={<DataMGMT />} />
                         <Route path="revenue" element={<Revenue />} />
                         <Route path="revenue/details" element={<RevenueDetails />} />
@@ -62,7 +62,7 @@ function AppContent() {
                         <Route path="email-preview/:emailType" element={<EmailPreviewPage />} />
                         {/* <Route path="time-management" element={<TimeManagement />} />
                         <Route path="call-details" element={<CallDetails />} /> */}
-                        <Route path="profile" element={<Profile />} />
+                        <Route path="profile" element={<ProfilePage />} />
                         {/* <Route path="agent-details" element={<AgentDetailsForm />} /> */}
                         <Route path="*" element={<Navigate to="/" />} />
                       </Routes>

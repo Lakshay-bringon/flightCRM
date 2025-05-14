@@ -4,14 +4,14 @@ import { TopPerformers } from '../features/dashboard/widgets/TopPerformers';
 import { PerformanceComparison } from '../features/dashboard/widgets/PerformanceComparison';
 import { Plane, Users, TrendingUp, AlertTriangle } from 'lucide-react';
 import { TimelineSelector } from './TimelineSelector';
+import { useUser } from '../context/UserContext';
 
-export default function AdminDashboard() {
-  const [dateRange, setDateRange] = useState({
+export default function AdminDashboard() {  const [dateRange, setDateRange] = useState({
     start: new Date(),
     end: new Date()
   });
-  const userRole = localStorage.getItem('userRole');
-  const isAgent = userRole === 'agent';
+  const { user } = useUser();
+  const isAgent = user?.role === 'agent';
   const handleDateRangeChange = (range) => {
     setDateRange(range);
   };

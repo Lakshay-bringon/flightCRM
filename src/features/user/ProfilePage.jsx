@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { User, Phone, Mail, Calendar, Building, Shield, Award, ArrowLeft, Users, Ticket, DollarSign, AlertCircle } from 'lucide-react';
 
-function Profile() {
+function ProfilePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const userData = location.state?.user;
@@ -166,4 +166,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default ProfilePage;

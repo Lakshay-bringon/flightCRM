@@ -11,6 +11,7 @@ import {
 import { Button } from "@headlessui/react";
 import Section from "./Section"; // Assuming Section.jsx is in the same directory
 import BookingDetailsHeader from "./BookingDetailsHeader";
+import ImagePreviewModal from "./ImagePreviewModal";
 
 const PROVIDER_OPTIONS = ["Air Fare/Flight", "Skyline"];
 
@@ -31,6 +32,8 @@ export default function BookingDetails() {
   const fileInputRef = useRef(null);
   const [attachments, setAttachments] = useState([]);
   const attachmentsInputRef = useRef(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -85,6 +88,11 @@ export default function BookingDetails() {
 
   const handleDragOver = (e) => {
     e.preventDefault();
+  };
+
+  const handlePreviewImage = (imageUrl) => {
+    setPreviewImage(imageUrl);
+    setShowPreview(true);
   };
 
   // Local state for each section
@@ -350,54 +358,69 @@ export default function BookingDetails() {
         </Section>
 
         {/* Itinerary Details Section */}
-        <Section title="Itinerary Details" editable={true}
-         onSave={() => {}}
+        <Section
+          title="Itinerary Details"
+          editable={true}
+          onSave={() => {}}
           onEditStart={() => setIsAnySectionEditing(true)}
           onEditCancel={() => setIsAnySectionEditing(false)}
-          onEditSave={() => setIsAnySectionEditing(false)}>
+          onEditSave={() => setIsAnySectionEditing(false)}
+        >
           {(isEditing) => (
-          <div className="p-4">
-            {image ? (
-              <div className="mt-4 relative">
-                {/* Delete button */}
-                <button
-                  onClick={handleImageRemove}
-                  className="absolute top-0 right-0 mt-1 mr-1 text-red-500 hover:text-red-700"
-                  title="Delete Image"
+            <div className="p-4 space-y-6">
+              {image && (
+                <div
+                  className="flex items-center justify-between bg-gray-700 text-white px-3 py-2 rounded hover:bg-gray-600 cursor-pointer group"
+                  onClick={() => handlePreviewImage(image)}
                 >
-                  <Trash className="w-5 h-5" />
-                </button>
+                  <div className="flex items-center space-x-4 w-full overflow-hidden">
+                    <img
+                      src={image}
+                      alt="Itinerary"
+                      className="w-12 h-12 object-cover rounded"
+                    />
+                    <p className="truncate">Itinerary Image</p>
+                  </div>
 
-                <h3 className="text-white">Image Preview:</h3>
-                <img
-                  src={image}
-                  alt="Itinerary"
-                  className="mt-2 max-w-full h-auto rounded"
-                />
-              </div>
-            ) : (
-              <div
-                className="border-dashed border-2 border-gray-400 p-4 text-center cursor-pointer"
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onClick={() => fileInputRef.current.click()}
-              >
-                <p className="text-gray-400 flex flex-col items-center justify-center">
-                  <CloudUpload className="w-10 h-10" />
-                  Drag and drop an image here, or click to select an image
-                </p>
+                  {isEditing && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleImageRemove();
+                      }}
+                      className="ml-4"
+                    >
+                      <Trash className="w-5 h-5 text-red-500 hover:text-red-700" />
+                    </button>
+                  )}
+                </div>
+              )}
 
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  disabled={!isEditing}
-                />
-              </div>
-            )}
-          </div>)}
+              {isEditing && !image && (
+                <>
+                  <div
+                    className="border-dashed border-2 border-gray-400 p-6 text-center rounded cursor-pointer hover:border-blue-400 transition-colors"
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    <p className="text-gray-400 flex flex-col items-center justify-center">
+                      <CloudUpload className="w-10 h-10 mb-2" />
+                      Drag and drop an image here, or click to select an image
+                    </p>
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </Section>
 
         {/* Price Details Section */}
@@ -1303,19 +1326,21 @@ export default function BookingDetails() {
         </Section>
 
         {/* Refund Details Section */}
-        <Section
-          title="Refund Details"
-
-        >
+        <Section title="Refund Details">
           {(isEditing) => (
-            < div  className="p-4 space-y-6">
-             
-               <table className="w-full table-fixed">
+            <div className="p-4 space-y-6">
+              <table className="w-full table-fixed">
                 <thead>
                   <tr className="text-gray-400 text-sm border-b border-gray-700">
-                    <th className="text-center py-2 font-medium w-1/3 ">AMOUNT</th>
-                    <th className="text-center py-2 font-medium w-1/3">REFUNDED ON</th>
-                    <th className="text-center py-2 font-medium w-1/3">STATUS</th>
+                    <th className="text-center py-2 font-medium w-1/3 ">
+                      AMOUNT
+                    </th>
+                    <th className="text-center py-2 font-medium w-1/3">
+                      REFUNDED ON
+                    </th>
+                    <th className="text-center py-2 font-medium w-1/3">
+                      STATUS
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1325,42 +1350,30 @@ export default function BookingDetails() {
                       className="text-white border-b border-gray-700/50"
                     >
                       <td className="py-3 text-center">{charge.amount}</td>
-                      <td className="py-3 text-center">{charge.refundedOn || "N/A"}</td>
                       <td className="py-3 text-center">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${
-                            charge.status === "Processed"
-                              ? "bg-green-500/20 text-green-400"
-                              : charge.status === "Failed"
-                              ? "bg-red-500/20 text-red-400"
-                              : "bg-yellow-500/20 text-yellow-400"
-                          }`}
-                        >
-                          {charge.status || "Pending"}
-                        </span>
+                        {charge.refundedOn || "N/A"}
+                      </td>
+                      <td className="py-3 text-center">
+                        N/A
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              
             </div>
           )}
         </Section>
 
         {/* Chargeback Details Section */}
-        <Section
-          title="Chargeback Details"
-        
-        >
+        <Section title="Chargeback Details">
           {(isEditing) => (
             <div className="p-4 space-y-6">
               <table className="min-w-full">
                 <thead>
                   <tr className="text-gray-400 text-sm border-b border-gray-700">
-                    <th className="text-center py-2 font-medium">AMOUNT</th>
-                    <th className="text-center py-2 font-medium">CHARGED ON</th>
-                    <th className="text-center py-2 font-medium">STATUS</th>
+                    <th className="text-center py-2 font-medium w-1/3">AMOUNT</th>
+                    <th className="text-center py-2 font-medium w-1/3">CHARGED ON</th>
+                    <th className="text-center py-2 font-medium  w-1/3 ">STATUS</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1370,19 +1383,11 @@ export default function BookingDetails() {
                       className="text-white border-b border-gray-700/50"
                     >
                       <td className="py-3 text-center">{charge.amount}</td>
-                      <td className="py-3 text-center">{charge.refundedOn || "N/A"}</td>
                       <td className="py-3 text-center">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${
-                            charge.status === "Processed"
-                              ? "bg-green-500/20 text-green-400"
-                              : charge.status === "Failed"
-                              ? "bg-red-500/20 text-red-400"
-                              : "bg-yellow-500/20 text-yellow-400"
-                          }`}
-                        >
-                          {charge.status || "Pending"}
-                        </span>
+                        {charge.refundedOn || "N/A"}
+                      </td>
+                      <td className="py-3 text-center">
+                        N/A
                       </td>
                     </tr>
                   ))}
@@ -1396,56 +1401,72 @@ export default function BookingDetails() {
         <Section
           title="Add Attachments"
           editable={true}
+          onSave={() => {}}
           onEditStart={() => setIsAnySectionEditing(true)}
           onEditCancel={() => setIsAnySectionEditing(false)}
           onEditSave={() => setIsAnySectionEditing(false)}
         >
-          <div className="p-4 space-y-6">
-            {attachments.map((attachment, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between bg-gray-700 text-white px-3 py-2 rounded hover:bg-gray-600 cursor-pointer group"
-                onClick={() => handleImagePreview(index)}
-              >
-                <div className="flex items-center space-x-4 w-full overflow-hidden">
-                  <img
-                    src={URL.createObjectURL(attachment.file)}
-                    alt="thumbnail"
-                    className="w-12 h-12 object-cover rounded"
-                  />
-                  <p className="truncate">{attachment.file.name}</p>
-                </div>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAttachmentsRemove(index);
-                  }}
-                  className="ml-4"
+          {(isEditing) => (
+            <div className="p-4 space-y-6">
+              {attachments.map((attachment, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-gray-700 text-white px-3 py-2 rounded hover:bg-gray-600 cursor-pointer group"
+                  onClick={() => handlePreviewImage(attachment.url)}
                 >
-                  <Trash className="w-5 h-5 text-red-500 hover:text-red-700" />
-                </button>
-              </div>
-            ))}
+                  <div className="flex items-center space-x-4 w-full overflow-hidden">
+                    <img
+                      src={attachment.url}
+                      alt="thumbnail"
+                      className="w-12 h-12 object-cover rounded"
+                    />
+                    <p className="truncate">{attachment.file.name}</p>
+                  </div>
 
-            <button
-              className="bg-blue-500 w-full text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-              onClick={() => {
-                attachmentsInputRef.current.click();
-              }}
-            >
-              + Add Image
-            </button>
-            <input
-              ref={attachmentsInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleAttachmentsUpload}
-              className="hidden"
-            />
-          </div>
+                  {isEditing && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAttachmentsRemove(index);
+                      }}
+                      className="ml-4"
+                    >
+                      <Trash className="w-5 h-5 text-red-500 hover:text-red-700" />
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              {isEditing && (
+                <>
+                  <button
+                    className="bg-blue-500 w-full text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                    onClick={() => {
+                      attachmentsInputRef.current.click();
+                    }}
+                  >
+                    + Add Image
+                  </button>
+                  <input
+                    ref={attachmentsInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAttachmentsUpload}
+                    className="hidden"
+                  />
+                </>
+              )}
+            </div>
+          )}
         </Section>
       </div>
+      {showPreview && (
+        <ImagePreviewModal
+          isOpen={showPreview}
+          onClose={() => setShowPreview(false)}
+          imageUrl={previewImage}
+        />
+      )}
     </>
   );
 }

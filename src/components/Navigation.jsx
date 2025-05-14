@@ -38,11 +38,12 @@ function NavLink({ to, children, iconOnly }) {
 }
 
 function Navigation({ iconOnly = false }) {
-  const { user } = useUser();
-  const isAgent = user?.role === ROLES.AGENT;
-  const canManageUsers = hasPermission('manage_users');
-  const canManageData = hasPermission('edit_all');
-  const canViewRevenue = hasPermission('view_reports');
+  const { user } = useUser();  const isAgent = user?.role === ROLES.AGENT;
+  const isLeader = user?.role === ROLES.LEADER;
+  const canManageUsers = hasPermission('manage_users') && !isLeader;
+  const canManageData = hasPermission('edit_all') || isLeader;
+  const canViewRevenue = hasPermission('view_reports') && !isLeader;
+  const canManageIP = !isAgent && !isLeader;
 
   return (
     <nav className="mt-2 h-[calc(100vh-152px)] overflow-y-auto">
@@ -74,8 +75,7 @@ function Navigation({ iconOnly = false }) {
             <PieChart />
             REVENUE
           </NavLink>
-        )}
-        {!isAgent && (
+        )}        {canManageIP && (
           <NavLink to="/ip-setting" iconOnly={iconOnly}>
             <Settings />
             IP SETTING
