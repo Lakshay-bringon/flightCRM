@@ -1,14 +1,25 @@
 import { RefreshCcw, Activity as ActivityIcon, MessageSquareText, Mails, X, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "../../components/ui/popover";
+import { useNavigate } from "react-router-dom";
 import Modal from "../../components/Modal";
 import Comments from "./Comments";
 import Activity from "./Actvity";
 
-export default function BookingDetailsHeader({ bookingId="1" }) {
+export default function BookingDetailsHeader({ bookingId="1", isEditing = false }) {
   const [showComments, setShowComments] = useState(false);
   const [showActivity, setShowActivity] = useState(false);
+  const [showCloseModal, setShowCloseModal] = useState(false);
+  const [closeComment, setCloseComment] = useState('');
+  const [commentError, setCommentError] = useState(false);
+  const textareaRef = useRef(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (showCloseModal && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [showCloseModal]);
   return (
     <div className="sticky top-0 z-10 flex items-center py-4 bg-transparent ">
       <div className="flex flex-1 gap-3">
@@ -25,9 +36,9 @@ export default function BookingDetailsHeader({ bookingId="1" }) {
             </Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-48 p-1">
-            <button className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer" type="button">Auth</button>
-            <button className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer" type="button">Confirmation</button>
-            <button className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer" type="button">Card Declined</button>
+            <button className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer" type="button" onClick={() => navigate('/email-preview/newBooking')}>Auth</button>
+            <button className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer" type="button" onClick={() => navigate('/email-preview/newBooking')}>Confirmation</button>
+            <button className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer" type="button" onClick={() => navigate('/email-preview/newBooking')}>Card Declined</button>
           </PopoverContent>
         </Popover>
         <Button variant="secondary" className="flex items-center gap-2 cursor-pointer" title="Refresh">
@@ -35,17 +46,63 @@ export default function BookingDetailsHeader({ bookingId="1" }) {
         </Button>
       </div>
       <div className="flex">
-        <Button variant="destructive" className="flex items-center gap-2 cursor-pointer">
+        <Button
+          variant="destructive"
+          className={`flex items-center gap-2 ${isEditing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          onClick={() => !isEditing && setShowCloseModal(true)}
+          disabled={isEditing}
+        >
           <X size={18}/> Close Booking
         </Button>
       </div>
-      {/* Comments Modal */}
-      <Modal isOpen={showComments} onClose={() => setShowComments(false)} title="Comments">
-        <Comments bookingId={bookingId} />
-      </Modal>
-      {/* Activity Modal */}
-      <Modal isOpen={showActivity} onClose={() => setShowActivity(false)} title="Activity">
-        <Activity bookingId={bookingId} />
+      {/* Comments Slide-in Panel */}
+      <Comments open={showComments} onClose={() => setShowComments(false)} bookingId={bookingId} />
+      {/* Activity Slide-in Panel */}
+      <Activity open={showActivity} onClose={() => setShowActivity(false)} bookingId={bookingId} />
+      {/* Close Booking Modal */}
+      <Modal isOpen={showCloseModal} onClose={() => {
+        setShowCloseModal(false);
+        setCloseComment('');
+        setCommentError(false);
+      }} title="Close Booking">
+        <div className="flex flex-col gap-4">
+          <div>
+            <label htmlFor="close-comment" className="text-gray-200 font-medium">
+              Comment <span className="text-red-400">*</span>
+            </label>
+            {commentError && (
+              <p className="text-red-400 text-sm mt-1">Please enter a comment before closing the booking</p>
+            )}
+          </div>
+          <textarea
+            id="close-comment"
+            ref={textareaRef}
+            className={`bg-gray-900 text-gray-100 rounded-lg p-4 min-h-[120px] border-2 ${
+              commentError ? 'border-red-500' : 'border-gray-700'
+            } focus:border-blue-500 resize-none w-full text-base shadow-md focus:outline-none focus:ring focus:ring-blue-500/30 transition-all`}
+            value={closeComment}
+            onChange={e => {
+              setCloseComment(e.target.value);
+              if (e.target.value.trim()) setCommentError(false);
+            }}
+            placeholder="Add a comment... (Required)"
+          />
+          <Button 
+            variant="destructive" 
+            onClick={() => {
+              if (!closeComment.trim()) {
+                setCommentError(true);
+                return;
+              }
+              // Handle closing booking with comment
+              setShowCloseModal(false);
+              setCloseComment('');
+              setCommentError(false);
+            }}
+          >
+            Save Comment and Close
+          </Button>
+        </div>
       </Modal>
     </div>
   );

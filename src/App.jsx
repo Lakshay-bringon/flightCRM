@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import CreatePNR from './components/CreatePNR';
+import EmailPreviewPage from './pages/EmailPreviewPage';
 import FindBookings from './features/booking/FindBookings';
 import UserMGMT from './features/user/UserMGMT';
 import DataMGMT from './components/DataMGMT';
@@ -57,6 +58,7 @@ function App() {
                         <Route path="revenue" element={<Revenue />} />
                         <Route path="revenue/details" element={<RevenueDetails />} />
                         <Route path="ip-setting" element={<IPSetting />} />
+                        <Route path="email-preview/:emailType" element={<EmailPreviewPage />} />
                         {/* <Route path="time-management" element={<TimeManagement />} />
                         <Route path="call-details" element={<CallDetails />} /> */}
                         <Route path="profile" element={<Profile />} />

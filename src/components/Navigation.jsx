@@ -36,6 +36,9 @@ function NavLink({ to, children, iconOnly }) {
 }
 
 function Navigation({ iconOnly = false }) {
+  const userRole = localStorage.getItem('userRole');
+  const isAgent = userRole === 'agent';
+
   return (
     <nav className="mt-2 h-[calc(100vh-152px)] overflow-y-auto">
       <div className="px-2 space-y-1">
@@ -50,22 +53,26 @@ function Navigation({ iconOnly = false }) {
           <Search />
           FIND BOOKINGS 
         </NavLink>
-        <NavLink to="/user-management" iconOnly={iconOnly}>
-          <UserCircle />
-          USER MGMT
-        </NavLink>
-        <NavLink to="/data-management" iconOnly={iconOnly}>
-          <FileInput />
-          DATA MGMT
-        </NavLink>
-        <NavLink to="/revenue" iconOnly={iconOnly}>
-          <PieChart />
-          REVENUE
-        </NavLink>
-        <NavLink to="/ip-setting" iconOnly={iconOnly}>
-          <Settings />
+        {!isAgent && (
+          <>
+            <NavLink to="/user-management" iconOnly={iconOnly}>
+              <UserCircle />
+              USER MGMT
+            </NavLink>
+            <NavLink to="/data-management" iconOnly={iconOnly}>
+              <FileInput />
+              DATA MGMT
+            </NavLink>
+            <NavLink to="/revenue" iconOnly={iconOnly}>
+              <PieChart />
+              REVENUE
+            </NavLink>
+            <NavLink to="/ip-setting" iconOnly={iconOnly}>
+              <Settings />
           IP SETTING
         </NavLink>
+        </>
+        )}
       </div>
     </nav>
   );

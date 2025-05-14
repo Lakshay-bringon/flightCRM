@@ -1,12 +1,32 @@
 import React, { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { RefreshCcw, PenSquare, Trash, CloudUpload, Activity } from "lucide-react";
+import {
+  RefreshCcw,
+  PenSquare,
+  Trash,
+  CloudUpload,
+  Activity,
+  PlusIcon,
+} from "lucide-react";
 import { Button } from "@headlessui/react";
 import Section from "./Section"; // Assuming Section.jsx is in the same directory
 import BookingDetailsHeader from "./BookingDetailsHeader";
 
+const PROVIDER_OPTIONS = ["Air Fare/Flight", "Skyline"];
+
+const AUTH_STATUS_OPTIONS = ["Pending", "Confirmed", "Rejected"];
+
+const BID_STATUS_OPTIONS = [
+  "Pending",
+  "Active",
+  "Cancelled",
+  "Completed",
+  "Expired",
+];
+
 export default function BookingDetails() {
   const { id } = useParams();
+  const [isAnySectionEditing, setIsAnySectionEditing] = useState(false);
   const [image, setImage] = useState(null);
   const fileInputRef = useRef(null);
   const [attachments, setAttachments] = useState([]);
@@ -128,453 +148,1310 @@ export default function BookingDetails() {
   // Save handlers (mock API)
   const saveProviderDetails = async () => {
     await fetch(`/api/bookings/${id}/provider`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(providerDetails),
     });
   };
   const savePassengerDetails = async () => {
     await fetch(`/api/bookings/${id}/passengers`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(passengerDetails),
     });
   };
   const saveBillingDetails = async () => {
     await fetch(`/api/bookings/${id}/billing`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(billingDetails),
     });
   };
   const saveChargingDetails = async () => {
     await fetch(`/api/bookings/${id}/charging`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(chargingDetails),
     });
   };
   const savePriceDetails = async () => {
     await fetch(`/api/bookings/${id}/price`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(priceDetails),
     });
   };
 
-
-
   return (
     <>
-    
-      <BookingDetailsHeader/>
-    <div className="space-y-6">
-      {/* Provider Details Section */}
-      <Section title="Provider Details" editable={true} onSave={saveProviderDetails}>
-        {(isEditing) => (
-          <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-gray-400 text-sm mb-1">BID</label>
-              {isEditing ? (
-                <input className="input" value={providerDetails.bid} onChange={e => setProviderDetails(pd => ({...pd, bid: e.target.value}))} />
-              ) : (
-                <div className="text-white">{providerDetails.bid}</div>
-              )}
+      <BookingDetailsHeader isEditing={isAnySectionEditing} />
+      <div className="space-y-4">
+        {/* Provider Details Section */}
+        <Section
+          title="Provider Details"
+          editable={true}
+          onSave={saveProviderDetails}
+          onEditStart={() => setIsAnySectionEditing(true)}
+          onEditCancel={() => setIsAnySectionEditing(false)}
+          onEditSave={() => setIsAnySectionEditing(false)}
+        >
+          {(isEditing) => (
+            <div className="p-4 space-y-6">
+              <div className="grid text-white grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    BID
+                  </label>
+                  <div className="h-10 flex items-center px-3 bg-gray-700/50 rounded-lg">
+                    <div className="text-white">{providerDetails.bid}</div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    PROVIDER
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <select
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={providerDetails.provider}
+                        onChange={(e) =>
+                          setProviderDetails((pd) => ({
+                            ...pd,
+                            provider: e.target.value,
+                          }))
+                        }
+                      >
+                        {PROVIDER_OPTIONS.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {providerDetails.provider}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    TRANSACTION TYPE
+                  </label>
+                  <div className="h-10 flex items-center px-3 bg-gray-700/50 rounded-lg">
+                    <div className="text-white">
+                      {providerDetails.transactionType}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    DATE CREATED
+                  </label>
+                  <div className="h-10 flex items-center px-3 bg-gray-700/50 rounded-lg">
+                    <div className="text-white">
+                      {providerDetails.dateCreated}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    AUTH STATUS
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <select
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={providerDetails.authStatus}
+                        onChange={(e) =>
+                          setProviderDetails((pd) => ({
+                            ...pd,
+                            authStatus: e.target.value,
+                          }))
+                        }
+                      >
+                        {AUTH_STATUS_OPTIONS.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {providerDetails.authStatus}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    BID STATUS
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <select
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={providerDetails.bidStatus}
+                        onChange={(e) =>
+                          setProviderDetails((pd) => ({
+                            ...pd,
+                            bidStatus: e.target.value,
+                          }))
+                        }
+                      >
+                        {BID_STATUS_OPTIONS.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {providerDetails.bidStatus}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    AGENT
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={providerDetails.agent}
+                        onChange={(e) =>
+                          setProviderDetails((pd) => ({
+                            ...pd,
+                            agent: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {providerDetails.agent}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-gray-400 text-sm mb-1">PROVIDER</label>
-              {isEditing ? (
-                <input className="input" value={providerDetails.provider} onChange={e => setProviderDetails(pd => ({...pd, provider: e.target.value}))} />
-              ) : (
-                <div className="text-white">{providerDetails.provider}</div>
-              )}
+          )}
+        </Section>
+
+        {/* Itinerary Details Section */}
+        <Section title="Itinerary Details" editable={true}
+         onSave={() => {}}
+          onEditStart={() => setIsAnySectionEditing(true)}
+          onEditCancel={() => setIsAnySectionEditing(false)}
+          onEditSave={() => setIsAnySectionEditing(false)}>
+          {(isEditing) => (
+          <div className="p-4">
+            {image ? (
+              <div className="mt-4 relative">
+                {/* Delete button */}
+                <button
+                  onClick={handleImageRemove}
+                  className="absolute top-0 right-0 mt-1 mr-1 text-red-500 hover:text-red-700"
+                  title="Delete Image"
+                >
+                  <Trash className="w-5 h-5" />
+                </button>
+
+                <h3 className="text-white">Image Preview:</h3>
+                <img
+                  src={image}
+                  alt="Itinerary"
+                  className="mt-2 max-w-full h-auto rounded"
+                />
+              </div>
+            ) : (
+              <div
+                className="border-dashed border-2 border-gray-400 p-4 text-center cursor-pointer"
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onClick={() => fileInputRef.current.click()}
+              >
+                <p className="text-gray-400 flex flex-col items-center justify-center">
+                  <CloudUpload className="w-10 h-10" />
+                  Drag and drop an image here, or click to select an image
+                </p>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  disabled={!isEditing}
+                />
+              </div>
+            )}
+          </div>)}
+        </Section>
+
+        {/* Price Details Section */}
+        <Section
+          title="Price Details"
+          editable={true}
+          onSave={savePriceDetails}
+          onEditStart={() => setIsAnySectionEditing(true)}
+          onEditCancel={() => setIsAnySectionEditing(false)}
+          onEditSave={() => setIsAnySectionEditing(false)}
+        >
+          {(isEditing) => (
+            <div className="p-4 space-y-6">
+              <div className="grid text-white grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    AIRLINE FARE
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={priceDetails.airlineFare}
+                        onChange={(e) =>
+                          setPriceDetails((pd) => ({
+                            ...pd,
+                            airlineFare: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {priceDetails.airlineFare}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    MCO
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={priceDetails.mco}
+                        onChange={(e) =>
+                          setPriceDetails((pd) => ({
+                            ...pd,
+                            mco: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">{priceDetails.mco}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    TOTAL AMOUNT
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={priceDetails.totalAmount}
+                        onChange={(e) =>
+                          setPriceDetails((pd) => ({
+                            ...pd,
+                            totalAmount: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {priceDetails.totalAmount}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    CURRENCY
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={priceDetails.currency}
+                        onChange={(e) =>
+                          setPriceDetails((pd) => ({
+                            ...pd,
+                            currency: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {priceDetails.currency}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-gray-400 text-sm mb-1">TRANSACTION TYPE</label>
-              {isEditing ? (
-                <input className="input" value={providerDetails.transactionType} onChange={e => setProviderDetails(pd => ({...pd, transactionType: e.target.value}))} />
-              ) : (
-                <div className="text-white">{providerDetails.transactionType}</div>
-              )}
+          )}
+        </Section>
+
+        {/* Charging Details Section */}
+        <Section
+          title="Charging Details"
+          editable={true}
+          onSave={saveChargingDetails}
+          onEditStart={() => setIsAnySectionEditing(true)}
+          onEditCancel={() => setIsAnySectionEditing(false)}
+          onEditSave={() => setIsAnySectionEditing(false)}
+        >
+          {(isEditing) => (
+            <div className="p-4 space-y-6">
+              <div className="grid text-white grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    TYPE
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <select
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={chargingDetails[0].type}
+                        onChange={(e) =>
+                          setChargingDetails((cd) => [
+                            { ...cd[0], type: e.target.value },
+                          ])
+                        }
+                      >
+                        <option value="MCO">MCO</option>
+                        <option value="AUTH">AUTH</option>
+                      </select>
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {chargingDetails[0].type}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    TRANSACTION ID
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={chargingDetails[0].transactionId}
+                        onChange={(e) =>
+                          setChargingDetails((cd) => [
+                            { ...cd[0], transactionId: e.target.value },
+                          ])
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {chargingDetails[0].transactionId || "123"}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    AMOUNT
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="number"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={chargingDetails[0].amount}
+                        onChange={(e) =>
+                          setChargingDetails((cd) => [
+                            { ...cd[0], amount: e.target.value },
+                          ])
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {chargingDetails[0].amount}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    STATUS
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <select
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={chargingDetails[0].status || ""}
+                        onChange={(e) =>
+                          setChargingDetails((cd) => [
+                            { ...cd[0], status: e.target.value },
+                          ])
+                        }
+                      >
+                        <option value="">Select Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Processed">Processed</option>
+                        <option value="Failed">Failed</option>
+                      </select>
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {chargingDetails[0].status || "N/A"}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    CHARGED ON
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="datetime-local"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={chargingDetails[0].chargedOn || ""}
+                        onChange={(e) =>
+                          setChargingDetails((cd) => [
+                            { ...cd[0], chargedOn: e.target.value },
+                          ])
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {chargingDetails[0].chargedOn || "N/A"}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    CHARGED BY
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={chargingDetails[0].chargedBy || ""}
+                        onChange={(e) =>
+                          setChargingDetails((cd) => [
+                            { ...cd[0], chargedBy: e.target.value },
+                          ])
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {chargingDetails[0].chargedBy || "N/A"}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    MERCHANT NAME
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={chargingDetails[0].merchantName || ""}
+                        onChange={(e) =>
+                          setChargingDetails((cd) => [
+                            { ...cd[0], merchantName: e.target.value },
+                          ])
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {chargingDetails[0].merchantName || "N/A"}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-gray-400 text-sm mb-1">DATE CREATED</label>
-              {isEditing ? (
-                <input className="input" value={providerDetails.dateCreated} onChange={e => setProviderDetails(pd => ({...pd, dateCreated: e.target.value}))} />
-              ) : (
-                <div className="text-white">{providerDetails.dateCreated}</div>
-              )}
-            </div>
-            <div>
-              <label className="block text-gray-400 text-sm mb-1">AUTH STATUS</label>
-              {isEditing ? (
-                <input className="input" value={providerDetails.authStatus} onChange={e => setProviderDetails(pd => ({...pd, authStatus: e.target.value}))} />
-              ) : (
-                <div className="text-white">{providerDetails.authStatus}</div>
-              )}
-            </div>
-            <div>
-              <label className="block text-gray-400 text-sm mb-1">BID STATUS</label>
-              {isEditing ? (
-                <input className="input" value={providerDetails.bidStatus} onChange={e => setProviderDetails(pd => ({...pd, bidStatus: e.target.value}))} />
-              ) : (
-                <div className="text-white">{providerDetails.bidStatus}</div>
-              )}
-            </div>
-            <div>
-              <label className="block text-gray-400 text-sm mb-1">AGENT</label>
-              {isEditing ? (
-                <input className="input" value={providerDetails.agent} onChange={e => setProviderDetails(pd => ({...pd, agent: e.target.value}))} />
-              ) : (
-                <div className="text-white">{providerDetails.agent}</div>
-              )}
-            </div>
-          </div>
-        )}
-      </Section>
+          )}
+        </Section>
 
-
-      {/* Price Details Section */}
-      <Section title="Price Details" editable={true}>
-        
-        <div className="p-4">
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-gray-400 text-sm">
-                <th className="text-left py-2">AIRLINE FARE</th>
-                <th className="text-left py-2">MCO</th>
-                <th className="text-left py-2">TOTAL AMOUNT</th>
-                <th className="text-left py-2">CURRENCY</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="text-white">
-                <td className="py-2">{priceDetails.airlineFare}</td>
-                <td className="py-2">{priceDetails.mco}</td>
-                <td className="py-2">{priceDetails.totalAmount}</td>
-                <td className="py-2">{priceDetails.currency}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Charging Details Section */}
-      <Section title="Charging Details" editable={true}>
-        
-        <div className="p-4">
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-gray-400 text-sm">
-                <th className="text-left py-2">TYPE</th>
-                <th className="text-left py-2">TRANSACTION ID</th>
-                <th className="text-left py-2">AMOUNT</th>
-                <th className="text-left py-2">STATUS</th>
-                <th className="text-left py-2">CHARGED ON</th>
-                <th className="text-left py-2">CHARGED BY</th>
-                <th className="text-left py-2">MERCHANT NAME</th>
-              </tr>
-            </thead>
-            <tbody>
-              {chargingDetails.map((charge, index) => (
-                <tr key={index} className="text-white">
-                  <td className="py-2">{charge.type}</td>
-                  <td className="py-2">{charge.transactionId || "123"}</td>
-                  <td className="py-2">{charge.amount}</td>
-                  <td className="py-2">{charge.status || "N/A"}</td>
-                  <td className="py-2">{charge.chargedOn || "N/A"}</td>
-                  <td className="py-2">{charge.chargedBy || "N/A"}</td>
-                  <td className="py-2">{charge.merchantName || "N/A"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-
-
-
-
-      {/* Passenger Details Section */}
-      <Section title="Passenger Details" editable={true}>
-        
-        <div className="p-4">
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-gray-400 text-sm">
-                <th className="text-left py-2">TYPE</th>
-                <th className="text-left py-2">FIRST NAME</th>
-                <th className="text-left py-2">MIDDLE NAME</th>
-                <th className="text-left py-2">LAST NAME</th>
-                <th className="text-left py-2">GENDER</th>
-                <th className="text-left py-2">DOB</th>
-                <th className="text-left py-2">TICKET NUMBER</th>
-              </tr>
-            </thead>
-            <tbody>
+        {/* Passenger Details Section */}
+        <Section
+          title="Passenger Details"
+          editable={true}
+          onSave={savePassengerDetails}
+          onEditStart={() => setIsAnySectionEditing(true)}
+          onEditCancel={() => setIsAnySectionEditing(false)}
+          onEditSave={() => setIsAnySectionEditing(false)}
+        >
+          {(isEditing) => (
+            <div className="p-4 space-y-8">
               {passengerDetails.map((passenger, index) => (
-                <tr key={index} className="text-white">
-                  <td className="py-2">{passenger.type}</td>
-                  <td className="py-2">{passenger.firstName}</td>
-                  <td className="py-2">{passenger.middleName}</td>
-                  <td className="py-2">{passenger.lastName}</td>
-                  <td className="py-2">{passenger.gender}</td>
-                  <td className="py-2">{passenger.dob}</td>
-                  <td className="py-2">{passenger.ticketNumber}</td>
-                </tr>
+                <div
+                  key={index}
+                  className="grid text-white grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-gray-700 first:border-t-0"
+                >
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">
+                      TYPE
+                    </label>
+                    <div className="h-10">
+                      {isEditing ? (
+                        <select
+                          className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                          value={passenger.type}
+                          onChange={(e) => {
+                            const newPassengers = [...passengerDetails];
+                            newPassengers[index] = {
+                              ...passenger,
+                              type: e.target.value,
+                            };
+                            setPassengerDetails(newPassengers);
+                          }}
+                        >
+                          <option value="Adult">Adult</option>
+                          <option value="Child">Child</option>
+                          <option value="Infant">Infant</option>
+                        </select>
+                      ) : (
+                        <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                          <div className="text-white">{passenger.type}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">
+                      FIRST NAME
+                    </label>
+                    <div className="h-10">
+                      {isEditing ? (
+                        <input
+                          className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                          value={passenger.firstName}
+                          onChange={(e) => {
+                            const newPassengers = [...passengerDetails];
+                            newPassengers[index] = {
+                              ...passenger,
+                              firstName: e.target.value,
+                            };
+                            setPassengerDetails(newPassengers);
+                          }}
+                        />
+                      ) : (
+                        <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                          <div className="text-white">
+                            {passenger.firstName}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">
+                      LAST NAME
+                    </label>
+                    <div className="h-10">
+                      {isEditing ? (
+                        <input
+                          className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                          value={passenger.lastName}
+                          onChange={(e) => {
+                            const newPassengers = [...passengerDetails];
+                            newPassengers[index] = {
+                              ...passenger,
+                              lastName: e.target.value,
+                            };
+                            setPassengerDetails(newPassengers);
+                          }}
+                        />
+                      ) : (
+                        <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                          <div className="text-white">{passenger.lastName}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">
+                      GENDER
+                    </label>
+                    <div className="h-10">
+                      {isEditing ? (
+                        <select
+                          className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                          value={passenger.gender}
+                          onChange={(e) => {
+                            const newPassengers = [...passengerDetails];
+                            newPassengers[index] = {
+                              ...passenger,
+                              gender: e.target.value,
+                            };
+                            setPassengerDetails(newPassengers);
+                          }}
+                        >
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      ) : (
+                        <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                          <div className="text-white">{passenger.gender}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">
+                      DOB
+                    </label>
+                    <div className="h-10">
+                      {isEditing ? (
+                        <input
+                          type="date"
+                          className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                          value={passenger.dob}
+                          onChange={(e) => {
+                            const newPassengers = [...passengerDetails];
+                            newPassengers[index] = {
+                              ...passenger,
+                              dob: e.target.value,
+                            };
+                            setPassengerDetails(newPassengers);
+                          }}
+                        />
+                      ) : (
+                        <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                          <div className="text-white">{passenger.dob}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">
+                      TICKET NUMBER
+                    </label>
+                    <div className="h-10">
+                      {isEditing ? (
+                        <input
+                          className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                          value={passenger.ticketNumber}
+                          onChange={(e) => {
+                            const newPassengers = [...passengerDetails];
+                            newPassengers[index] = {
+                              ...passenger,
+                              ticketNumber: e.target.value,
+                            };
+                            setPassengerDetails(newPassengers);
+                          }}
+                          placeholder="Enter ticket number"
+                        />
+                      ) : (
+                        <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                          <div className="text-white">
+                            {passenger.ticketNumber || "-"}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {isEditing && (
+                    <div className="col-span-full flex justify-between items-center">
+                      {passengerDetails.length > 1 && (
+                        <button
+                          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                          onClick={() => {
+                            const newPassengers = [...passengerDetails];
+                            newPassengers.splice(index, 1);
+                            setPassengerDetails(newPassengers);
+                          }}
+                        >
+                          Remove Passenger
+                        </button>
+                      )}
+                      {index === passengerDetails.length - 1 && (
+                        <button
+                          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                          onClick={() =>
+                            setPassengerDetails([
+                              ...passengerDetails,
+                              {
+                                type: "Adult",
+                                firstName: "",
+                                middleName: "",
+                                lastName: "",
+                                gender: "Male",
+                                dob: "",
+                                ticketNumber: "",
+                              },
+                            ])
+                          }
+                        >
+                          Add Passenger
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               ))}
-            </tbody>
-          </table>
-          </div>
-      </Section>
+            </div>
+          )}
+        </Section>
 
-      {/* Itinerary Details Section */}
-      <Section title="Itinerary Details" editable={true}>
-       
-        <div className="p-4">
-          <div
-            className="border-dashed border-2 border-gray-400 p-4 text-center cursor-pointer"
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onClick={() => fileInputRef.current.click()}
-          >
-            <p className="text-gray-400 flex flex-col items-center justify-center">
-              <CloudUpload className="w-10 h-10" />
-              Drag and drop an image here, or click to select an image
-            </p>
+        {/* Billing Details Section */}
+        <Section
+          title="Billing Details"
+          editable={true}
+          onSave={saveBillingDetails}
+          onEditStart={() => setIsAnySectionEditing(true)}
+          onEditCancel={() => setIsAnySectionEditing(false)}
+          onEditSave={() => setIsAnySectionEditing(false)}
+        >
+          {(isEditing) => (
+            <div className="p-4 space-y-6">
+              <div className="grid text-white grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    CARD TYPE
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <select
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.cardType}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            cardType: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="VI">VISA</option>
+                        <option value="MC">MASTERCARD</option>
+                        <option value="AX">AMEX</option>
+                      </select>
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {billingDetails.cardType}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    C.C.H. NAME
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.cchName}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            cchName: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {billingDetails.cchName}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    CARD NUMBER
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.cardNumber}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            cardNumber: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {billingDetails.cardNumber}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    CVV
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="password"
+                        maxLength="4"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.cvv}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            cvv: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">••••</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    EXPIRY
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <div className="flex h-full gap-2">
+                        <input
+                          type="text"
+                          maxLength="2"
+                          placeholder="MM"
+                          className="w-1/2 h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                          value={billingDetails.expiry.month}
+                          onChange={(e) =>
+                            setBillingDetails((bd) => ({
+                              ...bd,
+                              expiry: { ...bd.expiry, month: e.target.value },
+                            }))
+                          }
+                        />
+                        <input
+                          type="text"
+                          maxLength="2"
+                          placeholder="YY"
+                          className="w-1/2 h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                          value={billingDetails.expiry.year}
+                          onChange={(e) =>
+                            setBillingDetails((bd) => ({
+                              ...bd,
+                              expiry: { ...bd.expiry, year: e.target.value },
+                            }))
+                          }
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {billingDetails.expiry.month}/
+                          {billingDetails.expiry.year}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    BILLING NUMBER
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.billingNumber}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            billingNumber: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {billingDetails.billingNumber}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="col-span-full">
+                  <label className="block text-gray-400 text-sm mb-2">
+                    BILLING ADDRESS
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.billingAddress}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            billingAddress: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {billingDetails.billingAddress}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="col-span-full">
+                  <label className="block text-gray-400 text-sm mb-2">
+                    BILLING ADDRESS II
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.billingAddress2}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            billingAddress2: e.target.value,
+                          }))
+                        }
+                        placeholder="Optional"
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {billingDetails.billingAddress2 || "Not provided"}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    EMAIL
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="email"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.email}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            email: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">{billingDetails.email}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    CITY
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.city}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            city: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">{billingDetails.city}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    STATE
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.state}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            state: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">{billingDetails.state}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    COUNTRY
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.country}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            country: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {billingDetails.country}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">
+                    PIN CODE
+                  </label>
+                  <div className="h-10">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="w-full h-full bg-gray-700 text-white rounded-lg px-3 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        value={billingDetails.pinCode}
+                        onChange={(e) =>
+                          setBillingDetails((bd) => ({
+                            ...bd,
+                            pinCode: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="h-full flex items-center px-3 bg-gray-700/50 rounded-lg">
+                        <div className="text-white">
+                          {billingDetails.pinCode}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </Section>
 
+        {/* Refund Details Section */}
+        <Section
+          title="Refund Details"
+          editable={true}
+          onEditStart={() => setIsAnySectionEditing(true)}
+          onEditCancel={() => setIsAnySectionEditing(false)}
+          onEditSave={() => setIsAnySectionEditing(false)}
+        >
+          {(isEditing) => (
+            < div  className="p-4 space-y-6">
+             
+               <table className="w-full table-fixed">
+                <thead>
+                  <tr className="text-gray-400 text-sm border-b border-gray-700">
+                    <th className="text-center py-2 font-medium w-1/3 ">AMOUNT</th>
+                    <th className="text-center py-2 font-medium w-1/3">REFUNDED ON</th>
+                    <th className="text-center py-2 font-medium w-1/3">STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chargingDetails.map((charge, index) => (
+                    <tr
+                      key={index}
+                      className="text-white border-b border-gray-700/50"
+                    >
+                      <td className="py-3 text-center">{charge.amount}</td>
+                      <td className="py-3 text-center">{charge.refundedOn || "N/A"}</td>
+                      <td className="py-3 text-center">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            charge.status === "Processed"
+                              ? "bg-green-500/20 text-green-400"
+                              : charge.status === "Failed"
+                              ? "bg-red-500/20 text-red-400"
+                              : "bg-yellow-500/20 text-yellow-400"
+                          }`}
+                        >
+                          {charge.status || "Pending"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+            </div>
+          )}
+        </Section>
+
+        {/* Chargeback Details Section */}
+        <Section
+          title="Chargeback Details"
+          editable={true}
+          onEditStart={() => setIsAnySectionEditing(true)}
+          onEditCancel={() => setIsAnySectionEditing(false)}
+          onEditSave={() => setIsAnySectionEditing(false)}
+        >
+          {(isEditing) => (
+            <div className="p-4 space-y-6">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="text-gray-400 text-sm border-b border-gray-700">
+                    <th className="text-center py-2 font-medium">AMOUNT</th>
+                    <th className="text-center py-2 font-medium">CHARGED ON</th>
+                    <th className="text-center py-2 font-medium">STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chargingDetails.map((charge, index) => (
+                    <tr
+                      key={index}
+                      className="text-white border-b border-gray-700/50"
+                    >
+                      <td className="py-3 text-center">{charge.amount}</td>
+                      <td className="py-3 text-center">{charge.refundedOn || "N/A"}</td>
+                      <td className="py-3 text-center">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            charge.status === "Processed"
+                              ? "bg-green-500/20 text-green-400"
+                              : charge.status === "Failed"
+                              ? "bg-red-500/20 text-red-400"
+                              : "bg-yellow-500/20 text-yellow-400"
+                          }`}
+                        >
+                          {charge.status || "Pending"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Section>
+
+        {/* Add attachments Section */}
+        <Section
+          title="Add Attachments"
+          editable={true}
+          onEditStart={() => setIsAnySectionEditing(true)}
+          onEditCancel={() => setIsAnySectionEditing(false)}
+          onEditSave={() => setIsAnySectionEditing(false)}
+        >
+          <div className="p-4 space-y-6">
+            {attachments.map((attachment, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between bg-gray-700 text-white px-3 py-2 rounded hover:bg-gray-600 cursor-pointer group"
+                onClick={() => handleImagePreview(index)}
+              >
+                <div className="flex items-center space-x-4 w-full overflow-hidden">
+                  <img
+                    src={URL.createObjectURL(attachment.file)}
+                    alt="thumbnail"
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                  <p className="truncate">{attachment.file.name}</p>
+                </div>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAttachmentsRemove(index);
+                  }}
+                  className="ml-4"
+                >
+                  <Trash className="w-5 h-5 text-red-500 hover:text-red-700" />
+                </button>
+              </div>
+            ))}
+
+            <button
+              className="bg-blue-500 w-full text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              onClick={() => {
+                attachmentsInputRef.current.click();
+              }}
+            >
+              + Add Image
+            </button>
             <input
-              ref={fileInputRef}
+              ref={attachmentsInputRef}
               type="file"
               accept="image/*"
-              onChange={handleImageUpload}
+              onChange={handleAttachmentsUpload}
               className="hidden"
             />
           </div>
-
-          {image && (
-            <div className="mt-4 relative">
-              {/* Delete button */}
-              <button
-                onClick={handleImageRemove}
-                className="absolute top-0 right-0 mt-1 mr-1 text-red-500 hover:text-red-700"
-                title="Delete Image"
-              >
-                <Trash className="w-5 h-5" />
-              </button>
-
-              <h3 className="text-white">Image Preview:</h3>
-              <img
-                src={image}
-                alt="Itinerary"
-                className="mt-2 max-w-full h-auto rounded"
-              />
-            </div>
-          )}
-        </div>
-      </Section>
-
-
-      {/* Billing Details Section */}
-      <Section title="Billing Details" editable={true}>
-        
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">
-              CARD TYPE
-            </label>
-            <div className="text-white">
-              {billingDetails.cardType}
-            </div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">
-              C.C.H. NAME
-            </label>
-            <div className="text-white">
-              {billingDetails.cchName}
-            </div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">
-              CARD NUMBER
-            </label>
-            <div className="text-white">
-              {billingDetails.cardNumber}
-            </div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">CVV</label>
-            <div className="text-white">{billingDetails.cvv}</div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">EXPIRY</label>
-            <div className="text-white">
-              {billingDetails.expiry.month}/
-              {billingDetails.expiry.year}
-            </div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">
-              BILLING NUMBER
-            </label>
-            <div className="text-white">
-              {billingDetails.billingNumber}
-            </div>
-          </div>
-          <div className="col-span-full">
-            <label className="block text-gray-400 text-sm mb-1">
-              BILLING ADDRESS
-            </label>
-            <div className="text-white">
-              {billingDetails.billingAddress}
-            </div>
-          </div>
-          <div className="col-span-full">
-            <label className="block text-gray-400 text-sm mb-1">
-              BILLING ADDRESS II
-            </label>
-            <div className="text-white">
-              {billingDetails.billingAddress2 || "Not provided"}
-            </div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">EMAIL</label>
-            <div className="text-white">{billingDetails.email}</div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">CITY</label>
-            <div className="text-white">{billingDetails.city}</div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">STATE</label>
-            <div className="text-white">{billingDetails.state}</div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">COUNTRY</label>
-            <div className="text-white">
-              {billingDetails.country}
-            </div>
-          </div>
-          <div>
-            <label className="block text-gray-400 text-sm mb-1">PIN CODE</label>
-            <div className="text-white">
-              {billingDetails.pinCode}
-            </div>
-          </div>
-        </div>
-      </Section>
-
-
-      {/* Refund Details Section */}
-      <Section title="Refund Details" editable={true}>
-        
-        <div className="p-4">
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-gray-400 text-sm">
-                <th className="text-left py-2">AMOUNT</th>
-                <th className="text-left py-2">REFUNDED ON</th>
-                <th className="text-left py-2">STATUS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {chargingDetails.map((charge, index) => (
-                <tr key={index} className="text-white">
-
-                  <td className="py-2">{charge.amount}</td>
-                  <td className="py-2">{charge.refundedOn || "N/A"}</td>
-                  <td className="py-2">{charge.status || "N/A"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Chargeback Details Section */}
-      <Section title="Chargeback Details" editable={true}>
-        
-        <div className="p-4">
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-gray-400 text-sm">
-                <th className="text-left py-2">AMOUNT</th>
-                <th className="text-left py-2">CHARGED ON</th>
-                <th className="text-left py-2">STATUS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {chargingDetails.map((charge, index) => (
-                <tr key={index} className="text-white">
-
-                  <td className="py-2">{charge.amount}</td>
-                  <td className="py-2">{charge.refundedOn || "N/A"}</td>
-                  <td className="py-2">{charge.status || "N/A"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-
-      {/* Add attachments Section */}
-      <Section title="Add Attachments" editable={true}>
-        
-        <div className="p-4">
-          {attachments.map((attachment, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between bg-gray-700 text-white px-4 py-2 rounded mb-2 hover:bg-gray-600 cursor-pointer group"
-              onClick={() => handleImagePreview(index)}
-            >
-              {/* Image + Filename container */}
-              <div className="flex items-center space-x-4 w-full overflow-hidden">
-                <img
-                  src={URL.createObjectURL(attachment.file)}
-                  alt="thumbnail"
-                  className="w-12 h-12 object-cover rounded"
-                />
-                <p className="truncate">{attachment.file.name}</p>
-              </div>
-
-              {/* Delete button (prevent click propagation) */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAttachmentsRemove(index);
-                }}
-                className="ml-4"
-              >
-                <Trash className="w-5 h-5 text-red-500 hover:text-red-700" />
-              </button>
-            </div>
-          ))}
-
-          <button
-            className="bg-blue-500 w-full text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={() => {
-              attachmentsInputRef.current.click();
-            }}
-          >
-            {" "}
-            + Add Image{" "}
-          </button>
-          <input
-            ref={attachmentsInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleAttachmentsUpload}
-            className="hidden"
-          />
-        </div>
-      </Section>
-
-    
-    </div>
-
+        </Section>
+      </div>
     </>
   );
 }

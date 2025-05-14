@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { Search } from "lucide-react";
-
+import React, { useMemo } from "react";
+import AsideTable from "./AsideTable";
 // Example mock data (replace with API fetch in production)
 const MOCK_COMMENTS = [
   {
@@ -82,50 +81,29 @@ function TableRow({ record }) {
   );
 }
 
-export default function Activity({ bookingId = "" }) {
-  const [search, setSearch] = useState("");
-
+export default function Activity({ bookingId = "", open = false, onClose }) {
   // You would fetch activities based on bookingId in a real app
-  const activities = useMemo(() => {
-    if (!search) return MOCK_COMMENTS;
-    return MOCK_COMMENTS.filter((c) =>
-      c.comment.toLowerCase().includes(search.toLowerCase()) ||
-      c.user.toLowerCase().includes(search.toLowerCase()) ||
-      c.role.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search]);
+  // For now, just filter by bookingId if needed
+  const activities = useMemo(() => MOCK_COMMENTS, []);
+
+  const columns = [
+    { key: "date", label: "Date" },
+    { key: "time", label: "Time" },
+    { key: "activity", label: "Activity" },
+    { key: "user", label: "User Name" },
+    { key: "role", label: "Role" },
+  ];
 
   return (
-    <div>
-    <div className="bg-gray-900 rounded-lg shadow p-4">
-      <div className="flex items-center mb-4">
-        <Search className="w-4 h-4 text-gray-400 mr-2" />
-        <input
-          type="text"
-          placeholder="Search activities..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="bg-gray-800 text-gray-200 rounded px-3 py-1 w-full focus:outline-none focus:ring focus:ring-blue-500/40"
-        />
-      </div>
-    </div>
-     
-  <div className="flex-1 overflow-y-auto">
-  {activities.length === 0 ? (
-  <div className="p-6 text-center text-gray-400">No activities found.</div>
-) : (
-  <table>
-    {/* ... */}
-    <tbody>
-      {activities.map((comment, index) => (
-        <TableRow key={comment.id} record={comment} />
-      ))}
-    </tbody>
-  </table>
-)}
-  </div>
-    </div >
-    
-
+    <AsideTable
+      open={open}
+      onClose={onClose}
+      title="Activity"
+      columns={columns}
+      data={activities}
+      searchPlaceholder="Search activities..."
+      emptyMessage="No activities found."
+      pageSize={10}
+    />
   );
 }

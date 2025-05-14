@@ -16,7 +16,7 @@ function UserProfile({ showMenu, setShowMenu }) {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [setShowMenu]);
+  }, []);
 
   const handleLogout = () => {
     // Clear authentication state

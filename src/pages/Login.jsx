@@ -13,7 +13,7 @@ function Login() {
     if (!isResetMode) {
       // Set authentication state
       localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userRole', 'admin'); // or whatever role is appropriate
+      localStorage.setItem('userRole', 'agent'); // or whatever role is appropriate
       navigate('/');
     } else {
       // TODO: Implement password reset logic
@@ -32,7 +32,6 @@ function Login() {
               className="h-16 brightness-0 invert" 
             />
           </div>
-          <p className="text-sm text-gray-400">Management System</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
