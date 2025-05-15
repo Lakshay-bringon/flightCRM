@@ -1,35 +1,48 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, TicketsPlane, Search, Users, UserCircle, 
-  FileInput, PieChart, Settings, Clock, Phone 
-} from 'lucide-react';
-import { useUser } from '../context/UserContext';
-import { ROLES, hasPermission } from '../utils/auth';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  TicketsPlane,
+  Search,
+  Users,
+  UserCircle,
+  FileInput,
+  PieChart,
+  Settings,
+  Clock,
+  Phone,
+} from "lucide-react";
+import { useUser } from "../context/UserContext";
+import { ROLES, hasPermission } from "../utils/auth";
 
 function NavLink({ to, children, iconOnly }) {
   const location = useLocation();
   const isActive = location.pathname === to;
-  
+
   const childrenWithProps = React.Children.map(children, (child, idx) => {
     if (React.isValidElement(child)) {
       return React.cloneElement(child, {
-        className: `w-5 h-5 ${isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'} ${iconOnly ? '' : 'mr-2'}`
+        className: `w-5 h-5 ${
+          isActive ? "text-blue-400" : "text-gray-400 group-hover:text-blue-400"
+        } ${iconOnly ? "" : "mr-2"}`,
       });
     }
-    if (!iconOnly && typeof child === 'string') {
+    if (!iconOnly && typeof child === "string") {
       return child;
     }
     return null;
   });
-  
+
   return (
-    <Link 
-      to={to} 
-      className={`flex items-center ${iconOnly ? 'justify-center' : ''} px-3 py-2 text-sm rounded-lg transition-all duration-200 group
-        ${isActive 
-          ? 'bg-gray-700 text-white shadow-md border border-gray-600' 
-          : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+    <Link
+      to={to}
+      className={`flex items-center ${
+        iconOnly ? "justify-center" : ""
+      } px-3 py-2 text-sm rounded-lg transition-all duration-200 group
+        ${
+          isActive
+            ? "bg-gray-700 text-white shadow-md border border-gray-600"
+            : "text-gray-300 hover:bg-gray-700/50 hover:text-white"
         }`}
     >
       {childrenWithProps}
@@ -38,44 +51,47 @@ function NavLink({ to, children, iconOnly }) {
 }
 
 function Navigation({ iconOnly = false }) {
-  const { user } = useUser();  const isAgent = user?.role === ROLES.AGENT;
+  const { user } = useUser();
+  const isAgent = user?.role === ROLES.AGENT;
   const isLeader = user?.role === ROLES.LEADER;
-  const canManageUsers = hasPermission('manage_users') && !isLeader;
-  const canManageData = hasPermission('edit_all') || isLeader;
-  const canViewRevenue = hasPermission('view_reports') && !isLeader;
+  const isAdmin = user?.role === ROLES.ADMIN;
+ 
   const canManageIP = !isAgent && !isLeader;
 
   return (
     <nav className="mt-2 h-[calc(100vh-152px)] overflow-y-auto">
       <div className="px-2 space-y-1">
+        {" "}
         <NavLink to="/" iconOnly={iconOnly}>
-          <LayoutDashboard/> DASHBOARD
+          <LayoutDashboard /> DASHBOARD
         </NavLink>
-        <NavLink to="/create-pnr" iconOnly={iconOnly}>
+        <NavLink to="/manage-bookings" iconOnly={iconOnly}>
           <TicketsPlane />
-          CREATE PNR
+          MANAGE BOOKINGS
         </NavLink>
         <NavLink to="/find-bookings" iconOnly={iconOnly}>
           <Search />
-          FIND BOOKINGS 
-        </NavLink>        {canManageUsers && (
-          <NavLink to="/user-management" iconOnly={iconOnly}>
+          FIND BOOKINGS
+        </NavLink>
+       
+          <NavLink to="/manage-users" iconOnly={iconOnly}>
             <UserCircle />
-            USER MGMT
+            MANAGE USERS
           </NavLink>
-        )}
-        {canManageData && (
-          <NavLink to="/data-management" iconOnly={iconOnly}>
+      
+        {isAdmin && (
+          <NavLink to="/manage-data" iconOnly={iconOnly}>
             <FileInput />
-            DATA MGMT
+            MANAGE DATA
           </NavLink>
         )}
-        {canViewRevenue && (
+        
           <NavLink to="/revenue" iconOnly={iconOnly}>
             <PieChart />
             REVENUE
           </NavLink>
-        )}        {canManageIP && (
+      
+        {canManageIP && (
           <NavLink to="/ip-setting" iconOnly={iconOnly}>
             <Settings />
             IP SETTING

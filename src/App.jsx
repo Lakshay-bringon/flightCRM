@@ -2,11 +2,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useState } from 'react';
 import { UserProvider, useUser } from './context/UserContext';
 import Dashboard from './components/Dashboard';
-import CreatePNR from './components/CreatePNR';
+import ManageBookings from './components/ManageBookings';
 import EmailPreviewPage from './pages/EmailPreviewPage';
 import FindBookings from './features/booking/FindBookings';
-import UserMGMT from './features/user/UserMGMT';
-import DataMGMT from './components/DataMGMT';
+import ManageUsers from './features/user/ManageUsers';
+import ManageData from './features/data/ManageData';
 import Revenue from './components/Revenue';
 import RevenueDetails from './features/revenue/RevenueDetails';
 import IPSetting from './components/IPSetting';
@@ -41,29 +41,20 @@ function AppContent() {
                 <div className="flex w-full h-full">
                   <Sidebar collapsed={sidebarCollapsed} onToggleCollapse={handleSidebarToggle} />
                   <div className={sidebarCollapsed ? "flex-1 overflow-y-auto" : "flex-1 overflow-y-auto"}>
-                    {/* <div className="sticky top-0 z-10"> */}
-                      {/* <Header /> */}
-                      {/* <div className="absolute top-4 right-4">
-                        <UserProfile showMenu={showProfileMenu} setShowMenu={setShowProfileMenu} />
-                      </div> */}
-                    {/* </div> */}
                     <div className="p-4">
                       <Routes>
                         <Route index element={<Dashboard />} />
-                        <Route path="create-pnr" element={<CreatePNR />} />
+                        <Route path="manage-bookings" element={<ManageBookings />} />
                         <Route path="find-bookings" element={<FindBookings />} />
                         <Route path="details/booking/:id" element={<BookingDetails />} />
-                        <Route path="user-management" element={<UserMGMT />} />
+                        <Route path="manage-users" element={<ManageUsers />} />
                         <Route path="details/user/:id" element={<ProfilePage />} />
-                        <Route path="data-management" element={<DataMGMT />} />
+                        <Route path="manage-data" element={<ManageData />} />
                         <Route path="revenue" element={<Revenue />} />
                         <Route path="revenue/details" element={<RevenueDetails />} />
                         <Route path="ip-setting" element={<IPSetting />} />
                         <Route path="email-preview/:emailType" element={<EmailPreviewPage />} />
-                        {/* <Route path="time-management" element={<TimeManagement />} />
-                        <Route path="call-details" element={<CallDetails />} /> */}
                         <Route path="profile" element={<ProfilePage />} />
-                        {/* <Route path="agent-details" element={<AgentDetailsForm />} /> */}
                         <Route path="*" element={<Navigate to="/" />} />
                       </Routes>
                     </div>

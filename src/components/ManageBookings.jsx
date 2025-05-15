@@ -7,10 +7,11 @@ import BookingConfirmation from '../features/booking/BookingConfirmation'
 
 const formSchema = z.object({
   transactionType: z.string().min(1, { message: 'Transaction type is required' }),
-  provider: z.string().min(1, { message: 'Provider is required' })
+  provider: z.string().min(1, { message: 'Provider is required' }),
+  callQueue: z.string().min(1, { message: 'Call Queue is required' })
 })
 
-function CreatePNR() {
+function ManageBookings() {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [formData, setFormData] = useState(null)
 
@@ -57,29 +58,50 @@ function CreatePNR() {
             )}
           </div>
 
-          <div>
-            <label htmlFor="provider" className="block text-sm font-medium text-gray-300 mb-1">
-              Provider
-            </label>
-            <select
-              id="provider"
-              {...register('provider')}
-              className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-            >
-              <option value="">Select Provider</option>
-              <option value="provider1">Air Fare/ Flight Fare</option>
-              <option value="provider2">Skyline</option>
-            </select>
-            {errors.provider && (
-              <p className="mt-1 text-xs text-red-400">{errors.provider.message}</p>
-            )}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label htmlFor="provider" className="block text-sm font-medium text-gray-300 mb-1">
+                Provider
+              </label>
+              <select
+                id="provider"
+                {...register('provider')}
+                className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+              >
+                <option value="">Select Provider</option>
+                <option value="provider1">Air Fare/ Flight Fare</option>
+                <option value="provider2">Skyline</option>
+              </select>
+              {errors.provider && (
+                <p className="mt-1 text-xs text-red-400">{errors.provider.message}</p>
+              )}
+            </div>
+
+            <div className="flex-1">
+              <label htmlFor="callQueue" className="block text-sm font-medium text-gray-300 mb-1">
+                Call Queue
+              </label>
+              <select
+                id="callQueue"
+                {...register('callQueue')}
+                className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+              >
+                <option value="">Select Call Queue</option>
+                <option value="queue1">Queue 1</option>
+                <option value="queue2">Queue 2</option>
+                <option value="queue3">Queue 3</option>
+              </select>
+              {errors.callQueue && (
+                <p className="mt-1 text-xs text-red-400">{errors.callQueue.message}</p>
+              )}
+            </div>
           </div>
 
           <button
             type="submit"
             className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 text-sm"
           >
-            Create PNR
+            Submit
           </button>
         </form>
       </div>
@@ -87,4 +109,4 @@ function CreatePNR() {
   )
 }
 
-export default CreatePNR
+export default ManageBookings

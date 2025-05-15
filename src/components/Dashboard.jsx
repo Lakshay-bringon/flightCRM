@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { StatsCard } from '../features/dashboard/widgets/StatsCard';
 import { TopPerformers } from '../features/dashboard/widgets/TopPerformers';
 import { PerformanceComparison } from '../features/dashboard/widgets/PerformanceComparison';
@@ -76,10 +76,12 @@ export default function AdminDashboard() {  const [dateRange, setDateRange] = us
             {!isAgent && (
             <TopPerformers dateRange={dateRange} showBottom={true} />
             )}
-             <PerformanceComparison 
+            {isAgent && (
+              <PerformanceComparison 
               agentData={currentAgent}
               topPerformer={topPerformer}
-            />
+              />
+            )}
           </div>
 
        
