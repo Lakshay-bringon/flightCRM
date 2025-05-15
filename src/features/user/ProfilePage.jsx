@@ -5,7 +5,20 @@ import { User, Phone, Mail, Calendar, Building, Shield, Award, ArrowLeft, Users,
 function ProfilePage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const userData = location.state?.user;
+  const userData = location.state?.user || {
+    name: 'Guest',
+    role: 'Unknown',
+    isActive: false,
+    email: 'N/A',
+    phone: 'N/A',
+    monthlyMCO: 0,
+    totalBookings: 0,
+    monthlyChargeback: 0,
+    alias: 'N/A',
+    team: null,
+    joinedDate: 'N/A',
+    permissions: []
+  };
 
   if (!userData) {
     return (
@@ -152,7 +165,7 @@ function ProfilePage() {
           </div>
           <div className="p-4">
             <div className="space-y-2">
-              {userData.permissions.map((permission, index) => (
+              {userData?.permissions?.map((permission, index) => (
                 <div key={index} className="flex items-center space-x-2 text-xs">
                   <Shield className="w-3 h-3 text-blue-400" />
                   <span className="text-white">{permission}</span>

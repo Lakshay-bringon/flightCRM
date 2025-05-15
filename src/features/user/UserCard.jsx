@@ -1,14 +1,19 @@
 import React from 'react';
 import { UserCircle, Phone, Mail, PenSquare, Trash } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function UserCard({ user, onEdit, onRemove, onStatusChange }) {
   const handleStatusToggle = (e) => {
     e.stopPropagation();
     onStatusChange(user.id, !user.isActive);
   };
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(`/details/user/${user.id}`, { state: { user } });
+  };
 
   return (
-    <div className="p-4 hover:bg-gray-700/50 transition-all duration-200 flex items-center justify-between cursor-pointer group border-b border-gray-700 last:border-b-0">
+    <div onClick={handleClick} className="p-4 hover:bg-gray-700/50 transition-all duration-200 flex items-center justify-between cursor-pointer group border-b border-gray-700 last:border-b-0">
       <div className="flex items-center space-x-3">
         <div className="p-2 bg-gray-700 rounded-lg">
           <UserCircle className="w-8 h-8 text-blue-400" />
@@ -40,4 +45,4 @@ export default function UserCard({ user, onEdit, onRemove, onStatusChange }) {
       </div>
     </div>
   );
-} 
+}
