@@ -1,80 +1,153 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
-import { UserProvider, useUser } from './context/UserContext';
-import Dashboard from './components/Dashboard';
-import ManageBookings from './components/ManageBookings';
-import EmailPreviewPage from './pages/EmailPreviewPage';
-import FindBookings from './features/booking/FindBookings';
-import ManageUsers from './features/user/ManageUsers';
-import ManageData from './features/data/ManageData';
-import Revenue from './components/Revenue';
-import RevenueDetails from './features/revenue/RevenueDetails';
-import IPSetting from './components/IPSetting';
-import Sidebar from './components/Sidebar';
-import UserProfile from './features/user/UserProfile';
-import Login from './pages/Login';
-import ProfilePage from './features/user/ProfilePage';
-import BookingDetails from './features/booking/BookingDetails';
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Navigate,
+	useNavigate,
+} from "react-router-dom";
+import { useState } from "react";
+import { UserProvider, useUser } from "./context/UserContext";
+import Dashboard from "./components/Dashboard";
+import ManageBookings from "./components/ManageBookings";
+import EmailPreviewPage from "./pages/EmailPreviewPage";
+import FindBookings from "./features/booking/FindBookings";
+import ManageUsers from "./features/user/ManageUsers";
+import ManageData from "./features/data/ManageData";
+import Revenue from "./components/Revenue";
+import RevenueDetails from "./features/revenue/RevenueDetails";
+import IPSetting from "./components/IPSetting";
+import Sidebar from "./components/Sidebar";
+import UserProfile from "./features/user/UserProfile";
+import Login from "./pages/Login";
+import ProfilePage from "./features/user/ProfilePage";
+import BookingDetails from "./features/booking/BookingDetails";
+import NewBooking from "./features/booking/components/NewBooking";
+import Exchange from "./features/booking/components/Exchange";
+import SeatAssignment from "./features/booking/components/SeatAssignment";
+import Upgrade from "./features/booking/components/Upgrade";
+import CancelForRefund from "./features/booking/components/CancelForRefund";
+import CancelForFutureCredit from "./features/booking/components/CancelForFutureCredit";
+import ExtraAddOns from "./features/booking/components/ExtraAddOns";
+import TicketIssuance from "./features/booking/components/TicketIssuance";
+import OtpScreen from "./pages/OtpScreen";
 
 // Protected route wrapper component
 const ProtectedRoute = ({ children }) => {
-  const { user } = useUser();
-  return user ? children : <Navigate to="/login" />;
+	const { user } = useUser();
+	return user ? children : <Navigate to="/login" />;
 };
 
 function AppContent() {
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { user } = useUser();
+	const [showProfileMenu, setShowProfileMenu] = useState(false);
+	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+	const { user } = useUser();
+	const navigate = useNavigate(); // <-- useNavigate hook for back navigation
+	const handleSidebarToggle = () => setSidebarCollapsed((prev) => !prev);
 
-  const handleSidebarToggle = () => setSidebarCollapsed((prev) => !prev);
+	return (
+		<Routes>
+			<Route path="/login" element={<Login />} />
+			<Route path="/otp" element={<OtpScreen />} />
+			<Route
+				path="/*"
+				element={
+					<ProtectedRoute>
+						<div className="min-w-full h-screen box-border bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+							<div className="flex w-full h-full">
+								<Sidebar
+									collapsed={sidebarCollapsed}
+									onToggleCollapse={handleSidebarToggle}
+								/>
+								<div className={"flex-1 overflow-y-auto"}>
+									<div className="p-4">
+										<Routes>
+											<Route index element={<Dashboard />} />
 
-  return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-        <Route
-          path="/*"
-          element={
-            <ProtectedRoute>
-              <div className="min-w-full h-screen box-border bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-                <div className="flex w-full h-full">
-                  <Sidebar collapsed={sidebarCollapsed} onToggleCollapse={handleSidebarToggle} />
-                  <div className={sidebarCollapsed ? "flex-1 overflow-y-auto" : "flex-1 overflow-y-auto"}>
-                    <div className="p-4">
-                      <Routes>
-                        <Route index element={<Dashboard />} />
-                        <Route path="manage-bookings" element={<ManageBookings />} />
-                        <Route path="find-bookings" element={<FindBookings />} />
-                        <Route path="details/booking/:id" element={<BookingDetails />} />
-                        <Route path="manage-users" element={<ManageUsers />} />
-                        <Route path="details/user/:id" element={<ProfilePage />} />
-                        <Route path="manage-data" element={<ManageData />} />
-                        <Route path="revenue" element={<Revenue />} />
-                        <Route path="revenue/details" element={<RevenueDetails />} />
-                        <Route path="ip-setting" element={<IPSetting />} />
-                        <Route path="email-preview/:emailType" element={<EmailPreviewPage />} />
-                        <Route path="profile" element={<ProfilePage />} />
-                        <Route path="*" element={<Navigate to="/" />} />
-                      </Routes>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </Router>
-  );
+											<Route
+												path="manage-bookings"
+												element={<ManageBookings />}
+											/>
+											<Route
+												path="manage-bookings/new-booking"
+												element={<NewBooking onBack={() => navigate(-1)} />}
+											/>
+											<Route
+												path="manage-bookings/exchange"
+												element={<Exchange onBack={() => navigate(-1)} />}
+											/>
+											<Route
+												path="manage-bookings/seat-assignment"
+												element={<SeatAssignment onBack={() => navigate(-1)} />}
+											/>
+											<Route
+												path="manage-bookings/upgrade"
+												element={<Upgrade onBack={() => navigate(-1)} />}
+											/>
+											<Route
+												path="manage-bookings/cancel-for-refund"
+												element={
+													<CancelForRefund onBack={() => navigate(-1)} />
+												}
+											/>
+											<Route
+												path="manage-bookings/cancel-for-future-credit"
+												element={
+													<CancelForFutureCredit onBack={() => navigate(-1)} />
+												}
+											/>
+											<Route
+												path="manage-bookings/extra-add-ons"
+												element={<ExtraAddOns onBack={() => navigate(-1)} />}
+											/>
+											<Route
+												path="manage-bookings/ticket-issuance"
+												element={<TicketIssuance onBack={() => navigate(-1)} />}
+											/>
+
+											<Route path="find-bookings" element={<FindBookings />} />
+											<Route
+												path="details/booking/:id"
+												element={<BookingDetails />}
+											/>
+											<Route path="manage-users" element={<ManageUsers />} />
+											<Route
+												path="details/user/:id"
+												element={<ProfilePage />}
+											/>
+											<Route path="manage-data" element={<ManageData />} />
+											<Route path="revenue" element={<Revenue />} />
+											<Route
+												path="revenue/details"
+												element={<RevenueDetails />}
+											/>
+											<Route path="ip-setting" element={<IPSetting />} />
+											<Route
+												path="email-preview/:emailType"
+												element={<EmailPreviewPage />}
+											/>
+											<Route path="profile" element={<ProfilePage />} />
+
+											<Route path="*" element={<Navigate to="/" />} />
+										</Routes>
+									</div>
+								</div>
+							</div>
+						</div>
+					</ProtectedRoute>
+				}
+			/>
+		</Routes>
+	);
 }
 
 function App() {
-  return (
-    <UserProvider>
-      <AppContent />
-    </UserProvider>
-  );
+	return (
+		<UserProvider>
+			<Router>
+				<AppContent />
+			</Router>
+		</UserProvider>
+	);
 }
 
 export default App;
