@@ -28,6 +28,8 @@
   background: rgba(59, 130, 246, 0.8);
 }
 
+
+
 /* Dark theme for date inputs */
 input[type="date"] {
   color-scheme: dark;
@@ -47,4 +49,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   right: 0;
   top: 0;
   cursor: pointer;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #1f2937 inset !important;
+  /* Tailwind's gray-800 */
+  -webkit-text-fill-color: #f9fafb !important;
+  /* Tailwind's gray-50 */
+  transition: background-color 5000s ease-in-out 0s;
 }

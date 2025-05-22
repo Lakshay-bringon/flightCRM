@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -25,14 +25,10 @@ const providerSchema = z.object({
 	logo: z.string().optional(),
 	status: z.enum(["Active", "Inactive"]),
 	datetime: z.string(),
-	smtp: z.array(smtpSchema).optional(),
+	smtp: smtpSchema.optional(),
 });
 
 export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
-	const [showSmtp, setShowSmtp] = useState(
-		(initialData.smtp && initialData.smtp.length > 0) || false
-	);
-	const [smtpOpen, setSmtpOpen] = useState(true);
 	const nameRef = useRef(null);
 
 	const defaultValues = {
@@ -42,19 +38,17 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 		datetime:
 			initialData.datetime ||
 			new Date().toISOString().slice(0, 19).replace("T", " "),
-		smtp:
-			initialData.smtp && initialData.smtp.length > 0
-				? initialData.smtp.map((s) => ({
-						...s,
-						confirmId: s.id,
-						confirmPassword: s.password,
-				  }))
-				: [],
+		smtp: initialData.smtp
+			? {
+					...initialData.smtp,
+					confirmId: initialData.smtp.id,
+					confirmPassword: initialData.smtp.password,
+			  }
+			: undefined,
 	};
 
 	const {
 		register,
-		control,
 		handleSubmit,
 		formState: { errors },
 		setFocus,
@@ -65,18 +59,14 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 		mode: "onBlur",
 	});
 
-	const { fields, append, remove } = useFieldArray({
-		control,
-		name: "smtp",
-	});
-
 	useEffect(() => {
 		setFocus("name");
 	}, [setFocus]);
 
 	const onFormSubmit = (data) => {
-		const smtp =
-			data.smtp?.map(({ confirmId, confirmPassword, ...rest }) => rest) || [];
+		const smtp = data.smtp
+			? (({ confirmId, confirmPassword, ...rest }) => rest)(data.smtp)
+			: undefined;
 		onSubmit({ ...data, smtp });
 	};
 
@@ -116,125 +106,85 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 					</select>
 				</div>
 				<input type="hidden" {...register("datetime")} />
-				<div>
-					<div className="flex items-center justify-between mt-4">
-						<label className="block text-sm text-gray-300">SMTP Details</label>
 
-						<button
-							type="button"
-							onClick={() => {
-								setShowSmtp(true);
-								append({
-									host: "",
-									id: "",
-									confirmId: "",
-									password: "",
-									confirmPassword: "",
-								});
-								setSmtpOpen(true);
-							}}
-							className="inline-flex items-center px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded shadow text-xs font-medium"
-						>
-							+ Add SMTP
-						</button>
+				{/* SMTP fields directly in the form, styled to match the rest of the form */}
+				<div className="mt-4">
+					<label className="block text-sm text-gray-300 mb-2">
+						SMTP Details
+					</label>
+					<div className="mb-2">
+						<label className="block text-xs text-gray-400">SMTP Host</label>
+						<input
+							{...register(`smtp.host`)}
+							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+						{errors.smtp?.host && (
+							<p className="text-xs text-red-400 mt-1">
+								{errors.smtp.host.message}
+							</p>
+						)}
 					</div>
-					{showSmtp &&
-						smtpOpen &&
-						fields.map((field, idx) => (
-							<div
-								key={field.id}
-								className="border border-gray-600 rounded p-3  mt-2 mb-2 bg-gray-700"
-							>
-								<div className="mb-2">
-									<label className="block text-xs text-gray-400">
-										SMTP Host
-									</label>
-									<input
-										{...register(`smtp.${idx}.host`)}
-										className="w-full px-2 py-1 rounded bg-gray-800 text-white"
-										required
-									/>
-									{errors.smtp?.[idx]?.host && (
-										<p className="text-xs text-red-400 mt-1">
-											{errors.smtp[idx].host.message}
-										</p>
-									)}
-								</div>
-								<div className="mb-2">
-									<label className="block text-xs text-gray-400">SMTP ID</label>
-									<input
-										{...register(`smtp.${idx}.id`)}
-										className="w-full px-2 py-1 rounded bg-gray-800 text-white"
-										required
-									/>
-									{errors.smtp?.[idx]?.id && (
-										<p className="text-xs text-red-400 mt-1">
-											{errors.smtp[idx].id.message}
-										</p>
-									)}
-								</div>
-								<div className="mb-2">
-									<label className="block text-xs text-gray-400">
-										Confirm SMTP ID
-									</label>
-									<input
-										{...register(`smtp.${idx}.confirmId`)}
-										className="w-full px-2 py-1 rounded bg-gray-800 text-white"
-										required
-									/>
-									{errors.smtp?.[idx]?.confirmId && (
-										<p className="text-xs text-red-400 mt-1">
-											{errors.smtp[idx].confirmId.message}
-										</p>
-									)}
-								</div>
-								<div className="mb-2">
-									<label className="block text-xs text-gray-400">
-										SMTP Password
-									</label>
-									<input
-										type="password"
-										{...register(`smtp.${idx}.password`)}
-										className="w-full px-2 py-1 rounded bg-gray-800 text-white"
-										required
-									/>
-									{errors.smtp?.[idx]?.password && (
-										<p className="text-xs text-red-400 mt-1">
-											{errors.smtp[idx].password.message}
-										</p>
-									)}
-								</div>
-								<div className="mb-2">
-									<label className="block text-xs text-gray-400">
-										Confirm SMTP Password
-									</label>
-									<input
-										type="password"
-										{...register(`smtp.${idx}.confirmPassword`)}
-										className="w-full px-2 py-1 rounded bg-gray-800 text-white"
-										required
-									/>
-									{errors.smtp?.[idx]?.confirmPassword && (
-										<p className="text-xs text-red-400 mt-1">
-											{errors.smtp[idx].confirmPassword.message}
-										</p>
-									)}
-								</div>
-								<div className="flex justify-between items-center">
-									<button
-										type="button"
-										onClick={() => {
-											remove(idx);
-											clearErrors(`smtp.${idx}.host`);
-										}}
-										className="text-xs text-red-400 underline"
-									>
-										Remove SMTP
-									</button>
-								</div>
-							</div>
-						))}
+					<div className="mb-2">
+						<label className="block text-xs text-gray-400">SMTP ID</label>
+						<input
+							{...register(`smtp.id`)}
+							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+						{errors.smtp?.id && (
+							<p className="text-xs text-red-400 mt-1">
+								{errors.smtp.id.message}
+							</p>
+						)}
+					</div>
+					<div className="mb-2">
+						<label className="block text-xs text-gray-400">
+							Confirm SMTP ID
+						</label>
+						<input
+							{...register(`smtp.confirmId`)}
+							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+						{errors.smtp?.confirmId && (
+							<p className="text-xs text-red-400 mt-1">
+								{errors.smtp.confirmId.message}
+							</p>
+						)}
+					</div>
+					<div className="mb-2">
+						<label className="block text-xs text-gray-400">SMTP Password</label>
+						<input
+							type="password"
+							{...register(`smtp.password`)}
+							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+						{errors.smtp?.password && (
+							<p className="text-xs text-red-400 mt-1">
+								{errors.smtp.password.message}
+							</p>
+						)}
+					</div>
+					<div className="mb-2">
+						<label className="block text-xs text-gray-400">
+							Confirm SMTP Password
+						</label>
+						<input
+							type="password"
+							{...register(`smtp.confirmPassword`)}
+							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+							required
+						/>
+						{errors.smtp?.confirmPassword && (
+							<p className="text-xs text-red-400 mt-1">
+								{errors.smtp.confirmPassword.message}
+							</p>
+						)}
+					</div>
 				</div>
+
 				<div className="flex gap-2 justify-end mt-4">
 					<button
 						type="button"

@@ -27,8 +27,6 @@ import SeatAssignment from "./features/booking/components/SeatAssignment";
 import Upgrade from "./features/booking/components/Upgrade";
 import CancelForRefund from "./features/booking/components/CancelForRefund";
 import CancelForFutureCredit from "./features/booking/components/CancelForFutureCredit";
-import ExtraAddOns from "./features/booking/components/ExtraAddOns";
-import TicketIssuance from "./features/booking/components/TicketIssuance";
 import OtpScreen from "./pages/OtpScreen";
 
 // Protected route wrapper component
@@ -94,14 +92,6 @@ function AppContent() {
 												element={
 													<CancelForFutureCredit onBack={() => navigate(-1)} />
 												}
-											/>
-											<Route
-												path="manage-bookings/extra-add-ons"
-												element={<ExtraAddOns onBack={() => navigate(-1)} />}
-											/>
-											<Route
-												path="manage-bookings/ticket-issuance"
-												element={<TicketIssuance onBack={() => navigate(-1)} />}
 											/>
 
 											<Route path="find-bookings" element={<FindBookings />} />
