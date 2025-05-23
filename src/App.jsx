@@ -6,7 +6,8 @@ import {
 	useNavigate,
 } from "react-router-dom";
 import { useState } from "react";
-import { UserProvider, useUser } from "./context/UserContext";
+import { AuthProvider } from "./auth/AuthProvider";
+import { useAuth } from "./auth/hooks/useAuth";
 import Dashboard from "./components/Dashboard";
 import ManageBookings from "./components/ManageBookings";
 import EmailPreviewPage from "./pages/EmailPreviewPage";
@@ -31,15 +32,14 @@ import OtpScreen from "./pages/OtpScreen";
 
 // Protected route wrapper component
 const ProtectedRoute = ({ children }) => {
-	const { user } = useUser();
-	return user ? children : <Navigate to="/login" />;
+	const { isAuthenticated } = useAuth();
+	return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
 function AppContent() {
 	const [showProfileMenu, setShowProfileMenu] = useState(false);
 	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-	const { user } = useUser();
-	const navigate = useNavigate(); // <-- useNavigate hook for back navigation
+	const navigate = useNavigate();
 	const handleSidebarToggle = () => setSidebarCollapsed((prev) => !prev);
 
 	return (
@@ -132,11 +132,11 @@ function AppContent() {
 
 function App() {
 	return (
-		<UserProvider>
+		<AuthProvider>
 			<Router>
 				<AppContent />
 			</Router>
-		</UserProvider>
+		</AuthProvider>
 	);
 }
 

@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logoFull from "../assets/SkylineTravelLLC.png";
-import { login } from "../utils/auth";
-import { useUser } from "../context/UserContext";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import { useAuth } from "../auth/hooks/useAuth";
 
 function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -14,7 +13,7 @@ function Login() {
 	const [error, setError] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
-	const { updateUser } = useUser();
+	const { login } = useAuth();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -23,22 +22,12 @@ function Login() {
 		if (!isResetMode) {
 			try {
 				setIsLoading(true);
-				// Extract username from email (before @)
-				const username = email.split("@")[0];
-				const response = await login(username, password);
-
-				if (response.success) {
-					setTimeout(() => {
-						setIsLoading(false);
-						navigate("/otp", { state: { email, user: response.user } });
-					}, 2000);
-				} else {
-					setIsLoading(false);
-					setError(response.error);
-				}
+				await login(email, password);
+				setIsLoading(false);
+				navigate("/otp", { state: { email } });
 			} catch (err) {
 				setIsLoading(false);
-				setError("An error occurred during login");
+				setError(err.message || "An error occurred during login");
 			}
 		} else {
 			// TODO: Implement password reset logic
@@ -66,7 +55,6 @@ function Login() {
 				<form onSubmit={handleSubmit} className="space-y-6">
 					{!isResetMode ? (
 						<>
-							{" "}
 							<div>
 								<label className="block text-sm font-medium text-gray-400 mb-2">
 									Email Address
@@ -88,7 +76,7 @@ function Login() {
 									Password
 								</label>
 								<div className="relative">
-									<Lock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />{" "}
+									<Lock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
 									<input
 										type={showPassword ? "text" : "password"}
 										required

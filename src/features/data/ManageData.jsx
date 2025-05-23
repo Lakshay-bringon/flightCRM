@@ -89,7 +89,6 @@ function ManageData() {
 	useEffect(() => {
 		activeSection && setSearchQuery("");
 	}, [activeSection]);
-
 	// Data Tiles
 	const sections = [
 		{

@@ -12,8 +12,7 @@ import {
 	Clock,
 	Phone,
 } from "lucide-react";
-import { useUser } from "../context/UserContext";
-import { ROLES, hasPermission } from "../utils/auth";
+import { useAuth } from "../auth/hooks/useAuth";
 
 function NavLink({ to, children, iconOnly }) {
 	const location = useLocation();
@@ -53,11 +52,10 @@ function NavLink({ to, children, iconOnly }) {
 }
 
 function Navigation({ iconOnly = false }) {
-	const { user } = useUser();
-	const isAgent = user?.role === ROLES.AGENT;
-	const isLeader = user?.role === ROLES.LEADER;
-	const isAdmin = user?.role === ROLES.ADMIN;
-
+	const { user } = useAuth();
+	const isAgent = user?.role_id === 3;
+	const isLeader = user?.role_id === 2;
+	const isAdmin = user?.role_id == 1;
 	const canManageIP = !isAgent && !isLeader;
 
 	return (

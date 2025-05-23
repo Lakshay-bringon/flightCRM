@@ -1,24 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useUser } from "../context/UserContext";
+import { useAuth } from "../auth/hooks/useAuth";
 
 function OtpScreen() {
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { updateUser } = useUser();
+	const { user, login } = useAuth();
 	// For demo, let's use a hardcoded OTP. In real app, fetch from backend or location.state
 	const expectedOtp = "123456";
 	const email = location.state?.email;
-	const user = location.state?.user;
+	const backendUser = location.state?.user;
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
 		if (otp === expectedOtp) {
-			// Only now update the user context
-			if (user) updateUser(user);
+			// If user is not set in context, set it by logging in again (if needed)
+			if (!user && backendUser && email) {
+				// Optionally, you could call login(email, ...) here if needed
+			}
 			navigate("/");
 		} else {
 			setError("Invalid OTP. Redirecting to login...");

@@ -25,6 +25,7 @@ const providerSchema = z.object({
 	logo: z.string().optional(),
 	status: z.enum(["Active", "Inactive"]),
 	datetime: z.string(),
+	supportEmail: z.string().email("Support email is required"),
 	smtp: smtpSchema.optional(),
 });
 
@@ -38,6 +39,7 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 		datetime:
 			initialData.datetime ||
 			new Date().toISOString().slice(0, 19).replace("T", " "),
+		supportEmail: initialData.supportEmail || "",
 		smtp: initialData.smtp
 			? {
 					...initialData.smtp,
@@ -107,82 +109,88 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 				</div>
 				<input type="hidden" {...register("datetime")} />
 
-				{/* SMTP fields directly in the form, styled to match the rest of the form */}
-				<div className="mt-4">
-					<label className="block text-sm text-gray-300 mb-2">
-						SMTP Details
+				<div className="mb-2">
+					<label className="block text-sm text-gray-300">Support Email</label>
+					<input
+						{...register("supportEmail")}
+						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						required
+					/>
+					{errors.supportEmail && (
+						<p className="text-xs text-red-400 mt-1">
+							{errors.supportEmail.message}
+						</p>
+					)}
+				</div>
+
+				<div className="mb-2">
+					<label className="block text-sm text-gray-300">SMTP Host</label>
+					<input
+						{...register(`smtp.host`)}
+						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						required
+					/>
+					{errors.smtp?.host && (
+						<p className="text-xs text-red-400 mt-1">
+							{errors.smtp.host.message}
+						</p>
+					)}
+				</div>
+				<div className="mb-2">
+					<label className="block text-sm text-gray-300">SMTP ID</label>
+					<input
+						{...register(`smtp.id`)}
+						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						required
+					/>
+					{errors.smtp?.id && (
+						<p className="text-xs text-red-400 mt-1">
+							{errors.smtp.id.message}
+						</p>
+					)}
+				</div>
+				<div className="mb-2">
+					<label className="block text-sm text-gray-300">Confirm SMTP ID</label>
+					<input
+						{...register(`smtp.confirmId`)}
+						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						required
+					/>
+					{errors.smtp?.confirmId && (
+						<p className="text-xs text-red-400 mt-1">
+							{errors.smtp.confirmId.message}
+						</p>
+					)}
+				</div>
+				<div className="mb-2">
+					<label className="block text-sm text-gray-300">SMTP Password</label>
+					<input
+						type="password"
+						{...register(`smtp.password`)}
+						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						required
+					/>
+					{errors.smtp?.password && (
+						<p className="text-xs text-red-400 mt-1">
+							{errors.smtp.password.message}
+						</p>
+					)}
+				</div>
+				<div className="mb-2">
+					<label className="block text-sm text-gray-300">
+						Confirm SMTP Password
 					</label>
-					<div className="mb-2">
-						<label className="block text-xs text-gray-400">SMTP Host</label>
-						<input
-							{...register(`smtp.host`)}
-							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-							required
-						/>
-						{errors.smtp?.host && (
-							<p className="text-xs text-red-400 mt-1">
-								{errors.smtp.host.message}
-							</p>
-						)}
-					</div>
-					<div className="mb-2">
-						<label className="block text-xs text-gray-400">SMTP ID</label>
-						<input
-							{...register(`smtp.id`)}
-							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-							required
-						/>
-						{errors.smtp?.id && (
-							<p className="text-xs text-red-400 mt-1">
-								{errors.smtp.id.message}
-							</p>
-						)}
-					</div>
-					<div className="mb-2">
-						<label className="block text-xs text-gray-400">
-							Confirm SMTP ID
-						</label>
-						<input
-							{...register(`smtp.confirmId`)}
-							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-							required
-						/>
-						{errors.smtp?.confirmId && (
-							<p className="text-xs text-red-400 mt-1">
-								{errors.smtp.confirmId.message}
-							</p>
-						)}
-					</div>
-					<div className="mb-2">
-						<label className="block text-xs text-gray-400">SMTP Password</label>
-						<input
-							type="password"
-							{...register(`smtp.password`)}
-							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-							required
-						/>
-						{errors.smtp?.password && (
-							<p className="text-xs text-red-400 mt-1">
-								{errors.smtp.password.message}
-							</p>
-						)}
-					</div>
-					<div className="mb-2">
-						<label className="block text-xs text-gray-400">
-							Confirm SMTP Password
-						</label>
-						<input
-							type="password"
-							{...register(`smtp.confirmPassword`)}
-							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-							required
-						/>
-						{errors.smtp?.confirmPassword && (
-							<p className="text-xs text-red-400 mt-1">
-								{errors.smtp.confirmPassword.message}
-							</p>
-						)}
-					</div>
+					<input
+						type="password"
+						{...register(`smtp.confirmPassword`)}
+						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						required
+					/>
+					{errors.smtp?.confirmPassword && (
+						<p className="text-xs text-red-400 mt-1">
+							{errors.smtp.confirmPassword.message}
+						</p>
+					)}
 				</div>
 
 				<div className="flex gap-2 justify-end mt-4">
