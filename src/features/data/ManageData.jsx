@@ -1,8 +1,7 @@
-import { useState } from "react";
+// Imports
+import { useState, useEffect } from "react";
 import {
 	Plus,
-	PenSquare,
-	Trash,
 	X,
 	Search,
 	Plane,
@@ -18,9 +17,27 @@ import CardForm from "./components/CardForm";
 import ProviderForm from "./components/ProviderForm";
 import CallQueueForm from "./components/CallQueueForm";
 import Modal from "../../components/Modal";
-import { useEffect } from "react";
+import {
+	addCardApi,
+	getCardListApi,
+	updateCardApi,
+	deleteCardApi,
+	toggleCardStatusApi,
+} from "../../api/cardApi";
+import {
+	addCurrencyApi,
+	getCurrencyListApi,
+	updateCurrencyApi,
+	deleteCurrencyApi,
+	toggleCurrencyStatusApi,
+} from "../../api/currencyApi";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 function ManageData() {
+	// Auth context
+	const { user, token } = useAuth();
+
+	// UI State
 	const [activeSection, setActiveSection] = useState(null);
 	const [editData, setEditData] = useState(null);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -28,33 +45,23 @@ function ManageData() {
 	const [showModal, setShowModal] = useState(false);
 	const [modalType, setModalType] = useState("add");
 
+	// Data State
 	const [airlines, setAirlines] = useState([
-		{
-			id: 1,
-			name: "United",
-			logo: "/path/to/united.png",
-			status: "Active",
-		},
+		{ id: 1, name: "United", logo: "/path/to/united.png", status: "Active" },
 		{
 			id: 2,
 			name: "American",
 			logo: "/path/to/american.png",
 			status: "Active",
 		},
-		{
-			id: 3,
-			name: "Alaska",
-			logo: "/path/to/alaska.png",
-			status: "Active",
-		},
+		{ id: 3, name: "Alaska", logo: "/path/to/alaska.png", status: "Active" },
 	]);
 	const [currencies, setCurrencies] = useState([
 		{ id: 1, currency: "USD", status: "ACTIVE" },
 	]);
-	const [cards, setCards] = useState([
-		{ id: 1, card: "VISA", shortName: "VI", status: "Active" },
-		{ id: 2, card: "MASTER", shortName: "MS", status: "Active" },
-	]);
+	const [cards, setCards] = useState([]);
+	const [cardLoading, setCardLoading] = useState(false);
+	const [cardError, setCardError] = useState("");
 	const [providers, setProviders] = useState([
 		{
 			id: 1,
@@ -85,11 +92,19 @@ function ManageData() {
 			status: "Inactive",
 		},
 	]);
+	const [currencyLoading, setCurrencyLoading] = useState(false);
+	const [currencyError, setCurrencyError] = useState("");
 
-	useEffect(() => {
-		activeSection && setSearchQuery("");
-	}, [activeSection]);
-	// Data Tiles
+	// Table columns for each section
+	const tableColumns = {
+		airlines: ["id", "name", "logo", "status"],
+		currency: ["id", "Currency", "status"],
+		cards: ["id", "name", "sort_name", "status"],
+		providers: ["id", "name", "logo", "status", "datetime"],
+		callQueue: ["id", "name", "telephone", "status"],
+	};
+
+	// Section definitions for UI tiles
 	const sections = [
 		{
 			id: "airlines",
@@ -133,36 +148,90 @@ function ManageData() {
 		},
 	];
 
-	const tableColumns = {
-		airlines: ["id", "name", "logo", "status"],
-		currency: ["id", "currency", "status"],
-		cards: ["id", "card", "shortName", "status"],
-		providers: ["id", "name", "logo", "status", "datetime"],
-		callQueue: ["id", "name", "telephone", "status"],
-	};
+	// Reset search query when section changes
+	useEffect(() => {
+		if (activeSection) setSearchQuery("");
+	}, [activeSection]);
 
+	// Fetch cards from API when cards section is active
+	useEffect(() => {
+		if (activeSection === "cards") {
+			setCardLoading(true);
+			setCardError("");
+			getCardListApi(user?.email, token)
+				.then(setCards)
+				.catch((err) => setCardError(err.message))
+				.finally(() => setCardLoading(false));
+		}
+	}, [activeSection, user, token]);
+
+	// Fetch currencies from API when currency section is active
+	useEffect(() => {
+		if (activeSection === "currency") {
+			setCurrencyLoading(true);
+			setCurrencyError("");
+			getCurrencyListApi()
+				.then(setCurrencies)
+				.catch((err) => setCurrencyError(err.message))
+				.finally(() => setCurrencyLoading(false));
+		}
+	}, [activeSection]);
+
+	// Handle add new row button
 	const handleAddRow = () => {
 		setModalType("add");
 		setEditData(null);
 		setShowModal(true);
 	};
 
+	// Handle edit button for a row
 	const handleEdit = (item) => {
 		setModalType("edit");
-		setEditData(item);
+		// For cards, ensure the edit form is pre-filled with the current data
+		if (activeSection === "cards") {
+			setEditData({
+				card: item.name || item.card || "",
+				shortName: item.sort_name || item.shortName || "",
+				id: item.id,
+			});
+		} else if (activeSection === "currency") {
+			setEditData({
+				currency: item.currency || item.Currency || "",
+				id: item.id,
+			});
+		} else {
+			setEditData(item);
+		}
 		setShowModal(true);
 	};
 
-	const handleDelete = (id) => {
+	// Handle delete button for a row
+	const handleDelete = async (id) => {
 		switch (activeSection) {
 			case "airlines":
 				setAirlines(airlines.filter((a) => a.id !== id));
 				break;
 			case "currency":
-				setCurrencies(currencies.filter((c) => c.id !== id));
+				try {
+					setCurrencyLoading(true);
+					await deleteCurrencyApi(id);
+					setCurrencies(currencies.filter((c) => c.id !== id));
+				} catch (err) {
+					setCurrencyError(err.message);
+				} finally {
+					setCurrencyLoading(false);
+				}
 				break;
 			case "cards":
-				setCards(cards.filter((c) => c.id !== id));
+				try {
+					setCardLoading(true);
+					await deleteCardApi(id, user?.email, token);
+					setCards(cards.filter((c) => c.id !== id));
+				} catch (err) {
+					setCardError(err.message);
+				} finally {
+					setCardLoading(false);
+				}
 				break;
 			case "providers":
 				setProviders(providers.filter((p) => p.id !== id));
@@ -173,43 +242,105 @@ function ManageData() {
 		}
 	};
 
-	const handleSave = (id, updatedData) => {
-		switch (activeSection) {
-			case "currency":
-				setCurrencies(
-					currencies.map((c) => (c.id === id ? { ...c, ...updatedData } : c))
-				);
-				break;
-			case "cards":
-				setCards(
-					cards.map((c) => (c.id === id ? { ...c, ...updatedData } : c))
-				);
-				break;
-			case "providers":
-				setProviders(
-					providers.map((p) => (p.id === id ? { ...p, ...updatedData } : p))
-				);
-				break;
-			case "callQueue":
-				setCallQueues(
-					callQueues.map((q) => (q.id === id ? { ...q, ...updatedData } : q))
-				);
-				break;
+	// Card status toggle handler
+	const handleToggleCardStatus = async (id) => {
+		// Optimistic UI: set loading for this row
+		setCards((prev) =>
+			prev.map((c) => (c.id === id ? { ...c, _statusLoading: true } : c))
+		);
+		try {
+			await toggleCardStatusApi(id);
+			// Update status locally (toggle 1/0 or ACTIVE/INACTIVE)
+			setCards((prev) =>
+				prev.map((c) =>
+					c.id === id
+						? {
+								...c,
+								status:
+									c.status === 1 ||
+									c.status === "1" ||
+									c.status === "ACTIVE" ||
+									c.status === "Active"
+										? 0
+										: 1,
+								_statusLoading: false,
+						  }
+						: c
+				)
+			);
+		} catch (err) {
+			setCardError(err.message);
+			setCards((prev) =>
+				prev.map((c) => (c.id === id ? { ...c, _statusLoading: false } : c))
+			);
 		}
-		setEditingRowId(null);
 	};
 
-	const handleFormSubmit = (formData) => {
+	// Currency status toggle handler
+	const handleToggleCurrencyStatus = async (id) => {
+		setCurrencies((prev) =>
+			prev.map((c) => (c.id === id ? { ...c, _statusLoading: true } : c))
+		);
+		try {
+			await toggleCurrencyStatusApi(id);
+			setCurrencies((prev) =>
+				prev.map((c) =>
+					c.id === id
+						? {
+								...c,
+								status:
+									c.status === 1 ||
+									c.status === "1" ||
+									c.status === "ACTIVE" ||
+									c.status === "Active"
+										? 0
+										: 1,
+								_statusLoading: false,
+						  }
+						: c
+				)
+			);
+		} catch (err) {
+			setCurrencyError(err.message);
+			setCurrencies((prev) =>
+				prev.map((c) => (c.id === id ? { ...c, _statusLoading: false } : c))
+			);
+		}
+	};
+
+	// Handle form submit for add/edit modal
+	const handleFormSubmit = async (formData) => {
+		// Close modal and clear edit data immediately on submit
+		setShowModal(false);
+		setEditData(null);
 		if (modalType === "add") {
 			switch (activeSection) {
 				case "airlines":
 					setAirlines([{ id: Date.now(), ...formData }, ...airlines]);
 					break;
 				case "currency":
-					setCurrencies([{ id: Date.now(), ...formData }, ...currencies]);
+					try {
+						setCurrencyLoading(true);
+						const newCurrency = await addCurrencyApi(formData.currency);
+						setCurrencies((prev) => [{ ...newCurrency }, ...prev]);
+						setCurrencyError(""); // Clear any previous error
+					} catch (err) {
+						setCurrencyError(err.message);
+					} finally {
+						setCurrencyLoading(false);
+					}
 					break;
 				case "cards":
-					setCards([{ id: Date.now(), ...formData }, ...cards]);
+					try {
+						setCardLoading(true);
+						await addCardApi(formData, user?.email, token);
+						const freshCards = await getCardListApi(user?.email, token);
+						setCards(freshCards);
+					} catch (err) {
+						setCardError(err.message);
+					} finally {
+						setCardLoading(false);
+					}
 					break;
 				case "providers":
 					setProviders([{ id: Date.now(), ...formData }, ...providers]);
@@ -228,16 +359,36 @@ function ManageData() {
 					);
 					break;
 				case "currency":
-					setCurrencies(
-						currencies.map((c) =>
-							c.id === editData.id ? { ...c, ...formData } : c
-						)
-					);
+					try {
+						setCurrencyLoading(true);
+						await updateCurrencyApi({ id: editData.id, currency: formData.currency });
+						const freshCurrencies = await getCurrencyListApi();
+						setCurrencies(freshCurrencies);
+					} catch (err) {
+						setCurrencyError(err.message);
+					} finally {
+						setCurrencyLoading(false);
+					}
 					break;
 				case "cards":
-					setCards(
-						cards.map((c) => (c.id === editData.id ? { ...c, ...formData } : c))
-					);
+					try {
+						setCardLoading(true);
+						await updateCardApi(
+							{
+								id: editData.id,
+								...formData,
+							},
+							user?.email,
+							token
+						);
+						// Fetch the latest cards from the backend to ensure fresh data
+						const freshCards = await getCardListApi(user?.email, token);
+						setCards(freshCards);
+					} catch (err) {
+						setCardError(err.message);
+					} finally {
+						setCardLoading(false);
+					}
 					break;
 				case "providers":
 					setProviders(
@@ -255,11 +406,9 @@ function ManageData() {
 					break;
 			}
 		}
-		setShowModal(false);
-		setEditData(null);
 	};
 
-	// Render Table According to the active section
+	// Render the correct table for the active section
 	const renderTable = () => {
 		switch (activeSection) {
 			case "airlines":
@@ -274,6 +423,8 @@ function ManageData() {
 					/>
 				);
 			case "currency":
+				if (currencyError)
+					return <div className="text-red-400">{currencyError}</div>;
 				return (
 					<DataTable
 						data={currencies}
@@ -282,10 +433,13 @@ function ManageData() {
 						onEdit={handleEdit}
 						onDelete={handleDelete}
 						columns={tableColumns.currency}
+						loading={currencyLoading}
+						loadingLabel="Loading currencies..."
+						onToggleStatus={handleToggleCurrencyStatus}
 					/>
 				);
-
 			case "cards":
+				if (cardError) return <div className="text-red-400">{cardError}</div>;
 				return (
 					<DataTable
 						data={cards}
@@ -294,9 +448,11 @@ function ManageData() {
 						onEdit={handleEdit}
 						onDelete={handleDelete}
 						columns={tableColumns.cards}
+						loading={cardLoading}
+						loadingLabel="Loading cards..."
+						onToggleStatus={handleToggleCardStatus}
 					/>
 				);
-
 			case "providers":
 				return (
 					<DataTable
@@ -308,7 +464,6 @@ function ManageData() {
 						columns={tableColumns.providers}
 					/>
 				);
-
 			case "callQueue":
 				return (
 					<DataTable
@@ -320,12 +475,12 @@ function ManageData() {
 						columns={tableColumns.callQueue}
 					/>
 				);
-
 			default:
 				return null;
 		}
 	};
 
+	// Section selection UI
 	if (!activeSection) {
 		return (
 			<div className="max-w-7xl mx-auto p-4">
@@ -338,9 +493,9 @@ function ManageData() {
 							<button
 								key={id}
 								onClick={() => setActiveSection(id)}
-								className={`group relative h-32 p-6 rounded-xl bg-gradient-to-br ${color} 
-                        backdrop-blur-lg border border-gray-800 
-                        ${borderColor} transition-all duration-200 
+								className={`group relative h-32 p-6 rounded-xl bg-gradient-to-br ${color} \
+                        backdrop-blur-lg border border-gray-800 \
+                        ${borderColor} transition-all duration-200 \
                         shadow-lg hover:shadow-xl overflow-hidden`}
 							>
 								<h3 className="relative z-10 text-2xl font-semibold text-white group-hover:scale-105 transition-transform">
@@ -357,6 +512,7 @@ function ManageData() {
 		);
 	}
 
+	// Main render
 	return (
 		<div className="max-w-7xl mx-auto space-y-8">
 			{activeSection && (

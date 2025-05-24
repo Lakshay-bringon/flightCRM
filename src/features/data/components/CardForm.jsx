@@ -4,7 +4,6 @@ export default function CardForm({ initialData = {}, onSubmit, onCancel }) {
 	const [form, setForm] = React.useState({
 		card: "",
 		shortName: "",
-		status: "Active",
 		...initialData,
 	});
 	const cardRef = useRef(null);
@@ -45,18 +44,6 @@ export default function CardForm({ initialData = {}, onSubmit, onCancel }) {
 					className="w-full px-3 py-2 rounded bg-gray-700 text-white"
 					required
 				/>
-			</div>
-			<div>
-				<label className="block text-sm text-gray-300">Status</label>
-				<select
-					name="status"
-					value={form.status}
-					onChange={handleChange}
-					className="w-full px-3 py-2 rounded bg-gray-700 text-white"
-				>
-					<option value="Active">Active</option>
-					<option value="Inactive">Inactive</option>
-				</select>
 			</div>
 			<div className="flex gap-2 justify-end">
 				<button
