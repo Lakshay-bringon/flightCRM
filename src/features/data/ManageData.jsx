@@ -31,6 +31,13 @@ import {
 	deleteCurrencyApi,
 	toggleCurrencyStatusApi,
 } from "../../api/currencyApi";
+import {
+	addProviderApi,
+	getProvidersApi,
+	updateProviderApi,
+	deleteProviderApi,
+	toggleProviderStatusApi,
+} from "../../api/providerApi";
 import { useAuth } from "../../auth/hooks/useAuth";
 
 function ManageData() {
@@ -62,22 +69,7 @@ function ManageData() {
 	const [cards, setCards] = useState([]);
 	const [cardLoading, setCardLoading] = useState(false);
 	const [cardError, setCardError] = useState("");
-	const [providers, setProviders] = useState([
-		{
-			id: 1,
-			name: "Air Fare/Flight Fare",
-			logo: "",
-			status: "Active",
-			datetime: "2024-09-30 12:01:59",
-		},
-		{
-			id: 2,
-			name: "Skyline",
-			logo: "",
-			status: "Active",
-			datetime: "2025-04-14 14:32:35",
-		},
-	]);
+	const [providers, setProviders] = useState([]);
 	const [callQueues, setCallQueues] = useState([
 		{
 			id: 1,
@@ -94,13 +86,15 @@ function ManageData() {
 	]);
 	const [currencyLoading, setCurrencyLoading] = useState(false);
 	const [currencyError, setCurrencyError] = useState("");
+	const [providerLoading, setProviderLoading] = useState(false);
+	const [providerError, setProviderError] = useState("");
 
 	// Table columns for each section
 	const tableColumns = {
 		airlines: ["id", "name", "logo", "status"],
 		currency: ["id", "Currency", "status"],
 		cards: ["id", "name", "sort_name", "status"],
-		providers: ["id", "name", "logo", "status", "datetime"],
+		providers: ["id", "name", "logo", "status"],
 		callQueue: ["id", "name", "telephone", "status"],
 	};
 
@@ -177,6 +171,18 @@ function ManageData() {
 		}
 	}, [activeSection]);
 
+	// Fetch providers from API when providers section is active
+	useEffect(() => {
+		if (activeSection === "providers") {
+			setProviderLoading(true);
+			setProviderError("");
+			getProvidersApi()
+				.then(setProviders)
+				.catch((err) => setProviderError(err.message))
+				.finally(() => setProviderLoading(false));
+		}
+	}, [activeSection]);
+
 	// Handle add new row button
 	const handleAddRow = () => {
 		setModalType("add");
@@ -234,7 +240,15 @@ function ManageData() {
 				}
 				break;
 			case "providers":
-				setProviders(providers.filter((p) => p.id !== id));
+				try {
+					setProviderLoading(true);
+					await deleteProviderApi(id);
+					setProviders(providers.filter((p) => p.id !== id));
+				} catch (err) {
+					setProviderError(err.message);
+				} finally {
+					setProviderLoading(false);
+				}
 				break;
 			case "callQueue":
 				setCallQueues(callQueues.filter((q) => q.id !== id));
@@ -308,6 +322,38 @@ function ManageData() {
 		}
 	};
 
+	// Provider status toggle handler
+	const handleToggleProviderStatus = async (id) => {
+		setProviders((prev) =>
+			prev.map((p) => (p.id === id ? { ...p, _statusLoading: true } : p))
+		);
+		try {
+			await toggleProviderStatusApi(id);
+			setProviders((prev) =>
+				prev.map((p) =>
+					p.id === id
+						? {
+								...p,
+								status:
+									p.status === 1 ||
+									p.status === "1" ||
+									p.status === "ACTIVE" ||
+									p.status === "Active"
+										? 0
+										: 1,
+								_statusLoading: false,
+						  }
+						: p
+				)
+			);
+		} catch (err) {
+			setProviderError(err.message);
+			setProviders((prev) =>
+				prev.map((p) => (p.id === id ? { ...p, _statusLoading: false } : p))
+			);
+		}
+	};
+
 	// Handle form submit for add/edit modal
 	const handleFormSubmit = async (formData) => {
 		// Close modal and clear edit data immediately on submit
@@ -343,7 +389,16 @@ function ManageData() {
 					}
 					break;
 				case "providers":
-					setProviders([{ id: Date.now(), ...formData }, ...providers]);
+					try {
+						setProviderLoading(true);
+						const newProvider = await addProviderApi(formData);
+						setProviders((prev) => [{ ...newProvider }, ...prev]);
+						setProviderError("");
+					} catch (err) {
+						setProviderError(err.message);
+					} finally {
+						setProviderLoading(false);
+					}
 					break;
 				case "callQueue":
 					setCallQueues([{ id: Date.now(), ...formData }, ...callQueues]);
@@ -361,7 +416,10 @@ function ManageData() {
 				case "currency":
 					try {
 						setCurrencyLoading(true);
-						await updateCurrencyApi({ id: editData.id, currency: formData.currency });
+						await updateCurrencyApi({
+							id: editData.id,
+							currency: formData.currency,
+						});
 						const freshCurrencies = await getCurrencyListApi();
 						setCurrencies(freshCurrencies);
 					} catch (err) {
@@ -391,11 +449,16 @@ function ManageData() {
 					}
 					break;
 				case "providers":
-					setProviders(
-						providers.map((p) =>
-							p.id === editData.id ? { ...p, ...formData } : p
-						)
-					);
+					try {
+						setProviderLoading(true);
+						await updateProviderApi({ ...formData, providerId: editData.id });
+						const freshProviders = await getProvidersApi();
+						setProviders(freshProviders);
+					} catch (err) {
+						setProviderError(err.message);
+					} finally {
+						setProviderLoading(false);
+					}
 					break;
 				case "callQueue":
 					setCallQueues(
@@ -454,6 +517,8 @@ function ManageData() {
 					/>
 				);
 			case "providers":
+				if (providerError)
+					return <div className="text-red-400">{providerError}</div>;
 				return (
 					<DataTable
 						data={providers}
@@ -462,6 +527,9 @@ function ManageData() {
 						onEdit={handleEdit}
 						onDelete={handleDelete}
 						columns={tableColumns.providers}
+						loading={providerLoading}
+						loadingLabel="Loading providers..."
+						onToggleStatus={handleToggleProviderStatus}
 					/>
 				);
 			case "callQueue":

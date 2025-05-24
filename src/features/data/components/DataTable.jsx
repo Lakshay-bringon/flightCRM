@@ -31,7 +31,7 @@ function DataTable({
 		);
 	}, [data, searchQuery, tableColumns]);
 
-	// Helper: Render status button for cards
+	// Helper: Render status button for cards/providers
 	const renderStatusButton = (row, onToggleStatus, loading) => {
 		const isActive =
 			row.status === 1 ||
@@ -119,22 +119,23 @@ function DataTable({
 										key={colIdx}
 										className="px-3 py-2 text-sm text-center w-[140px] truncate"
 									>
-										{/* Render status as button for cards */}
-										{key === "status" &&
-										typeof onToggleStatus === "function" ? (
+										{/* Provider logo: show using UPLOADS baseurl/dataObj.logo if logo exists */}
+										{key === "logo" && dataObj.logo ? (
+											<img
+												src={`${import.meta.env.VITE_UPLOADS_BASE_URL}/${
+													dataObj.logo
+												}`}
+												alt="Logo"
+												className="h-8 w-8 mx-auto rounded bg-white object-contain border border-gray-600"
+												style={{ background: "#fff" }}
+											/>
+										) : key === "status" &&
+										  typeof onToggleStatus === "function" ? (
 											renderStatusButton(
 												dataObj,
 												onToggleStatus,
 												dataObj._statusLoading
 											)
-										) : typeof dataObj[key] === "string" &&
-										  dataObj[key].includes("/") &&
-										  dataObj[key].includes(".") ? (
-											<img
-												src={dataObj[key]}
-												alt={key}
-												className="h-6 w-6 mx-auto"
-											/>
 										) : (
 											dataObj[key]
 										)}

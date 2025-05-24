@@ -3,50 +3,40 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const smtpSchema = z
-	.object({
-		host: z.string().min(1, "Host is required"),
-		id: z.string().min(1, "SMTP ID is required"),
-		confirmId: z.string().min(1, "Confirm SMTP ID is required"),
-		password: z.string().min(8, "Password is required"),
-		confirmPassword: z.string().min(8, "Confirm Password is required"),
-	})
-	.refine((data) => data.id === data.confirmId, {
-		message: "SMTP ID and Confirm ID must match",
-		path: ["confirmId"],
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: "Password and Confirm Password must match",
-		path: ["confirmPassword"],
-	});
-
 const providerSchema = z.object({
 	name: z.string().min(1, "Provider name is required"),
-	logo: z.string().optional(),
-	status: z.enum(["Active", "Inactive"]),
+	logo_base64: z.string().optional(),
+	// status removed
 	datetime: z.string(),
-	supportEmail: z.string().email("Support email is required"),
-	smtp: smtpSchema.optional(),
+	support_email: z.string().email("Support email is required"),
+	smtp_host: z.string().min(1, "SMTP Host is required"),
+	smtp_email: z.string().email("SMTP Email is required"),
+	smtp_password: z.string({ required_error: "SMTP Password is required" }), // no min length
+	domain: z.string().min(1, "Domain is required"),
 });
 
 export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 	const nameRef = useRef(null);
+	const [logoPreview, setLogoPreview] = useState(
+		initialData.logo_base64
+			? `data:image/png;base64,${initialData.logo_base64}`
+			: ""
+	);
+	const [logoBase64, setLogoBase64] = useState(initialData.logo_base64 || "");
+	const [showPassword, setShowPassword] = useState(false);
 
 	const defaultValues = {
 		name: initialData.name || "",
-		logo: initialData.logo || "",
-		status: initialData.status || "Active",
+		logo_base64: initialData.logo_base64 || "",
+		// status removed
 		datetime:
 			initialData.datetime ||
 			new Date().toISOString().slice(0, 19).replace("T", " "),
-		supportEmail: initialData.supportEmail || "",
-		smtp: initialData.smtp
-			? {
-					...initialData.smtp,
-					confirmId: initialData.smtp.id,
-					confirmPassword: initialData.smtp.password,
-			  }
-			: undefined,
+		support_email: initialData.support_email || "",
+		smtp_host: initialData.smtp_host || "",
+		smtp_email: initialData.smtp_email || "",
+		smtp_password: initialData.smtp_password || "",
+		domain: initialData.domain || "",
 	};
 
 	const {
@@ -54,7 +44,7 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 		handleSubmit,
 		formState: { errors },
 		setFocus,
-		clearErrors,
+		setValue,
 	} = useForm({
 		resolver: zodResolver(providerSchema),
 		defaultValues,
@@ -65,11 +55,23 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 		setFocus("name");
 	}, [setFocus]);
 
+	// Handle image upload and convert to base64
+	const handleLogoChange = (e) => {
+		const file = e.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (ev) => {
+				const base64 = ev.target.result.split(",")[1];
+				setLogoBase64(base64);
+				setLogoPreview(ev.target.result);
+				setValue("logo_base64", base64);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
 	const onFormSubmit = (data) => {
-		const smtp = data.smtp
-			? (({ confirmId, confirmPassword, ...rest }) => rest)(data.smtp)
-			: undefined;
-		onSubmit({ ...data, smtp });
+		onSubmit({ ...data, logo_base64: logoBase64 });
 	};
 
 	return (
@@ -82,7 +84,7 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 					<label className="block text-sm text-gray-300">Provider Name</label>
 					<input
 						{...register("name")}
-						ref={nameRef}
+						// ref={nameRef} // Remove ref to avoid double registration
 						className="w-full px-3 py-2 rounded bg-gray-700 text-white"
 						required
 					/>
@@ -91,108 +93,103 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 					)}
 				</div>
 				<div>
-					<label className="block text-sm text-gray-300">Logo URL</label>
+					<label className="block text-sm text-gray-300">Provider Logo</label>
 					<input
-						{...register("logo")}
+						type="file"
+						accept="image/*"
+						onChange={handleLogoChange}
 						className="w-full px-3 py-2 rounded bg-gray-700 text-white"
 					/>
+					{logoPreview && (
+						<img
+							src={logoPreview}
+							alt="Logo Preview"
+							className="h-12 w-12 mt-2 rounded border border-gray-600 object-contain bg-white"
+						/>
+					)}
 				</div>
-				<div>
-					<label className="block text-sm text-gray-300">Status</label>
-					<select
-						{...register("status")}
-						className="w-full px-3 py-2 rounded bg-gray-700 text-white"
-					>
-						<option value="Active">Active</option>
-						<option value="Inactive">Inactive</option>
-					</select>
-				</div>
+				{/* Status input removed */}
 				<input type="hidden" {...register("datetime")} />
-
 				<div className="mb-2">
 					<label className="block text-sm text-gray-300">Support Email</label>
 					<input
-						{...register("supportEmail")}
+						{...register("support_email")}
 						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
 						required
 					/>
-					{errors.supportEmail && (
+					{errors.support_email && (
 						<p className="text-xs text-red-400 mt-1">
-							{errors.supportEmail.message}
+							{errors.support_email.message}
 						</p>
 					)}
 				</div>
-
 				<div className="mb-2">
 					<label className="block text-sm text-gray-300">SMTP Host</label>
 					<input
-						{...register(`smtp.host`)}
+						{...register("smtp_host")}
 						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
 						required
 					/>
-					{errors.smtp?.host && (
+					{errors.smtp_host && (
 						<p className="text-xs text-red-400 mt-1">
-							{errors.smtp.host.message}
+							{errors.smtp_host.message}
 						</p>
 					)}
 				</div>
 				<div className="mb-2">
-					<label className="block text-sm text-gray-300">SMTP ID</label>
+					<label className="block text-sm text-gray-300">SMTP Email</label>
 					<input
-						{...register(`smtp.id`)}
+						{...register("smtp_email")}
 						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
 						required
 					/>
-					{errors.smtp?.id && (
+					{errors.smtp_email && (
 						<p className="text-xs text-red-400 mt-1">
-							{errors.smtp.id.message}
-						</p>
-					)}
-				</div>
-				<div className="mb-2">
-					<label className="block text-sm text-gray-300">Confirm SMTP ID</label>
-					<input
-						{...register(`smtp.confirmId`)}
-						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-						required
-					/>
-					{errors.smtp?.confirmId && (
-						<p className="text-xs text-red-400 mt-1">
-							{errors.smtp.confirmId.message}
+							{errors.smtp_email.message}
 						</p>
 					)}
 				</div>
 				<div className="mb-2">
 					<label className="block text-sm text-gray-300">SMTP Password</label>
-					<input
-						type="password"
-						{...register(`smtp.password`)}
-						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-						required
-					/>
-					{errors.smtp?.password && (
+					<div className="relative flex items-center">
+						<input
+							type={showPassword ? "text" : "password"}
+							{...register("smtp_password")}
+							className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+							required
+						/>
+						<button
+							type="button"
+							tabIndex={-1}
+							className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-blue-400"
+							onClick={() => setShowPassword((v) => !v)}
+							style={{
+								background: "none",
+								border: "none",
+								padding: 0,
+								cursor: "pointer",
+							}}
+						>
+							{showPassword ? "Hide" : "Show"}
+						</button>
+					</div>
+					{errors.smtp_password && (
 						<p className="text-xs text-red-400 mt-1">
-							{errors.smtp.password.message}
+							{errors.smtp_password.message}
 						</p>
 					)}
 				</div>
 				<div className="mb-2">
-					<label className="block text-sm text-gray-300">
-						Confirm SMTP Password
-					</label>
+					<label className="block text-sm text-gray-300">Domain</label>
 					<input
-						type="password"
-						{...register(`smtp.confirmPassword`)}
+						{...register("domain")}
 						className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
 						required
 					/>
-					{errors.smtp?.confirmPassword && (
-						<p className="text-xs text-red-400 mt-1">
-							{errors.smtp.confirmPassword.message}
-						</p>
+					{errors.domain && (
+						<p className="text-xs text-red-400 mt-1">{errors.domain.message}</p>
 					)}
 				</div>
-
 				<div className="flex gap-2 justify-end mt-4">
 					<button
 						type="button"

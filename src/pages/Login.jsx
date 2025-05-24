@@ -36,7 +36,7 @@ function Login() {
 	};
 
 	if (isLoading) {
-		return <LoadingSpinner label="Logging you in..." />;
+		return <LoadingSpinner label="Logging you in..." fullPage />;
 	}
 
 	return (
