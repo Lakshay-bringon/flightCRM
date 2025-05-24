@@ -6,16 +6,24 @@ export default function CallQueueForm({
 	onCancel,
 }) {
 	const [form, setForm] = React.useState({
-		name: "",
-		telephone: "",
-		status: "Active",
-		...initialData,
+		name: initialData.name || "",
+		telephone:
+			initialData.phone || initialData.telephone || initialData.number || "",
 	});
 	const nameRef = useRef(null);
 
 	useEffect(() => {
 		if (nameRef.current) nameRef.current.focus();
 	}, []);
+
+	// Update form state when initialData changes (for edit mode)
+	useEffect(() => {
+		setForm({
+			name: initialData.name || "",
+			telephone:
+				initialData.phone || initialData.telephone || initialData.number || "",
+		});
+	}, [initialData]);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -24,7 +32,7 @@ export default function CallQueueForm({
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		onSubmit(form);
+		onSubmit({ name: form.name, phone: form.telephone });
 	};
 
 	return (
@@ -41,7 +49,7 @@ export default function CallQueueForm({
 				/>
 			</div>
 			<div>
-				<label className="block text-sm text-gray-300">Telephone</label>
+				<label className="block text-sm text-gray-300">Phone</label>
 				<input
 					name="telephone"
 					value={form.telephone}
@@ -49,18 +57,6 @@ export default function CallQueueForm({
 					className="w-full px-3 py-2 rounded bg-gray-700 text-white"
 					required
 				/>
-			</div>
-			<div>
-				<label className="block text-sm text-gray-300">Status</label>
-				<select
-					name="status"
-					value={form.status}
-					onChange={handleChange}
-					className="w-full px-3 py-2 rounded bg-gray-700 text-white"
-				>
-					<option value="Active">Active</option>
-					<option value="Inactive">Inactive</option>
-				</select>
 			</div>
 			<div className="flex gap-2 justify-end">
 				<button
