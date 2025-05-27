@@ -15,10 +15,12 @@ import {
 	AlertCircle,
 } from "lucide-react";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { useDataContext } from "../../context/DataContext";
 
 function ProfilePage() {
 	const location = useLocation();
 	const { user: authUser } = useAuth();
+	const { leaders } = useDataContext();
 	const user = location.state?.user || authUser;
 	const navigate = useNavigate();
 
@@ -98,6 +100,18 @@ function ProfilePage() {
 		return "Not Assigned";
 	};
 
+	// Find leader name from leaders context if leader_id exists
+	let leaderDisplay = null;
+	if (user?.leader_id && leaders && leaders.length > 0) {
+		const foundLeader = leaders.find(
+			(l) => String(l.id) === String(user.leader_id)
+		);
+		if (foundLeader) {
+			leaderDisplay =
+				foundLeader.name || foundLeader.alias || foundLeader.email;
+		}
+	}
+
 	return (
 		<div className="max-w-3xl mx-auto space-y-6">
 			{/* Back Button */}
@@ -108,7 +122,6 @@ function ProfilePage() {
 				<ArrowLeft className="w-4 h-4 mr-2" />
 				Back
 			</button>
-
 			{/* Profile Header */}
 			<div className="rounded-xl bg-gray-800 bg-opacity-70 backdrop-blur-lg border border-gray-700">
 				<div className="p-4">
@@ -123,6 +136,12 @@ function ProfilePage() {
 										{userData.name}
 									</h2>
 									<p className="text-xs text-gray-400">{userData.role}</p>
+									{/* Show leader name if leader_id exists and found in leaders */}
+									{user?.leader_id && leaderDisplay && (
+										<p className="text-xs text-blue-400 mt-1">
+											Team Leader: {leaderDisplay}
+										</p>
+									)}
 								</div>
 								<span
 									className={`px-2 py-0.5 text-xs rounded-full ${
@@ -148,7 +167,6 @@ function ProfilePage() {
 					</div>
 				</div>
 			</div>
-
 			{/* Stats Container */}
 			<div className="rounded-xl bg-gray-800 bg-opacity-70 backdrop-blur-lg border border-gray-700">
 				{/* Monthly Stats Header */}
@@ -180,11 +198,10 @@ function ProfilePage() {
 					</div>
 				</div>
 			</div>
-
 			{/* Detailed Information */}
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-				{/* Personal Information */}
-				<div className="rounded-lg bg-gray-800 bg-opacity-70 backdrop-blur-lg border border-gray-700">
+			{/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-4"> */}
+			{/* Personal Information */}
+			{/* <div className="rounded-lg bg-gray-800 bg-opacity-70 backdrop-blur-lg border border-gray-700">
 					<div className="p-4 border-b border-gray-700">
 						<h3 className="text-base font-semibold text-white">
 							Personal Information
@@ -207,10 +224,10 @@ function ProfilePage() {
 							<div className="text-white">{userData.joinedDate}</div>
 						</div>
 					</div>
-				</div>
+				</div> */}
 
-				{/* Permissions */}
-				<div className="rounded-lg bg-gray-800 bg-opacity-70 backdrop-blur-lg border border-gray-700">
+			{/* Permissions */}
+			{/* <div className="rounded-lg bg-gray-800 bg-opacity-70 backdrop-blur-lg border border-gray-700">
 					<div className="p-4 border-b border-gray-700">
 						<h3 className="text-base font-semibold text-white">
 							Access & Permissions
@@ -229,8 +246,8 @@ function ProfilePage() {
 							))}
 						</div>
 					</div>
-				</div>
-			</div>
+				</div> */}
+			{/* </div> */}
 		</div>
 	);
 }

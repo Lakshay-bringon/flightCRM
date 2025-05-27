@@ -10,10 +10,10 @@ import {
 	toggleQueueStatusApi,
 	getQueueListApi,
 } from "../../../api/queueApi";
+import { showPromiseToast } from "../../../utils/showPromiseToast";
 
 export default function CallQueueSection({ onClose }) {
 	const [callQueues, setCallQueues] = useState([]);
-	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showModal, setShowModal] = useState(false);
@@ -21,12 +21,14 @@ export default function CallQueueSection({ onClose }) {
 	const [editData, setEditData] = useState(null);
 
 	useEffect(() => {
-		setLoading(true);
 		setError("");
-		getQueueListApi()
+		showPromiseToast(getQueueListApi(), {
+			loading: "Loading call queues...",
+			success: "Call queues loaded!",
+			error: "Failed to load call queues",
+		})
 			.then(setCallQueues)
-			.catch((err) => setError(err.message))
-			.finally(() => setLoading(false));
+			.catch((err) => setError(err.message));
 	}, []);
 
 	const handleAdd = () => {
@@ -47,78 +49,68 @@ export default function CallQueueSection({ onClose }) {
 	};
 
 	const handleDelete = async (id) => {
-		try {
-			setLoading(true);
-			await deleteQueueApi(id);
-			setCallQueues((prev) => prev.filter((q) => q.id !== id));
-		} catch (err) {
-			setError(err.message);
-		} finally {
-			setLoading(false);
-		}
+		await showPromiseToast(deleteQueueApi(id), {
+			loading: "Deleting call queue...",
+			success: "Call queue deleted successfully!",
+			error: "Failed to delete call queue",
+		});
+		setCallQueues((prev) => prev.filter((q) => q.id !== id));
 	};
 
 	const handleToggleStatus = async (id) => {
 		setCallQueues((prev) =>
 			prev.map((q) => (q.id === id ? { ...q, _statusLoading: true } : q))
 		);
-		try {
-			await toggleQueueStatusApi(id);
-			setCallQueues((prev) =>
-				prev.map((q) =>
-					q.id === id
-						? {
-								...q,
-								status:
-									q.status === 1 ||
-									q.status === "1" ||
-									q.status === "ACTIVE" ||
-									q.status === "Active"
-										? 0
-										: 1,
-								_statusLoading: false,
-						  }
-						: q
-				)
-			);
-		} catch (err) {
-			setError(err.message);
-			setCallQueues((prev) =>
-				prev.map((q) => (q.id === id ? { ...q, _statusLoading: false } : q))
-			);
-		}
+		await showPromiseToast(toggleQueueStatusApi(id), {
+			loading: "Toggling status...",
+			success: "Status updated!",
+			error: "Failed to update status",
+		});
+		setCallQueues((prev) =>
+			prev.map((q) =>
+				q.id === id
+					? {
+							...q,
+							status:
+								q.status === 1 ||
+								q.status === "1" ||
+								q.status === "ACTIVE" ||
+								q.status === "Active"
+									? 0
+									: 1,
+							_statusLoading: false,
+					  }
+					: q
+			)
+		);
 	};
 
 	const handleFormSubmit = async (formData) => {
 		setShowModal(false);
 		setEditData(null);
 		if (modalType === "add") {
-			try {
-				setLoading(true);
-				// Only send { queue: name, number: phone } to API
-				const newQueue = await addQueueApi(formData.name, formData.phone);
-				setCallQueues((prev) => [{ ...newQueue }, ...prev]);
-				setError("");
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
-			}
+			await showPromiseToast(addQueueApi(formData.name, formData.phone), {
+				loading: "Adding call queue...",
+				success: "Call queue added!",
+				error: "Failed to add call queue",
+			});
+			const newQueue = await addQueueApi(formData.name, formData.phone);
+			setCallQueues((prev) => [{ ...newQueue }, ...prev]);
 		} else if (modalType === "edit") {
-			try {
-				setLoading(true);
-				await updateQueueApi({
+			await showPromiseToast(
+				updateQueueApi({
 					id: editData.id,
 					queue: formData.name,
 					number: formData.phone,
-				});
-				const freshQueues = await getQueueListApi();
-				setCallQueues(freshQueues);
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
-			}
+				}),
+				{
+					loading: "Updating call queue...",
+					success: "Call queue updated!",
+					error: "Failed to update call queue",
+				}
+			);
+			const freshQueues = await getQueueListApi();
+			setCallQueues(freshQueues);
 		}
 	};
 
@@ -142,7 +134,7 @@ export default function CallQueueSection({ onClose }) {
 				onEdit={handleEdit}
 				onDelete={handleDelete}
 				columns={["id", "name", "phone", "status"]}
-				loading={loading}
+				loading={false}
 				loadingLabel="Loading call queues..."
 				onToggleStatus={handleToggleStatus}
 			/>

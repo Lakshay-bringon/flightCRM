@@ -40,10 +40,10 @@ export default function UserCard({ user, onEdit, onRemove, onStatusChange }) {
 				<div>
 					<div className="text-white font-medium text-base">{user.name}</div>
 					<div className="flex flex-wrap gap-3 text-xs text-gray-400">
-						<span className="flex items-center">
+						{/* <span className="flex items-center">
 							<IdCard className="w-3 h-3 mr-1" />
 							{user.id}
-						</span>
+						</span> */}
 						<span className="flex items-center">
 							<Phone className="w-3 h-3 mr-1" />
 							{user.phone}
@@ -81,12 +81,12 @@ export default function UserCard({ user, onEdit, onRemove, onStatusChange }) {
 					<PenSquare className="w-4 h-4" />
 				</button>
 				{/* button to delete user  */}
-				{/* <button
+				<button
 					onClick={() => onRemove(user)}
 					className="px-2 py-1 rounded-full hover:bg-red-500/20 text-red-400 cursor-pointer"
 				>
 					<Trash className="w-4 h-4" />
-				</button> */}
+				</button>
 			</div>
 		</div>
 	);

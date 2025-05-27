@@ -18,10 +18,10 @@ import {
 	deleteProviderApi,
 	toggleProviderStatusApi,
 } from "../../../api/providerApi";
+import { showPromiseToast } from "../../../utils/showPromiseToast";
 
 export default function ProvidersSection({ onClose }) {
 	const [providers, setProviders] = useState([]);
-	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showModal, setShowModal] = useState(false);
@@ -29,12 +29,14 @@ export default function ProvidersSection({ onClose }) {
 	const [editData, setEditData] = useState(null);
 
 	useEffect(() => {
-		setLoading(true);
 		setError("");
-		getProvidersApi()
+		showPromiseToast(getProvidersApi(), {
+			loading: "Loading providers...",
+			success: "Providers loaded!",
+			error: "Failed to load providers",
+		})
 			.then(setProviders)
-			.catch((err) => setError(err.message))
-			.finally(() => setLoading(false));
+			.catch((err) => setError(err.message));
 	}, []);
 
 	const handleAdd = () => {
@@ -50,73 +52,64 @@ export default function ProvidersSection({ onClose }) {
 	};
 
 	const handleDelete = async (id) => {
-		try {
-			setLoading(true);
-			await deleteProviderApi(id);
-			setProviders((prev) => prev.filter((p) => p.id !== id));
-		} catch (err) {
-			setError(err.message);
-		} finally {
-			setLoading(false);
-		}
+		await showPromiseToast(deleteProviderApi(id), {
+			loading: "Deleting provider...",
+			success: "Provider deleted successfully!",
+			error: "Failed to delete provider",
+		});
+		setProviders((prev) => prev.filter((p) => p.id !== id));
 	};
 
 	const handleToggleStatus = async (id) => {
 		setProviders((prev) =>
 			prev.map((p) => (p.id === id ? { ...p, _statusLoading: true } : p))
 		);
-		try {
-			await toggleProviderStatusApi(id);
-			setProviders((prev) =>
-				prev.map((p) =>
-					p.id === id
-						? {
-								...p,
-								status:
-									p.status === 1 ||
-									p.status === "1" ||
-									p.status === "ACTIVE" ||
-									p.status === "Active"
-										? 0
-										: 1,
-								_statusLoading: false,
-						  }
-						: p
-				)
-			);
-		} catch (err) {
-			setError(err.message);
-			setProviders((prev) =>
-				prev.map((p) => (p.id === id ? { ...p, _statusLoading: false } : p))
-			);
-		}
+		await showPromiseToast(toggleProviderStatusApi(id), {
+			loading: "Toggling status...",
+			success: "Status updated!",
+			error: "Failed to update status",
+		});
+		setProviders((prev) =>
+			prev.map((p) =>
+				p.id === id
+					? {
+							...p,
+							status:
+								p.status === 1 ||
+								p.status === "1" ||
+								p.status === "ACTIVE" ||
+								p.status === "Active"
+									? 0
+									: 1,
+							_statusLoading: false,
+					  }
+					: p
+			)
+		);
 	};
 
 	const handleFormSubmit = async (formData) => {
 		setShowModal(false);
 		setEditData(null);
 		if (modalType === "add") {
-			try {
-				setLoading(true);
-				const newProvider = await addProviderApi(formData);
-				setProviders((prev) => [{ ...newProvider }, ...prev]);
-				setError("");
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
-			}
+			await showPromiseToast(addProviderApi(formData), {
+				loading: "Adding provider...",
+				success: "Provider added!",
+				error: "Failed to add provider",
+			});
+			const newProvider = await addProviderApi(formData);
+			setProviders((prev) => [{ ...newProvider }, ...prev]);
 		} else if (modalType === "edit") {
-			try {
-				setLoading(true);
-				await updateProviderApi({ ...formData, providerId: editData.id });
-				const freshProviders = await getProvidersApi();
-				setProviders(freshProviders);
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
-			}
+			await showPromiseToast(
+				updateProviderApi({ ...formData, providerId: editData.id }),
+				{
+					loading: "Updating provider...",
+					success: "Provider updated!",
+					error: "Failed to update provider",
+				}
+			);
+			const freshProviders = await getProvidersApi();
+			setProviders(freshProviders);
 		}
 	};
 
@@ -140,7 +133,7 @@ export default function ProvidersSection({ onClose }) {
 				onEdit={handleEdit}
 				onDelete={handleDelete}
 				columns={["id", "name", "logo", "status"]}
-				loading={loading}
+				loading={false}
 				loadingLabel="Loading providers..."
 				onToggleStatus={handleToggleStatus}
 			/>

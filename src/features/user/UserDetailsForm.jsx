@@ -276,8 +276,18 @@ export default function UserDetailsForm({
 								<FormField error={errors.leader_id?.message}>
 									<FormSelect
 										{...register("leader_id")}
-										value={isLeader ? String(loggedInUser.id) : undefined}
+										value={
+											isLeader
+												? String(loggedInUser.id)
+												: watch("leader_id") ||
+												  (user && user.leader_id ? String(user.leader_id) : "")
+										}
 										disabled={isLeader || leadersLoading}
+										onChange={
+											isLeader
+												? undefined
+												: (e) => setValue("leader_id", e.target.value)
+										}
 									>
 										{isLeader ? (
 											<option value={loggedInUser.id}>

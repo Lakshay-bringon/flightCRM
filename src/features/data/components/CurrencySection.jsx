@@ -10,6 +10,7 @@ import {
 	deleteCurrencyApi,
 	toggleCurrencyStatusApi,
 } from "../../../api/currencyApi";
+import { showPromiseToast } from "../../../utils/showPromiseToast";
 
 // --- DEBUGGING/MAINTENANCE COMMENTS ---
 // CurrencySection handles its own modal and edit state, but all add/edit/delete logic is managed by the parent (ManageData).
@@ -22,7 +23,6 @@ import {
 export default function CurrencySection({ onClose }) {
 	// State
 	const [currencies, setCurrencies] = useState([]);
-	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showModal, setShowModal] = useState(false);
@@ -31,12 +31,14 @@ export default function CurrencySection({ onClose }) {
 
 	// Fetch currencies on mount
 	useEffect(() => {
-		setLoading(true);
 		setError("");
-		getCurrencyListApi()
+		showPromiseToast(getCurrencyListApi(), {
+			loading: "Loading currencies...",
+			success: "Currencies loaded!",
+			error: "Failed to load currencies",
+		})
 			.then(setCurrencies)
-			.catch((err) => setError(err.message))
-			.finally(() => setLoading(false));
+			.catch((err) => setError(err.message));
 	}, []);
 
 	// Add
@@ -58,15 +60,12 @@ export default function CurrencySection({ onClose }) {
 
 	// Delete
 	const handleDelete = async (id) => {
-		try {
-			setLoading(true);
-			await deleteCurrencyApi(id);
-			setCurrencies((prev) => prev.filter((c) => c.id !== id));
-		} catch (err) {
-			setError(err.message);
-		} finally {
-			setLoading(false);
-		}
+		await showPromiseToast(deleteCurrencyApi(id), {
+			loading: "Deleting currency...",
+			success: "Currency deleted successfully!",
+			error: "Failed to delete currency",
+		});
+		setCurrencies((prev) => prev.filter((c) => c.id !== id));
 	};
 
 	// Toggle status
@@ -74,31 +73,28 @@ export default function CurrencySection({ onClose }) {
 		setCurrencies((prev) =>
 			prev.map((c) => (c.id === id ? { ...c, _statusLoading: true } : c))
 		);
-		try {
-			await toggleCurrencyStatusApi(id);
-			setCurrencies((prev) =>
-				prev.map((c) =>
-					c.id === id
-						? {
-								...c,
-								status:
-									c.status === 1 ||
-									c.status === "1" ||
-									c.status === "ACTIVE" ||
-									c.status === "Active"
-										? 0
-										: 1,
-								_statusLoading: false,
-						  }
-						: c
-				)
-			);
-		} catch (err) {
-			setError(err.message);
-			setCurrencies((prev) =>
-				prev.map((c) => (c.id === id ? { ...c, _statusLoading: false } : c))
-			);
-		}
+		await showPromiseToast(toggleCurrencyStatusApi(id), {
+			loading: "Toggling status...",
+			success: "Status updated!",
+			error: "Failed to update status",
+		});
+		setCurrencies((prev) =>
+			prev.map((c) =>
+				c.id === id
+					? {
+							...c,
+							status:
+								c.status === 1 ||
+								c.status === "1" ||
+								c.status === "ACTIVE" ||
+								c.status === "Active"
+									? 0
+									: 1,
+							_statusLoading: false,
+					  }
+					: c
+			)
+		);
 	};
 
 	// Form submit
@@ -106,30 +102,24 @@ export default function CurrencySection({ onClose }) {
 		setShowModal(false);
 		setEditData(null);
 		if (modalType === "add") {
-			try {
-				setLoading(true);
-				const newCurrency = await addCurrencyApi(formData.currency);
-				setCurrencies((prev) => [{ ...newCurrency }, ...prev]);
-				setError("");
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
-			}
+			await showPromiseToast(addCurrencyApi(formData.currency), {
+				loading: "Adding currency...",
+				success: "Currency added!",
+				error: "Failed to add currency",
+			});
+			const newCurrency = await addCurrencyApi(formData.currency);
+			setCurrencies((prev) => [{ ...newCurrency }, ...prev]);
 		} else if (modalType === "edit") {
-			try {
-				setLoading(true);
-				await updateCurrencyApi({
-					id: editData.id,
-					currency: formData.currency,
-				});
-				const freshCurrencies = await getCurrencyListApi();
-				setCurrencies(freshCurrencies);
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
-			}
+			await showPromiseToast(
+				updateCurrencyApi({ id: editData.id, currency: formData.currency }),
+				{
+					loading: "Updating currency...",
+					success: "Currency updated!",
+					error: "Failed to update currency",
+				}
+			);
+			const freshCurrencies = await getCurrencyListApi();
+			setCurrencies(freshCurrencies);
 		}
 	};
 
@@ -155,8 +145,8 @@ export default function CurrencySection({ onClose }) {
 				data={Array.isArray(filteredCurrencies) ? filteredCurrencies : []}
 				onEdit={handleEdit}
 				onDelete={handleDelete}
-				columns={["id", "Currency", "status"]}
-				loading={loading}
+				columns={["id", "currency", "status"]}
+				loading={false}
 				loadingLabel="Loading currencies..."
 				onToggleStatus={handleToggleStatus}
 			/>

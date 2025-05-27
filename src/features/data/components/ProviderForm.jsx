@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const providerSchema = z.object({
 	name: z.string().min(1, "Provider name is required"),
-	logo_base64: z.string().optional(),
+	logo_base64: z.string().min(1, "Logo is required"), // now required
 	// status removed
 	datetime: z.string(),
 	support_email: z.string().email("Support email is required"),
@@ -106,6 +106,12 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 							alt="Logo Preview"
 							className="h-12 w-12 mt-2 rounded border border-gray-600 object-contain bg-white"
 						/>
+					)}
+					{/* Show validation error for logo */}
+					{errors.logo_base64 && (
+						<p className="text-xs text-red-400 mt-1">
+							{errors.logo_base64.message}
+						</p>
 					)}
 				</div>
 				{/* Status input removed */}

@@ -11,11 +11,11 @@ import {
 	toggleCardStatusApi,
 } from "../../../api/cardApi";
 import { useAuth } from "../../../auth/hooks/useAuth";
+import { showPromiseToast } from "../../../utils/showPromiseToast";
 
 export default function CardsSection({ onClose }) {
 	const { user, token } = useAuth();
 	const [cards, setCards] = useState([]);
-	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showModal, setShowModal] = useState(false);
@@ -23,12 +23,14 @@ export default function CardsSection({ onClose }) {
 	const [editData, setEditData] = useState(null);
 
 	useEffect(() => {
-		setLoading(true);
 		setError("");
-		getCardListApi(user?.email, token)
+		showPromiseToast(getCardListApi(user?.email, token), {
+			loading: "Loading cards...",
+			success: "Cards loaded!",
+			error: "Failed to load cards",
+		})
 			.then(setCards)
-			.catch((err) => setError(err.message))
-			.finally(() => setLoading(false));
+			.catch((err) => setError(err.message));
 	}, [user, token]);
 
 	const handleAdd = () => {
@@ -48,77 +50,64 @@ export default function CardsSection({ onClose }) {
 	};
 
 	const handleDelete = async (id) => {
-		try {
-			setLoading(true);
-			await deleteCardApi(id, user?.email, token);
-			setCards((prev) => prev.filter((c) => c.id !== id));
-		} catch (err) {
-			setError(err.message);
-		} finally {
-			setLoading(false);
-		}
+		await showPromiseToast(deleteCardApi(id, user?.email, token), {
+			loading: "Deleting card...",
+			success: "Card deleted successfully!",
+			error: "Failed to delete card",
+		});
+		setCards((prev) => prev.filter((c) => c.id !== id));
 	};
 
 	const handleToggleStatus = async (id) => {
 		setCards((prev) =>
 			prev.map((c) => (c.id === id ? { ...c, _statusLoading: true } : c))
 		);
-		try {
-			await toggleCardStatusApi(id);
-			setCards((prev) =>
-				prev.map((c) =>
-					c.id === id
-						? {
-								...c,
-								status:
-									c.status === 1 ||
-									c.status === "1" ||
-									c.status === "ACTIVE" ||
-									c.status === "Active"
-										? 0
-										: 1,
-								_statusLoading: false,
-						  }
-						: c
-				)
-			);
-		} catch (err) {
-			setError(err.message);
-			setCards((prev) =>
-				prev.map((c) => (c.id === id ? { ...c, _statusLoading: false } : c))
-			);
-		}
+		await showPromiseToast(toggleCardStatusApi(id), {
+			loading: "Toggling status...",
+			success: "Status updated!",
+			error: "Failed to update status",
+		});
+		setCards((prev) =>
+			prev.map((c) =>
+				c.id === id
+					? {
+							...c,
+							status:
+								c.status === 1 ||
+								c.status === "1" ||
+								c.status === "ACTIVE" ||
+								c.status === "Active"
+									? 0
+									: 1,
+							_statusLoading: false,
+					  }
+					: c
+			)
+		);
 	};
 
 	const handleFormSubmit = async (formData) => {
 		setShowModal(false);
 		setEditData(null);
 		if (modalType === "add") {
-			try {
-				setLoading(true);
-				await addCardApi(formData, user?.email, token);
-				const freshCards = await getCardListApi(user?.email, token);
-				setCards(freshCards);
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
-			}
+			await showPromiseToast(addCardApi(formData, user?.email, token), {
+				loading: "Adding card...",
+				success: "Card added!",
+				error: "Failed to add card",
+			});
+			const freshCards = await getCardListApi(user?.email, token);
+			setCards(freshCards);
 		} else if (modalType === "edit") {
-			try {
-				setLoading(true);
-				await updateCardApi(
-					{ id: editData.id, ...formData },
-					user?.email,
-					token
-				);
-				const freshCards = await getCardListApi(user?.email, token);
-				setCards(freshCards);
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
-			}
+			await showPromiseToast(
+				updateCardApi({ id: editData.id, ...formData }, user?.email, token),
+				{
+					loading: "Updating card...",
+					success: "Card updated!",
+					error: "Failed to update card",
+				}
+			);
+			const freshCards = await getCardListApi(user?.email, token);
+			setCards(freshCards);
 		}
 	};
 
@@ -136,13 +125,13 @@ export default function CardsSection({ onClose }) {
 				onAdd={handleAdd}
 				addLabel="Add Card"
 			/>
-			{error && <div className="text-red-400 mb-2">{error}</div>}
+			{/* {error && <div className="text-red-400 mb-2">{error}</div>} */}
 			<DataTable
 				data={Array.isArray(filteredCards) ? filteredCards : []}
 				onEdit={handleEdit}
 				onDelete={handleDelete}
 				columns={["id", "name", "sort_name", "status"]}
-				loading={loading}
+				loading={false}
 				loadingLabel="Loading cards..."
 				onToggleStatus={handleToggleStatus}
 			/>

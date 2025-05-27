@@ -1,16 +1,38 @@
 import API from "./axios";
 
+// Helper to flatten error messages
+function flattenErrorMessages(error) {
+	if (!error) return [];
+	if (typeof error === "string") return [error];
+	if (Array.isArray(error)) return error.flatMap(flattenErrorMessages);
+	if (typeof error === "object") {
+		return Object.values(error).flatMap(flattenErrorMessages);
+	}
+	return [String(error)];
+}
+
 // Add a new provider
 export const addProviderApi = async (providerData) => {
 	try {
 		const res = await API.post("/addProvider", providerData);
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to add provider");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to add provider");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to add provider");
-		throw new Error("Add provider error: " + err.message);
+		if (err.response?.data?.msg) {
+			let errorMsg = err.response.data.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to add provider");
+		}
+		throw new Error(err.message || "Add provider error");
 	}
 };
 
