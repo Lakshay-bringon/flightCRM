@@ -15,37 +15,85 @@ export const DataProvider = ({ children }) => {
 	const [leaders, setLeaders] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	// Add individual loading states
+	const [cardsLoading, setCardsLoading] = useState(false);
+	const [currenciesLoading, setCurrenciesLoading] = useState(false);
+	const [providersLoading, setProvidersLoading] = useState(false);
+	const [callQueuesLoading, setCallQueuesLoading] = useState(false);
+	const [leadersLoading, setLeadersLoading] = useState(false);
+
+	// Individual fetch functions
+	const fetchCards = async () => {
+		setCardsLoading(true);
+		try {
+			const data = await getCardListApi();
+			setCards(data || []);
+		} catch (err) {
+			setError(err.message || "Failed to load cards");
+		} finally {
+			setCardsLoading(false);
+		}
+	};
+
+	const fetchCurrencies = async () => {
+		setCurrenciesLoading(true);
+		try {
+			const data = await getCurrencyListApi();
+			setCurrencies(data || []);
+		} catch (err) {
+			setError(err.message || "Failed to load currencies");
+		} finally {
+			setCurrenciesLoading(false);
+		}
+	};
+
+	const fetchProviders = async () => {
+		setProvidersLoading(true);
+		try {
+			const data = await getProvidersApi();
+			setProviders(data || []);
+		} catch (err) {
+			setError(err.message || "Failed to load providers");
+		} finally {
+			setProvidersLoading(false);
+		}
+	};
+
+	const fetchCallQueues = async () => {
+		setCallQueuesLoading(true);
+		try {
+			const data = await getQueueListApi();
+			setCallQueues(data || []);
+		} catch (err) {
+			setError(err.message || "Failed to load call queues");
+		} finally {
+			setCallQueuesLoading(false);
+		}
+	};
+
+	const fetchLeaders = async () => {
+		setLeadersLoading(true);
+		try {
+			const data = await getUserByRoleApi(2);
+			setLeaders(data || []);
+		} catch (err) {
+			setError(err.message || "Failed to load leaders");
+		} finally {
+			setLeadersLoading(false);
+		}
+	};
 
 	useEffect(() => {
-		const fetchData = async () => {
-			setLoading(true);
-			setError(null);
-			try {
-				const [
-					cardsData,
-					currenciesData,
-					providersData,
-					queuesData,
-					leadersData,
-				] = await Promise.all([
-					getCardListApi(),
-					getCurrencyListApi(),
-					getProvidersApi(),
-					getQueueListApi(),
-					getUserByRoleApi(2),
-				]);
-				setCards(cardsData || []);
-				setCurrencies(currenciesData || []);
-				setProviders(providersData || []);
-				setCallQueues(queuesData || []);
-				setLeaders(leadersData || []);
-			} catch (err) {
-				setError(err.message || "Failed to load data");
-			} finally {
-				setLoading(false);
-			}
-		};
-		fetchData();
+		// Initial fetch for all data
+		setLoading(true);
+		setError(null);
+		Promise.all([
+			fetchCards(),
+			fetchCurrencies(),
+			fetchProviders(),
+			fetchCallQueues(),
+			fetchLeaders(),
+		]).finally(() => setLoading(false));
 	}, []);
 
 	return (
@@ -58,6 +106,17 @@ export const DataProvider = ({ children }) => {
 				leaders,
 				loading,
 				error,
+				// Expose loading states and fetch functions
+				cardsLoading,
+				currenciesLoading,
+				providersLoading,
+				callQueuesLoading,
+				leadersLoading,
+				fetchCards,
+				fetchCurrencies,
+				fetchProviders,
+				fetchCallQueues,
+				fetchLeaders,
 			}}
 		>
 			{children}

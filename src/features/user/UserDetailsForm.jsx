@@ -62,7 +62,7 @@ export default function UserDetailsForm({
 	onClose,
 }) {
 	const { role, user: loggedInUser } = useAuthContext();
-	const { leaders } = useDataContext();
+	const { leaders, leadersLoading, fetchLeaders } = useDataContext();
 	const [photoPreview, setPhotoPreview] = useState(null);
 	const [dragActive, setDragActive] = useState(false);
 	const [showConfirmEmail, setShowConfirmEmail] = useState(false);
@@ -208,6 +208,13 @@ export default function UserDetailsForm({
 		}
 	}, [isLeader, loggedInUser, setValue, user]);
 
+	// Fetch leaders when the selector is shown and not already loading/fetched
+	useEffect(() => {
+		fetchLeaders();
+		// Only run on mount
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	return (
 		<Modal
 			isOpen={true}
@@ -270,7 +277,7 @@ export default function UserDetailsForm({
 									<FormSelect
 										{...register("leader_id")}
 										value={isLeader ? String(loggedInUser.id) : undefined}
-										disabled={isLeader}
+										disabled={isLeader || leadersLoading}
 									>
 										{isLeader ? (
 											<option value={loggedInUser.id}>
@@ -280,12 +287,15 @@ export default function UserDetailsForm({
 											</option>
 										) : (
 											<>
-												<option value="">Select Team</option>
-												{leaders.map((leader) => (
-													<option key={leader.id} value={leader.id}>
-														{leader.name || leader.alias || leader.email}
-													</option>
-												))}
+												<option value="">
+													{leadersLoading ? "Loading..." : "Select Team"}
+												</option>
+												{!leadersLoading &&
+													leaders.map((leader) => (
+														<option key={leader.id} value={leader.id}>
+															{leader.name || leader.alias || leader.email}
+														</option>
+													))}
 											</>
 										)}
 									</FormSelect>

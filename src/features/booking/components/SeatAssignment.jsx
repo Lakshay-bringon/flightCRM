@@ -9,8 +9,11 @@ import PassengerDetails from "./PassengerDetails";
 import PurchaseSummary from "./PurchaseSummary";
 import AttachmentsSection from "./AttachmentsSection";
 import AuthorizeSection from "./AuthorizeSection";
+import { useDataContext } from "../../../context/DataContext";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 function SeatAssignment({ initialData, onBack }) {
+	const { cards, cardsLoading, fetchCards } = useDataContext();
 	const [passengers, setPassengers] = useState([{ id: 1 }]);
 	const [charges, setCharges] = useState([{ id: 1 }, { id: 2 }]);
 	const [attachments, setAttachments] = useState([]);
@@ -45,6 +48,10 @@ function SeatAssignment({ initialData, onBack }) {
 			passengers: [{}],
 		},
 	});
+
+	React.useEffect(() => {
+		fetchCards();
+	}, []);
 
 	// Watch for pnr, bookingType, airline, cardNumber, and cardType to keep them in sync in UI
 	const pnr = watch("pnr");

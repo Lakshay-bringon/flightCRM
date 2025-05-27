@@ -2,7 +2,10 @@ import React from "react";
 import { useDataContext } from "../../../context/DataContext";
 
 function PurchaseSummary({ register }) {
-	const { cards } = useDataContext();
+	const { cards, cardsLoading, fetchCards } = useDataContext();
+	React.useEffect(() => {
+		fetchCards();
+	}, []);
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg">
 			<h3 className="font-semibold mb-2">Purchase Summary</h3>
@@ -13,6 +16,24 @@ function PurchaseSummary({ register }) {
 						{...register("cardholderName")}
 						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
 					/>
+				</div>
+				<div>
+					<label className="inline-block w-32">Card:</label>
+					<select
+						{...register("cardType")}
+						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
+						disabled={cardsLoading}
+					>
+						<option value="">
+							{cardsLoading ? "Loading..." : "Select Card"}
+						</option>
+						{!cardsLoading &&
+							cards.map((card) => (
+								<option key={card.id || card.name} value={card.name}>
+									{card.name}
+								</option>
+							))}
+					</select>
 				</div>
 				<div>
 					<label className="inline-block w-32">Email:</label>

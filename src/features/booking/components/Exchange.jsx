@@ -8,8 +8,15 @@ import PassengerDetails from "./PassengerDetails";
 import PurchaseSummary from "./PurchaseSummary";
 import AttachmentsSection from "./AttachmentsSection";
 import AuthorizeSection from "./AuthorizeSection";
+import { useDataContext } from "../../../context/DataContext";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 function Exchange({ initialData, onBack }) {
+	const { cards, cardsLoading, fetchCards } = useDataContext();
+	React.useEffect(() => {
+		fetchCards();
+	}, []);
+
 	const [passengers, setPassengers] = useState([{ id: 1 }]);
 	const [charges, setCharges] = useState([{ id: 1 }, { id: 2 }]);
 	const [attachments, setAttachments] = useState([]);

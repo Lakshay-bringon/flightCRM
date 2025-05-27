@@ -1,8 +1,12 @@
 import React from "react";
 import { useDataContext } from "../../../context/DataContext";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 function AuthorizeSection({ register, cardNumber, setValue }) {
-	const { cards } = useDataContext();
+	const { cards, cardsLoading, fetchCards } = useDataContext();
+	React.useEffect(() => {
+		fetchCards();
+	}, []);
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg leading-loose">
 			<p className="leading-loose">
@@ -17,22 +21,18 @@ function AuthorizeSection({ register, cardNumber, setValue }) {
 				<select
 					{...register("paymentMethod")}
 					className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
+					disabled={cardsLoading}
 				>
-					{cards.map((card) => (
-						<option key={card.id || card.name} value={card.name}>
-							{card.name}
-						</option>
-					))}
-				</select>{" "}
-				card with number{" "}
-				<input
-					{...register("cardNumber")}
-					className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-					style={{ minWidth: 60 }}
-					placeholder="Card Number"
-					value={cardNumber}
-					onChange={(e) => setValue("cardNumber", e.target.value)}
-				/>
+					<option value="">
+						{cardsLoading ? "Loading..." : "Select Card"}
+					</option>
+					{!cardsLoading &&
+						cards.map((card) => (
+							<option key={card.id || card.name} value={card.name}>
+								{card.name}
+							</option>
+						))}
+				</select>
 				, and I will not dispute the payment with my credit/debit card company
 				or bank, as this amount is being charged for my personal travel."{" "}
 				<p>

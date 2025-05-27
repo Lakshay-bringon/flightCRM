@@ -16,7 +16,14 @@ const formSchema = z.object({
 });
 
 function ManageBookings() {
-	const { providers, callQueues } = useDataContext();
+	const {
+		providers,
+		callQueues,
+		providersLoading,
+		callQueuesLoading,
+		fetchProviders,
+		fetchCallQueues,
+	} = useDataContext();
 	const [showConfirmation, setShowConfirmation] = useState(false);
 	const [formData, setFormData] = useState(null);
 	const transactionTypeInputRef = useRef(null);
@@ -28,6 +35,11 @@ function ManageBookings() {
 	} = useForm({
 		resolver: zodResolver(formSchema),
 	});
+
+	React.useEffect(() => {
+		fetchProviders();
+		fetchCallQueues();
+	}, []);
 
 	const onSubmit = (data) => {
 		switch (data.transactionType) {
@@ -107,13 +119,17 @@ function ManageBookings() {
 								id="provider"
 								{...register("provider")}
 								className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+								disabled={providersLoading}
 							>
-								<option value="">Select Provider</option>
-								{providers.map((provider) => (
-									<option key={provider.id} value={provider.name}>
-										{provider.name}
-									</option>
-								))}
+								<option value="">
+									{providersLoading ? "Loading..." : "Select Provider"}
+								</option>
+								{!providersLoading &&
+									providers.map((provider) => (
+										<option key={provider.id} value={provider.name}>
+											{provider.name}
+										</option>
+									))}
 							</select>
 							{errors.provider && (
 								<p className="mt-1 text-xs text-red-400">
@@ -133,13 +149,17 @@ function ManageBookings() {
 								id="callQueue"
 								{...register("callQueue")}
 								className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+								disabled={callQueuesLoading}
 							>
-								<option value="">Select Call Queue</option>
-								{callQueues.map((queue) => (
-									<option key={queue.id} value={queue.name}>
-										{queue.name}
-									</option>
-								))}
+								<option value="">
+									{callQueuesLoading ? "Loading..." : "Select Call Queue"}
+								</option>
+								{!callQueuesLoading &&
+									callQueues.map((queue) => (
+										<option key={queue.id} value={queue.name}>
+											{queue.name}
+										</option>
+									))}
 							</select>
 							{errors.callQueue && (
 								<p className="mt-1 text-xs text-red-400">
