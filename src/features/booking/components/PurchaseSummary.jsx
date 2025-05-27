@@ -1,6 +1,8 @@
 import React from "react";
+import { useDataContext } from "../../../context/DataContext";
 
 function PurchaseSummary({ register }) {
+	const { cards } = useDataContext();
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg">
 			<h3 className="font-semibold mb-2">Purchase Summary</h3>
@@ -33,10 +35,11 @@ function PurchaseSummary({ register }) {
 						{...register("paymentMethod")}
 						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
 					>
-						<option value="VISA">VISA</option>
-						<option value="MASTER">MASTER</option>
-						<option value="DISCOVER">DISCOVER</option>
-						<option value="AMERICAN EXPRESS">AMERICAN EXPRESS</option>
+						{cards.map((card) => (
+							<option key={card.id || card.name} value={card.name}>
+								{card.name}
+							</option>
+						))}
 					</select>
 				</div>
 				<div>

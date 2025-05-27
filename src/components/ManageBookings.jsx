@@ -5,6 +5,8 @@ import { z } from "zod";
 import { TRANSACTION_TYPES } from "../constants";
 import NewBooking from "../features/booking/components/NewBooking";
 import { useNavigate } from "react-router-dom";
+import { useDataContext } from "../context/DataContext";
+
 const formSchema = z.object({
 	transactionType: z
 		.string()
@@ -14,6 +16,7 @@ const formSchema = z.object({
 });
 
 function ManageBookings() {
+	const { providers, callQueues } = useDataContext();
 	const [showConfirmation, setShowConfirmation] = useState(false);
 	const [formData, setFormData] = useState(null);
 	const transactionTypeInputRef = useRef(null);
@@ -106,8 +109,11 @@ function ManageBookings() {
 								className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
 							>
 								<option value="">Select Provider</option>
-								<option value="provider1">Air Fare/ Flight Fare</option>
-								<option value="provider2">Skyline</option>
+								{providers.map((provider) => (
+									<option key={provider.id} value={provider.name}>
+										{provider.name}
+									</option>
+								))}
 							</select>
 							{errors.provider && (
 								<p className="mt-1 text-xs text-red-400">
@@ -129,9 +135,11 @@ function ManageBookings() {
 								className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
 							>
 								<option value="">Select Call Queue</option>
-								<option value="queue1">Queue 1</option>
-								<option value="queue2">Queue 2</option>
-								<option value="queue3">Queue 3</option>
+								{callQueues.map((queue) => (
+									<option key={queue.id} value={queue.name}>
+										{queue.name}
+									</option>
+								))}
 							</select>
 							{errors.callQueue && (
 								<p className="mt-1 text-xs text-red-400">

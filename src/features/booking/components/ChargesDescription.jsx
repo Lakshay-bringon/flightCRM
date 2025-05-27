@@ -1,7 +1,9 @@
 import React from "react";
 import { Plus, X } from "lucide-react";
+import { useDataContext } from "../../../context/DataContext";
 
 function ChargesDescription({ charges, register, addCharge, removeCharge }) {
+	const { currencies } = useDataContext();
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg">
 			<div className="flex items-center justify-between mb-2">
@@ -38,10 +40,11 @@ function ChargesDescription({ charges, register, addCharge, removeCharge }) {
 									{...register(`charges.${index}.currency`)}
 									className="bg-gray-700 border border-gray-600 rounded px-1 py-1 text-sm"
 								>
-									<option value="USD">USD</option>
-									<option value="INR">INR</option>
-									<option value="EUR">EUR</option>
-									<option value="GBP">GBP</option>
+									{currencies.map((currency) => (
+										<option key={currency.id} value={currency.Currency}>
+											{currency.Currency}
+										</option>
+									))}
 								</select>
 							</td>
 							<td className="px-2 py-2">

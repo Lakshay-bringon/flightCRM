@@ -32,10 +32,10 @@ export const loginApi = async (email, password) => {
 			role_id,
 			status: userStatus,
 		};
-		if (!token || !user) {
+		if (!user) {
 			throw new Error("Invalid response from server");
 		}
-		return { token, user };
+		return { user };
 	} catch (err) {
 		if (err.response) {
 			throw new Error(err.response.data.message || "Login failed");

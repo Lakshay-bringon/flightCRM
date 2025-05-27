@@ -122,7 +122,7 @@ function DataTable({
 										{/* Provider logo: show using UPLOADS baseurl/dataObj.logo if logo exists */}
 										{key === "logo" && dataObj.logo ? (
 											<img
-												src={`${import.meta.env.VITE_UPLOADS_BASE_URL}/${
+												src={`${import.meta.env.VITE_UPLOADS_BASE_URL}${
 													dataObj.logo
 												}`}
 												alt="Logo"

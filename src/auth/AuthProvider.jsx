@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
 	});
 
 	const login = async (email, password) => {
-		const { token, user } = await loginApi(email, password);
+		const { user } = await loginApi(email, password);
 		localStorage.setItem("jwt_token", token);
 		localStorage.setItem("user", JSON.stringify(user));
 		setToken(token);
@@ -25,9 +25,26 @@ export const AuthProvider = ({ children }) => {
 		setUser(null);
 	};
 
+	// Map role_id to role string
+	const ROLE_MAP = {
+		1: "admin",
+		2: "leader",
+		3: "agent",
+	};
+
+	const parsedRoleId = user?.role_id ? Number(user.role_id) : undefined;
+	const role = parsedRoleId ? ROLE_MAP[parsedRoleId] : undefined;
+
 	return (
 		<AuthContext.Provider
-			value={{ token, user, login, logout, isAuthenticated: !!token }}
+			value={{
+				user,
+				login,
+				logout,
+				isAuthenticated: !!user,
+				role,
+				role_id: parsedRoleId,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>

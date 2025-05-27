@@ -17,7 +17,9 @@ import {
 import { useAuth } from "../../auth/hooks/useAuth";
 
 function ProfilePage() {
-	const { user } = useAuth();
+	const location = useLocation();
+	const { user: authUser } = useAuth();
+	const user = location.state?.user || authUser;
 	const navigate = useNavigate();
 
 	// Map role_id and status to display values
@@ -44,7 +46,7 @@ function ProfilePage() {
 			: "Not Assigned";
 
 	const userData = {
-		name: user?.alias || user?.email || "Guest",
+		name: user?.alies_name || user?.name || "Guest",
 		role: getRole(user?.role_id),
 		isActive,
 		email: user?.email || "N/A",
@@ -100,7 +102,7 @@ function ProfilePage() {
 		<div className="max-w-3xl mx-auto space-y-6">
 			{/* Back Button */}
 			<button
-				onClick={() => navigate("/user-management")}
+				onClick={() => navigate(-1)}
 				className="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
 			>
 				<ArrowLeft className="w-4 h-4 mr-2" />
