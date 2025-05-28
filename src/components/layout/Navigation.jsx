@@ -12,7 +12,7 @@ import {
 	Clock,
 	Phone,
 } from "lucide-react";
-import { useAuth } from "../auth/hooks/useAuth";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 function NavLink({ to, children, iconOnly }) {
 	const location = useLocation();

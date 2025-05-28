@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
-import Modal from "../../components/Modal";
+import { Modal } from "../../components/common";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { changePasswordApi } from "../../api";
 

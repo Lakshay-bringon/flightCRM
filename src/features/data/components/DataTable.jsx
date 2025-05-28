@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { PenSquare, Trash } from "lucide-react";
 import SearchBar from "./SearchBar";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { LoadingSpinner } from "../../../components/ui";
 
 function DataTable({
 	data,

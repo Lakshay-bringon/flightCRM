@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "./DataTable";
 import CurrencyForm from "./CurrencyForm";
-import Modal from "../../../components/Modal";
+import { Modal } from "../../../components/common";
 import SectionTableHeader from "./SectionTableHeader";
 import {
 	addCurrencyApi,

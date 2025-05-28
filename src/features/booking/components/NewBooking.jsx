@@ -9,7 +9,7 @@ import ChargesDescription from "./ChargesDescription";
 import AttachmentsSection from "./AttachmentsSection";
 import AuthorizeSection from "./AuthorizeSection";
 import { useDataContext } from "../../../context/DataContext";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { LoadingSpinner } from "../../../components/ui";
 
 function NewBooking({ initialData, onBack }) {
 	const { cards, cardsLoading, fetchCards } = useDataContext();

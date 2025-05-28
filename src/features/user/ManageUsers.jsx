@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import RecordsList from "../../components/RecordsList";
+import { RecordsList } from "../../components/business";
 import UserCard from "./UserCard";
 import UserDetailsForm from "./UserDetailsForm";
 import {

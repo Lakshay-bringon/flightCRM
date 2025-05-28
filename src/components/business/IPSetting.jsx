@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Globe, Shield, Plus, X } from "lucide-react";
-import { showPromiseToast } from "../utils/showPromiseToast";
+import { showPromiseToast } from "../../utils/showPromiseToast";
 import {
 	addIpApi,
 	updateIpApi,
 	getIpListApi,
 	toggleIpStatusApi,
 	getIpInfoApi,
-} from "../api";
+} from "../../api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 

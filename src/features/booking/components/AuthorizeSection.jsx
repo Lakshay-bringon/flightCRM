@@ -1,6 +1,6 @@
 import React from "react";
 import { useDataContext } from "../../../context/DataContext";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { LoadingSpinner } from "../../../components/ui";
 
 function AuthorizeSection({ register, cardNumber, setValue }) {
 	const { cards, cardsLoading, fetchCards } = useDataContext();

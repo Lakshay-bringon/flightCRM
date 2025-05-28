@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import Logo from "./Logo";
-import Navigation from "./Navigation";
-import UserProfile from "../features/user/UserProfile";
+import { Logo } from "../common";
+import { Navigation } from "../layout";
+import UserProfile from "../../features/user/UserProfile";
 import { ChevronLeft, ChevronRight, Plane } from "lucide-react";
-import { useAuth } from "../auth/hooks/useAuth";
-import logo from "../assets/SkylineTravelLLC-logo.png";
-import logoFull from "../assets/SkylineTravelLLC.png";
+import { useAuth } from "../../auth/hooks/useAuth";
+import logo from "../../assets/SkylineTravelLLC-logo.png";
+import logoFull from "../../assets/SkylineTravelLLC.png";
 
 function getRoleName(role_id) {
 	switch (role_id) {

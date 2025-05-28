@@ -10,7 +10,7 @@ import PurchaseSummary from "./PurchaseSummary";
 import AttachmentsSection from "./AttachmentsSection";
 import AuthorizeSection from "./AuthorizeSection";
 import { useDataContext } from "../../../context/DataContext";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { LoadingSpinner } from "../../../components/ui";
 
 function SeatAssignment({ initialData, onBack }) {
 	const { cards, cardsLoading, fetchCards } = useDataContext();

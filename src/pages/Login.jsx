@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logoFull from "../assets/SkylineTravelLLC.png";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
+import { LoadingSpinner } from "../components/ui";
 import { useAuth } from "../auth/hooks/useAuth";
 
 function Login() {

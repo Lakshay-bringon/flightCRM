@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { StatsCard } from "../features/dashboard/widgets/StatsCard";
-import { TopPerformers } from "../features/dashboard/widgets/TopPerformers";
-import { PerformanceComparison } from "../features/dashboard/widgets/PerformanceComparison";
+import { StatsCard } from "../../features/dashboard/widgets/StatsCard";
+import { TopPerformers } from "../../features/dashboard/widgets/TopPerformers";
+import { PerformanceComparison } from "../../features/dashboard/widgets/PerformanceComparison";
 import { Plane, Users, TrendingUp, AlertTriangle } from "lucide-react";
-import { TimelineSelector } from "./TimelineSelector";
-import { useAuth } from "../auth/hooks/useAuth";
-import { useHasRole } from "../auth/hooks/useRole";
+import { TimelineSelector } from "../common";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { useHasRole } from "../../auth/hooks/useRole";
 
 export default function AdminDashboard() {
 	const [dateRange, setDateRange] = useState({

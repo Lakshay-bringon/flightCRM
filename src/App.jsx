@@ -8,16 +8,13 @@ import {
 import { useState } from "react";
 import { AuthProvider } from "./auth/AuthProvider";
 import { useAuth } from "./auth/hooks/useAuth";
-import Dashboard from "./components/Dashboard";
-import ManageBookings from "./components/ManageBookings";
+import { Dashboard, Sidebar } from "./components/layout";
+import { ManageBookings, Revenue, IPSetting } from "./components/business";
 import EmailPreviewPage from "./pages/EmailPreviewPage";
 import FindBookings from "./features/booking/FindBookings";
 import ManageUsers from "./features/user/ManageUsers";
 import ManageData from "./features/data/ManageData";
-import Revenue from "./components/Revenue";
 import RevenueDetails from "./features/revenue/RevenueDetails";
-import IPSetting from "./components/IPSetting";
-import Sidebar from "./components/Sidebar";
 import UserProfile from "./features/user/UserProfile";
 import Login from "./pages/Login";
 import ProfilePage from "./features/user/ProfilePage";

@@ -2,10 +2,10 @@ import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { TRANSACTION_TYPES } from "../constants";
-import NewBooking from "../features/booking/components/NewBooking";
+import { TRANSACTION_TYPES } from "../../constants";
+import NewBooking from "../../features/booking/components/NewBooking";
 import { useNavigate } from "react-router-dom";
-import { useDataContext } from "../context/DataContext";
+import { useDataContext } from "../../context/DataContext";
 
 const formSchema = z.object({
 	transactionType: z
