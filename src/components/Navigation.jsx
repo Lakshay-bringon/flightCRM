@@ -53,10 +53,9 @@ function NavLink({ to, children, iconOnly }) {
 
 function Navigation({ iconOnly = false }) {
 	const { user } = useAuth();
-	const isAgent = user?.role_id === 3;
-	const isLeader = user?.role_id === 2;
-	const isAdmin = user?.role_id == 1;
-	const canManageIP = !isAgent && !isLeader;
+	const isAgent = user?.role_id === "3";
+	const isLeader = user?.role_id === "2";
+	const isAdmin = user?.role_id === "1";
 
 	return (
 		<nav className="mt-2 h-[calc(100vh-152px)] overflow-y-auto">
@@ -87,7 +86,7 @@ function Navigation({ iconOnly = false }) {
 					<PieChart />
 					REVENUE
 				</NavLink>
-				{canManageIP && (
+				{isAdmin && (
 					<NavLink to="/ip-setting" iconOnly={iconOnly}>
 						<Settings />
 						IP SETTING

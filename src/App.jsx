@@ -29,6 +29,8 @@ import Upgrade from "./features/booking/components/Upgrade";
 import CancelForRefund from "./features/booking/components/CancelForRefund";
 import CancelForFutureCredit from "./features/booking/components/CancelForFutureCredit";
 import OtpScreen from "./pages/OtpScreen";
+import RoleProtectedRoute from "./auth/RoleProtectedRoute";
+import AccessDenied from "./pages/AccessDenied";
 
 // Protected route wrapper component
 const ProtectedRoute = ({ children }) => {
@@ -104,13 +106,23 @@ function AppContent() {
 												path="details/user/:id"
 												element={<ProfilePage />}
 											/>
-											<Route path="manage-data" element={<ManageData />} />
-											<Route path="revenue" element={<Revenue />} />
 											<Route
-												path="revenue/details"
-												element={<RevenueDetails />}
+												path="manage-data"
+												element={
+													<RoleProtectedRoute allowedRoles={["1"]}>
+														<ManageData />
+													</RoleProtectedRoute>
+												}
 											/>
-											<Route path="ip-setting" element={<IPSetting />} />
+											<Route
+												path="ip-setting"
+												element={
+													<RoleProtectedRoute allowedRoles={["1"]}>
+														<IPSetting />
+													</RoleProtectedRoute>
+												}
+											/>
+											<Route path="access-denied" element={<AccessDenied />} />
 											<Route
 												path="email-preview/:emailType"
 												element={<EmailPreviewPage />}

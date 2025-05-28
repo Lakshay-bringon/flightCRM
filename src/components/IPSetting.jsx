@@ -62,6 +62,16 @@ function IPSetting() {
 		description: form.description,
 	});
 
+	// Utility to refresh both IP list and IP info
+	const refreshData = async () => {
+		const [list, info] = await Promise.all([
+			getIpListApi().catch(() => []),
+			getIpInfoApi().catch(() => ({})),
+		]);
+		setIpList(Array.isArray(list) ? list.map(normalizeIp) : []);
+		if (info && typeof info === "object") setIpInfo(info);
+	};
+
 	// Fetch IP list and IP info on mount
 	useEffect(() => {
 		showPromiseToast(getIpListApi(), {
@@ -102,8 +112,7 @@ function IPSetting() {
 				error: "Failed to add IP",
 			});
 		}
-		const freshList = await getIpListApi();
-		setIpList(Array.isArray(freshList) ? freshList.map(normalizeIp) : []);
+		await refreshData();
 		setForm({ ip: "", allowed_status: "allowed", description: "" });
 		setEditingId(null);
 	};
@@ -127,8 +136,7 @@ function IPSetting() {
 			success: "Status updated!",
 			error: "Failed to update status",
 		});
-		const freshList = await getIpListApi();
-		setIpList(Array.isArray(freshList) ? freshList.map(normalizeIp) : []);
+		await refreshData();
 	};
 
 	const filteredIPs = ipList.filter((ipObj) => {
