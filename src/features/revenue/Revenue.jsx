@@ -10,7 +10,7 @@ import {
 	BarChart2,
 } from "lucide-react";
 import { StatsCard } from "../../features/dashboard/widgets/StatsCard";
-import { TimelineSelector } from "../common";
+import { TimelineSelector } from "../../components/common";
 
 function Revenue() {
 	const navigate = useNavigate();

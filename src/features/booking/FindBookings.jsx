@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { RecordsList } from "../../components/business";
+import { RecordsList } from "../data";
 import BookingCard from "./BookingCard";
 
 export default function FindBookings() {
