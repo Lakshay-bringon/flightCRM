@@ -9,7 +9,7 @@ import {
 	updateCurrencyApi,
 	deleteCurrencyApi,
 	toggleCurrencyStatusApi,
-} from "../../../api/currencyApi";
+} from "../../../api";
 import { showPromiseToast } from "../../../utils/showPromiseToast";
 
 // --- DEBUGGING/MAINTENANCE COMMENTS ---

@@ -1,4 +1,4 @@
-import API from "./axios";
+import API from "../axios";
 
 export const addCardApi = async ({ card, shortName }, email, token) => {
 	try {

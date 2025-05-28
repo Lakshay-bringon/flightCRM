@@ -1,4 +1,4 @@
-import API from "./axios";
+import API from "../axios";
 
 // Add a new queue
 export const addQueueApi = async (queue, number) => {

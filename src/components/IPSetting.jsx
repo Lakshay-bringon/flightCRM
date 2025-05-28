@@ -7,7 +7,7 @@ import {
 	getIpListApi,
 	toggleIpStatusApi,
 	getIpInfoApi,
-} from "../api/ipApi";
+} from "../api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 

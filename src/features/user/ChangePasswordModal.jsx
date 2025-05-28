@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import Modal from "../../components/Modal";
 import { useAuth } from "../../auth/hooks/useAuth";
-import { changePasswordApi } from "../../api/authApi";
+import { changePasswordApi } from "../../api";
 
 export default function ChangePasswordModal({ onClose }) {
 	const { user, token, logout } = useAuth();

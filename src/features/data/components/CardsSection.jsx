@@ -9,7 +9,7 @@ import {
 	updateCardApi,
 	deleteCardApi,
 	toggleCardStatusApi,
-} from "../../../api/cardApi";
+} from "../../../api";
 import { useAuth } from "../../../auth/hooks/useAuth";
 import { showPromiseToast } from "../../../utils/showPromiseToast";
 

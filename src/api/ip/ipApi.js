@@ -1,4 +1,4 @@
-import API from "./axios";
+import API from "../axios";
 
 // Helper to flatten error messages
 function flattenErrorMessages(error) {

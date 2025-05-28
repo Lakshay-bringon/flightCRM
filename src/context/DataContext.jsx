@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getCardListApi } from "../api/cardApi";
-import { getCurrencyListApi } from "../api/currencyApi";
-import { getProvidersApi } from "../api/providerApi";
-import { getQueueListApi } from "../api/queueApi";
-import { getUserByRoleApi } from "../api/userApi";
+import { getCardListApi } from "../api";
+import { getCurrencyListApi } from "../api";
+import { getProvidersApi } from "../api";
+import { getQueueListApi } from "../api";
+import { getUserByRoleApi } from "../api";
 
 const DataContext = createContext();
 

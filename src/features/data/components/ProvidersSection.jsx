@@ -17,7 +17,7 @@ import {
 	updateProviderApi,
 	deleteProviderApi,
 	toggleProviderStatusApi,
-} from "../../../api/providerApi";
+} from "../../../api";
 import { showPromiseToast } from "../../../utils/showPromiseToast";
 
 export default function ProvidersSection({ onClose }) {

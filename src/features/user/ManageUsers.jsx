@@ -9,7 +9,7 @@ import {
 	toggleUserStatusApi,
 	getUserByIdApi,
 	getTeamApi,
-} from "../../api/userApi";
+} from "../../api";
 import { useAuthContext } from "../../auth/AuthProvider";
 
 import { showPromiseToast } from "../../utils/showPromiseToast";

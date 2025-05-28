@@ -9,7 +9,7 @@ import {
 	deleteQueueApi,
 	toggleQueueStatusApi,
 	getQueueListApi,
-} from "../../../api/queueApi";
+} from "../../../api";
 import { showPromiseToast } from "../../../utils/showPromiseToast";
 
 export default function CallQueueSection({ onClose }) {
