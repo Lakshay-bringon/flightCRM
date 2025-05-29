@@ -2,7 +2,7 @@ import React from "react";
 import { useDataContext } from "../../../context/DataContext";
 
 function PurchaseSummary({ register }) {
-	const { cards, cardsLoading, fetchCards } = useDataContext();
+	const { cards, fetchCards } = useDataContext();
 	React.useEffect(() => {
 		fetchCards();
 	}, []);
@@ -13,27 +13,17 @@ function PurchaseSummary({ register }) {
 				<div>
 					<label className="inline-block w-32">Card Holder:</label>
 					<input
-						{...register("cardholderName")}
+						{...register("card_holder")}
 						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
 					/>
-				</div>
+				</div>{" "}
 				<div>
-					<label className="inline-block w-32">Card:</label>
-					<select
-						{...register("cardType")}
+					<label className="inline-block w-32">Card Number:</label>
+					<input
+						{...register("card_number")}
 						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
-						disabled={cardsLoading}
-					>
-						<option value="">
-							{cardsLoading ? "Loading..." : "Select Card"}
-						</option>
-						{!cardsLoading &&
-							cards.map((card) => (
-								<option key={card.id || card.name} value={card.name}>
-									{card.name}
-								</option>
-							))}
-					</select>
+						maxLength={19}
+					/>
 				</div>
 				<div>
 					<label className="inline-block w-32">Email:</label>
@@ -53,7 +43,7 @@ function PurchaseSummary({ register }) {
 				<div>
 					<label className="inline-block w-32">Payment Method:</label>
 					<select
-						{...register("paymentMethod")}
+						{...register("payment_method")}
 						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
 					>
 						{cards.map((card) => (
@@ -67,7 +57,7 @@ function PurchaseSummary({ register }) {
 					<label className="inline-block w-32">Purchase Date:</label>
 					<input
 						type="date"
-						{...register("date")}
+						{...register("purchase_date")}
 						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
 						readOnly
 					/>
@@ -75,39 +65,34 @@ function PurchaseSummary({ register }) {
 				{/* Address fields - American address style, multi-line, organized */}
 				<div className="md:col-span-2">
 					<label className="inline-block w-32 mb-1">Address:</label>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+					<div className="grid grid-cols-1  gap-2 mb-2">
 						<input
-							{...register("address.streetAddress")}
+							{...register("billing_address", { required: true })}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
-							placeholder="Street Address (House/Apt No, Building, Street)"
-						/>
-						<input
-							{...register("address.locality")}
-							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
-							placeholder="Locality (Neighborhood, Area)"
+							placeholder="Billing Address"
 						/>
 					</div>
 					<div className="grid grid-cols-1 md:grid-cols-4 gap-2">
 						<input
-							{...register("address.city", { required: true })}
+							{...register("city", { required: true })}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
 							placeholder="City*"
 						/>
 						<input
-							{...register("address.state", { required: true })}
+							{...register("state", { required: true })}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
 							placeholder="State*"
-							maxLength={2}
+							// maxLength={2}
 							style={{ textTransform: "uppercase" }}
 						/>
 						<input
-							{...register("address.zip", { required: true })}
+							{...register("zip", { required: true })}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
 							placeholder="ZIP Code*"
 							maxLength={10}
 						/>
 						<input
-							{...register("address.country", { required: true })}
+							{...register("country", { required: true })}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
 							placeholder="Country*"
 						/>

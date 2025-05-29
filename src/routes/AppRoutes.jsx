@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Dashboard, Sidebar } from "../components/layout";
 import { ManageBookings, ReservationMGMT } from "../features/booking";
 import { Revenue } from "../features/revenue";
@@ -26,6 +27,21 @@ import ProtectedRoute from "../auth/ProtectedRoute";
 export default function AppRoutes() {
 	const navigate = useNavigate();
 
+	// Initialize sidebar state from localStorage or default to false
+	const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+		const saved = localStorage.getItem("sidebarCollapsed");
+		return saved ? JSON.parse(saved) : false;
+	});
+
+	// Save sidebar state to localStorage whenever it changes
+	useEffect(() => {
+		localStorage.setItem("sidebarCollapsed", JSON.stringify(sidebarCollapsed));
+	}, [sidebarCollapsed]);
+
+	const handleToggleSidebar = () => {
+		setSidebarCollapsed(!sidebarCollapsed);
+	};
+
 	return (
 		<Routes>
 			<Route path="/login" element={<Login />} />
@@ -36,7 +52,10 @@ export default function AppRoutes() {
 					<ProtectedRoute>
 						<div className="min-w-full h-screen box-border bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
 							<div className="flex w-full h-full">
-								<Sidebar />
+								<Sidebar
+									collapsed={sidebarCollapsed}
+									onToggleCollapse={handleToggleSidebar}
+								/>
 								<div className="flex-1 overflow-y-auto">
 									<div className="p-4">
 										<Routes>

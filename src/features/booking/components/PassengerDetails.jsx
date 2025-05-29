@@ -34,9 +34,9 @@ function PassengerDetails({
 						</tr>
 					</thead>
 					<tbody>
-						{passengers.map((passenger, index) => (
+						{passengers.map((_, index) => (
 							<tr
-								key={passenger.id}
+								key={index}
 								className="border-b border-gray-700/50 bg-gray-900 rounded-lg shadow-sm"
 							>
 								<td className="py-2 px-2 font-semibold text-center">
@@ -44,7 +44,7 @@ function PassengerDetails({
 								</td>
 								<td className="py-2 px-2">
 									<select
-										{...register(`passengers.${index}.type`)}
+										{...register(`passenger_data.${index}.type`)}
 										className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full cursor-pointer"
 									>
 										<option value="ADT">Adult</option>
@@ -54,21 +54,21 @@ function PassengerDetails({
 								</td>
 								<td className="py-2 px-2">
 									<input
-										{...register(`passengers.${index}.firstName`)}
+										{...register(`passenger_data.${index}.firstName`)}
 										className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
 										placeholder="First Name"
 									/>
 								</td>
 								<td className="py-2 px-2">
 									<input
-										{...register(`passengers.${index}.middleName`)}
+										{...register(`passenger_data.${index}.middleName`)}
 										className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
 										placeholder="Middle Name"
 									/>
 								</td>
 								<td className="py-2 px-2">
 									<input
-										{...register(`passengers.${index}.lastName`)}
+										{...register(`passenger_data.${index}.lastName`)}
 										className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
 										placeholder="Last Name"
 									/>
@@ -77,7 +77,7 @@ function PassengerDetails({
 									<div className="relative">
 										<input
 											type="date"
-											{...register(`passengers.${index}.dob`)}
+											{...register(`passenger_data.${index}.dob`)}
 											className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full cursor-pointer"
 											onClick={(e) => e.stopPropagation()}
 										/>

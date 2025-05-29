@@ -50,16 +50,16 @@ export default function ProvidersSection({ onClose }) {
 		setEditData(item);
 		setShowModal(true);
 	};
-
 	const handleDelete = async (id) => {
 		await showPromiseToast(deleteProviderApi(id), {
 			loading: "Deleting provider...",
 			success: "Provider deleted successfully!",
 			error: "Failed to delete provider",
 		});
-		setProviders((prev) => prev.filter((p) => p.id !== id));
+		// Refresh data after delete
+		const freshProviders = await getProvidersApi();
+		setProviders(freshProviders);
 	};
-
 	const handleToggleStatus = async (id) => {
 		setProviders((prev) =>
 			prev.map((p) => (p.id === id ? { ...p, _statusLoading: true } : p))
@@ -69,25 +69,10 @@ export default function ProvidersSection({ onClose }) {
 			success: "Status updated!",
 			error: "Failed to update status",
 		});
-		setProviders((prev) =>
-			prev.map((p) =>
-				p.id === id
-					? {
-							...p,
-							status:
-								p.status === 1 ||
-								p.status === "1" ||
-								p.status === "ACTIVE" ||
-								p.status === "Active"
-									? 0
-									: 1,
-							_statusLoading: false,
-					  }
-					: p
-			)
-		);
+		// Refresh data after status toggle
+		const freshProviders = await getProvidersApi();
+		setProviders(freshProviders);
 	};
-
 	const handleFormSubmit = async (formData) => {
 		setShowModal(false);
 		setEditData(null);
@@ -97,8 +82,9 @@ export default function ProvidersSection({ onClose }) {
 				success: "Provider added!",
 				error: "Failed to add provider",
 			});
-			const newProvider = await addProviderApi(formData);
-			setProviders((prev) => [{ ...newProvider }, ...prev]);
+			// Refresh data after add
+			const freshProviders = await getProvidersApi();
+			setProviders(freshProviders);
 		} else if (modalType === "edit") {
 			await showPromiseToast(
 				updateProviderApi({ ...formData, providerId: editData.id }),
@@ -108,6 +94,7 @@ export default function ProvidersSection({ onClose }) {
 					error: "Failed to update provider",
 				}
 			);
+			// Refresh data after edit
 			const freshProviders = await getProvidersApi();
 			setProviders(freshProviders);
 		}

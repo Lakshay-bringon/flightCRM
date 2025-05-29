@@ -1,24 +1,27 @@
 import React, { useRef } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Eye } from "lucide-react";
 
-function AttachmentsSection({ images, setImages }) {
+function AttachmentsSection({ images, setImages, onPreview }) {
 	const fileInputRef = useRef();
 
 	const handleAddImage = (e) => {
 		const files = Array.from(e.target.files);
 		if (files.length) {
-			const newImages = files.map((file) => ({
-				id: Date.now() + Math.random(),
-				file,
-				url: URL.createObjectURL(file),
-			}));
-			setImages((prev) => [...prev, ...newImages]);
+			files.forEach((file) => {
+				const reader = new FileReader();
+				reader.onloadend = () => {
+					if (typeof reader.result === "string" && reader.result.startsWith("data:image/")) {
+						setImages((prev) => [...prev, reader.result]);
+					}
+				};
+				reader.readAsDataURL(file);
+			});
 		}
 		e.target.value = null;
 	};
 
-	const handleRemoveImage = (id) => {
-		setImages((prev) => prev.filter((img) => img.id !== id));
+	const handleRemoveImage = (index) => {
+		setImages((prev) => prev.filter((_, i) => i !== index));
 	};
 
 	return (
@@ -43,25 +46,43 @@ function AttachmentsSection({ images, setImages }) {
 				/>
 			</div>
 			<div className="flex flex-wrap gap-4">
-				{images.map((img) => (
-					<div
-						key={img.id}
-						className="relative w-32 h-32 border border-gray-600 rounded overflow-hidden bg-gray-800"
-					>
-						<img
-							src={img.url}
-							alt="Attachment"
-							className="object-cover w-full h-full"
-						/>
-						<button
-							type="button"
-							className="absolute top-1 right-1 bg-gray-900 bg-opacity-70 rounded-full p-1 text-red-400 hover:text-red-200"
-							onClick={() => handleRemoveImage(img.id)}
+				{images.map((img, idx) =>
+					img && typeof img === "string" && img.startsWith("data:image/") ? (
+						<div
+							key={idx}
+							className="relative w-32 h-32 border border-gray-600 rounded overflow-hidden bg-gray-800"
 						>
-							<X className="w-4 h-4" />
-						</button>
-					</div>
-				))}
+							<img
+								src={img}
+								alt="Attachment"
+								className="object-cover w-full h-full cursor-pointer"
+								onClick={() => onPreview && onPreview(img)}
+								onError={(e) => {
+									e.target.alt = "Invalid image";
+									console.warn("Invalid base64 image string:", img);
+								}}
+							/>
+							<div className="absolute top-1 right-1 flex gap-1">
+								<button
+									type="button"
+									className="bg-gray-900 bg-opacity-70 rounded-full p-1 text-blue-400 hover:text-blue-200"
+									onClick={() => onPreview && onPreview(img)}
+									title="Preview"
+								>
+									<Eye className="w-4 h-4" />
+								</button>
+								<button
+									type="button"
+									className="bg-gray-900 bg-opacity-70 rounded-full p-1 text-red-400 hover:text-red-200"
+									onClick={() => handleRemoveImage(idx)}
+									title="Remove"
+								>
+									<X className="w-4 h-4" />
+								</button>
+							</div>
+						</div>
+					) : null
+				)}
 				{images.length === 0 && (
 					<span className="text-gray-400 text-sm">No attachments added.</span>
 				)}

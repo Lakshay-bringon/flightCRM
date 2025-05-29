@@ -48,16 +48,16 @@ export default function CardsSection({ onClose }) {
 		});
 		setShowModal(true);
 	};
-
 	const handleDelete = async (id) => {
 		await showPromiseToast(deleteCardApi(id, user?.email, token), {
 			loading: "Deleting card...",
 			success: "Card deleted successfully!",
 			error: "Failed to delete card",
 		});
-		setCards((prev) => prev.filter((c) => c.id !== id));
+		// Refresh data after delete
+		const freshCards = await getCardListApi(user?.email, token);
+		setCards(freshCards);
 	};
-
 	const handleToggleStatus = async (id) => {
 		setCards((prev) =>
 			prev.map((c) => (c.id === id ? { ...c, _statusLoading: true } : c))
@@ -67,23 +67,9 @@ export default function CardsSection({ onClose }) {
 			success: "Status updated!",
 			error: "Failed to update status",
 		});
-		setCards((prev) =>
-			prev.map((c) =>
-				c.id === id
-					? {
-							...c,
-							status:
-								c.status === 1 ||
-								c.status === "1" ||
-								c.status === "ACTIVE" ||
-								c.status === "Active"
-									? 0
-									: 1,
-							_statusLoading: false,
-					  }
-					: c
-			)
-		);
+		// Refresh data after status toggle
+		const freshCards = await getCardListApi(user?.email, token);
+		setCards(freshCards);
 	};
 
 	const handleFormSubmit = async (formData) => {

@@ -6,3 +6,4 @@ export * from "./provider/providerApi.js";
 export * from "./card/cardApi.js";
 export * from "./currency/currencyApi.js";
 export * from "./queue/queueApi.js";
+export * from "./booking/bookingApi.js";

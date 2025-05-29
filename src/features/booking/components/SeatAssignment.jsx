@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ItineraryDetailsInput from "./ItineraryDetailsInput";
@@ -11,41 +12,73 @@ import AttachmentsSection from "./AttachmentsSection";
 import AuthorizeSection from "./AuthorizeSection";
 import { useDataContext } from "../../../context/DataContext";
 import { LoadingSpinner } from "../../../components/ui";
+import { showPromiseToast } from "../../../utils/showPromiseToast";
+import bookingService from "../services/bookingService";
+import { bookingSchema } from "../schemas/bookingSchema";
 
 function SeatAssignment({ initialData, onBack }) {
 	const { cards, cardsLoading, fetchCards } = useDataContext();
-	const [passengers, setPassengers] = useState([{ id: 1 }]);
-	const [charges, setCharges] = useState([{ id: 1 }, { id: 2 }]);
-	const [attachments, setAttachments] = useState([]);
 	const [itineraryDetails, setItineraryDetails] = useState("");
 	const [itineraryImage, setItineraryImage] = useState(null);
 	const [showPreview, setShowPreview] = useState(false);
 	const [previewImage, setPreviewImage] = useState(null);
+	const [attachments, setAttachments] = useState([]);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const navigate = useNavigate();
 
-	const { register, handleSubmit, watch, setValue } = useForm({
+	const {
+		register,
+		handleSubmit,
+		watch,
+		setValue,
+		formState: { errors },
+	} = useForm({
+		resolver: zodResolver(bookingSchema),
 		defaultValues: {
-			bookingType: "NEW BOOKING",
+			bookingType: "SEAT_ASSIGNMENT",
 			pnr: "",
 			customerName: "",
 			totalCost: "",
 			cardType: "VISA",
-			cardNumber: "4444000000000000",
-			chargeAmount: "",
+			cardNumber: "",
 			airline: "",
 			date: new Date().toISOString().split("T")[0],
 			email: "",
 			phone: "",
-			billingAddress: "",
+			cardholderName: "",
 			paymentMethod: "VISA",
-			charge1Amount: "",
-			charge1Merchant: "",
-			charge1Currency: "USD",
-			charge2Amount: "",
-			charge2Merchant: "",
-			charge2Currency: "USD",
-			authorizer: "MARTIN F HOFFMAN",
-			passengers: [{}],
+			address: {
+				streetAddress: "",
+				locality: "",
+				city: "",
+				state: "",
+				zip: "",
+				country: "US",
+			},
+			passengers: [
+				{
+					type: "ADT",
+					firstName: "",
+					middleName: "",
+					lastName: "",
+					dob: "",
+				},
+			],
+			charges: [
+				{
+					amount: "",
+					merchant: "",
+					currency: "USD",
+				},
+				{
+					amount: "",
+					merchant: "",
+					currency: "USD",
+				},
+			],
+			itineraryDetails: "",
+			itineraryImage: "",
+			attachments: [],
 		},
 	});
 
@@ -53,44 +86,113 @@ function SeatAssignment({ initialData, onBack }) {
 		fetchCards();
 	}, []);
 
-	// Watch for pnr, bookingType, airline, cardNumber, and cardType to keep them in sync in UI
+	// Watch for form fields
 	const pnr = watch("pnr");
 	const bookingType = watch("bookingType");
 	const airline = watch("airline");
-	const cardNumber = watch("cardNumber");
 	const cardType = watch("cardType");
+	const cardNumber = watch("cardNumber");
+	const passengers = watch("passengers");
+	const charges = watch("charges");
 
 	const addPassenger = () => {
-		const newId = passengers.length + 1;
-		setPassengers([...passengers, { id: newId }]);
+		const currentPassengers = watch("passengers") || [];
+		setValue("passengers", [
+			...currentPassengers,
+			{
+				type: "ADT",
+				firstName: "",
+				middleName: "",
+				lastName: "",
+				dob: "",
+			},
+		]);
 	};
 
 	const removePassenger = (index) => {
-		if (passengers.length > 1) {
-			setPassengers(passengers.filter((_, i) => i !== index));
+		const currentPassengers = watch("passengers") || [];
+		if (currentPassengers.length > 1) {
+			const newPassengers = currentPassengers.filter((_, i) => i !== index);
+			setValue("passengers", newPassengers);
 		}
 	};
 
 	const addCharge = () => {
-		setCharges([...charges, { id: Date.now() }]);
+		const currentCharges = watch("charges") || [];
+		setValue("charges", [
+			...currentCharges,
+			{
+				amount: "",
+				merchant: "",
+				currency: "USD",
+			},
+		]);
 	};
 
 	const removeCharge = (index) => {
-		if (charges.length > 1) {
-			setCharges(charges.filter((_, i) => i !== index));
+		const currentCharges = watch("charges") || [];
+		if (currentCharges.length > 1) {
+			const newCharges = currentCharges.filter((_, i) => i !== index);
+			setValue("charges", newCharges);
 		}
 	};
 
-	const onSubmit = (data) => {
-		const type = data.bookingType || "NEW BOOKING";
-		if (type === "NEW BOOKING") {
-			navigate("/transaction/new-booking", { state: data });
-		} else if (type === "CHANGE BOOKING") {
-			navigate("/transaction/change-booking", { state: data });
-		} else if (type === "CANCEL BOOKING") {
-			navigate("/transaction/cancel-booking", { state: data });
-		} else {
-			console.log(data);
+	// Helper function to convert file to base64
+	const convertToBase64 = (file) => {
+		return new Promise((resolve, reject) => {
+			if (typeof file === "string") {
+				resolve(file); // Already base64
+				return;
+			}
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = (error) => reject(error);
+		});
+	};
+
+	const onSubmit = async (data) => {
+		setIsSubmitting(true);
+
+		try {
+			// Convert images to base64 if they exist
+			let itineraryImageBase64 = "";
+			if (itineraryImage) {
+				itineraryImageBase64 = await convertToBase64(itineraryImage);
+			}
+
+			const attachmentsBase64 = [];
+			for (const attachment of attachments) {
+				if (attachment) {
+					const base64 = await convertToBase64(attachment);
+					attachmentsBase64.push(base64);
+				}
+			}
+
+			// Prepare complete form data
+			const completeData = {
+				...data,
+				itineraryDetails,
+				itineraryImage: itineraryImageBase64,
+				attachments: attachmentsBase64,
+			};
+
+			// Create the booking using showPromiseToast
+			await showPromiseToast(bookingService.createBooking(completeData), {
+				loading: "Processing seat assignment...",
+				success: "Seat assignment processed successfully!",
+				error: "Failed to process seat assignment",
+			})
+				.then(() => {
+					navigate("/booking");
+				})
+				.catch((error) => {
+					console.error("Error processing seat assignment:", error);
+				});
+		} catch (error) {
+			console.error("Error processing seat assignment:", error);
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
@@ -174,7 +276,7 @@ function SeatAssignment({ initialData, onBack }) {
 								/>{" "}
 								USD (Including all taxes and fees) as per the below description.
 							</p>
-						</div>
+						</div>{" "}
 						{/* Charges Description Section */}
 						<ChargesDescription
 							charges={charges}
@@ -182,7 +284,6 @@ function SeatAssignment({ initialData, onBack }) {
 							addCharge={addCharge}
 							removeCharge={removeCharge}
 						/>
-
 						{/* Itinerary Details Section */}
 						<ItineraryDetailsInput
 							value={itineraryDetails}
@@ -194,7 +295,6 @@ function SeatAssignment({ initialData, onBack }) {
 								setShowPreview(true);
 							}}
 						/>
-
 						{/* Passenger Details Section */}
 						<PassengerDetails
 							passengers={passengers}
@@ -202,16 +302,13 @@ function SeatAssignment({ initialData, onBack }) {
 							addPassenger={addPassenger}
 							removePassenger={removePassenger}
 						/>
-
 						{/* Purchase Summary Section */}
 						<PurchaseSummary register={register} />
-
 						{/* Attachments Section */}
 						<AttachmentsSection
 							images={attachments}
 							setImages={setAttachments}
 						/>
-
 						<div className="p-3 border border-gray-700 rounded-lg leading-loose">
 							<p className="flex flex-wrap items-center gap-2">
 								Make sure that the displayed flight information is as you
@@ -219,20 +316,19 @@ function SeatAssignment({ initialData, onBack }) {
 								Arrival times properly
 							</p>
 						</div>
-
 						{/* Authorization Section */}
 						<AuthorizeSection
 							register={register}
 							cardNumber={cardNumber}
 							setValue={setValue}
 						/>
-					</div>
-
+					</div>{" "}
 					<button
 						type="submit"
-						className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 text-sm"
+						disabled={isSubmitting}
+						className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						Confirm Seat Assignment
+						{isSubmitting ? "Processing..." : "Confirm Seat Assignment"}
 					</button>
 				</form>
 				{showPreview && (

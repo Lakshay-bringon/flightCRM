@@ -7,7 +7,7 @@ export const USER_ROLES = {
 
 // Transaction Types
 export const TRANSACTION_TYPES = {
-	BOOKING: "booking",
+	NEW_BOOKING: "new_booking",
 	EXCHANGE: "exchange",
 	SEAT_ASSIGNMENT: "seat_assignment",
 	UPGRADE: "upgrade",

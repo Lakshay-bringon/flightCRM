@@ -57,7 +57,6 @@ export default function CurrencySection({ onClose }) {
 		});
 		setShowModal(true);
 	};
-
 	// Delete
 	const handleDelete = async (id) => {
 		await showPromiseToast(deleteCurrencyApi(id), {
@@ -65,9 +64,10 @@ export default function CurrencySection({ onClose }) {
 			success: "Currency deleted successfully!",
 			error: "Failed to delete currency",
 		});
-		setCurrencies((prev) => prev.filter((c) => c.id !== id));
+		// Refresh data after delete
+		const freshCurrencies = await getCurrencyListApi();
+		setCurrencies(freshCurrencies);
 	};
-
 	// Toggle status
 	const handleToggleStatus = async (id) => {
 		setCurrencies((prev) =>
@@ -78,25 +78,10 @@ export default function CurrencySection({ onClose }) {
 			success: "Status updated!",
 			error: "Failed to update status",
 		});
-		setCurrencies((prev) =>
-			prev.map((c) =>
-				c.id === id
-					? {
-							...c,
-							status:
-								c.status === 1 ||
-								c.status === "1" ||
-								c.status === "ACTIVE" ||
-								c.status === "Active"
-									? 0
-									: 1,
-							_statusLoading: false,
-					  }
-					: c
-			)
-		);
+		// Refresh data after status toggle
+		const freshCurrencies = await getCurrencyListApi();
+		setCurrencies(freshCurrencies);
 	};
-
 	// Form submit
 	const handleFormSubmit = async (formData) => {
 		setShowModal(false);
@@ -107,8 +92,9 @@ export default function CurrencySection({ onClose }) {
 				success: "Currency added!",
 				error: "Failed to add currency",
 			});
-			const newCurrency = await addCurrencyApi(formData.currency);
-			setCurrencies((prev) => [{ ...newCurrency }, ...prev]);
+			// Refresh data after add
+			const freshCurrencies = await getCurrencyListApi();
+			setCurrencies(freshCurrencies);
 		} else if (modalType === "edit") {
 			await showPromiseToast(
 				updateCurrencyApi({ id: editData.id, currency: formData.currency }),
@@ -118,6 +104,7 @@ export default function CurrencySection({ onClose }) {
 					error: "Failed to update currency",
 				}
 			);
+			// Refresh data after edit
 			const freshCurrencies = await getCurrencyListApi();
 			setCurrencies(freshCurrencies);
 		}
@@ -145,7 +132,7 @@ export default function CurrencySection({ onClose }) {
 				data={Array.isArray(filteredCurrencies) ? filteredCurrencies : []}
 				onEdit={handleEdit}
 				onDelete={handleDelete}
-				columns={["id", "currency", "status"]}
+				columns={["id", "Currency", "status"]}
 				loading={false}
 				loadingLabel="Loading currencies..."
 				onToggleStatus={handleToggleStatus}

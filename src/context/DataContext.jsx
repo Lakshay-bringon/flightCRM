@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getCardListApi } from "../api";
-import { getCurrencyListApi } from "../api";
-import { getProvidersApi } from "../api";
-import { getQueueListApi } from "../api";
+import { activeCardsApi } from "../api/card/cardApi";
+import { activeCurrencyListApi } from "../api/currency/currencyApi";
+import { activeProvidersApi } from "../api/provider/providerApi";
+import { activeQueuesApi } from "../api/queue/queueApi";
 import { getUserByRoleApi } from "../api";
 
 const DataContext = createContext();
@@ -21,12 +21,11 @@ export const DataProvider = ({ children }) => {
 	const [providersLoading, setProvidersLoading] = useState(false);
 	const [callQueuesLoading, setCallQueuesLoading] = useState(false);
 	const [leadersLoading, setLeadersLoading] = useState(false);
-
 	// Individual fetch functions
 	const fetchCards = async () => {
 		setCardsLoading(true);
 		try {
-			const data = await getCardListApi();
+			const data = await activeCardsApi();
 			setCards(data || []);
 		} catch (err) {
 			setError(err.message || "Failed to load cards");
@@ -34,11 +33,10 @@ export const DataProvider = ({ children }) => {
 			setCardsLoading(false);
 		}
 	};
-
 	const fetchCurrencies = async () => {
 		setCurrenciesLoading(true);
 		try {
-			const data = await getCurrencyListApi();
+			const data = await activeCurrencyListApi();
 			setCurrencies(data || []);
 		} catch (err) {
 			setError(err.message || "Failed to load currencies");
@@ -46,11 +44,10 @@ export const DataProvider = ({ children }) => {
 			setCurrenciesLoading(false);
 		}
 	};
-
 	const fetchProviders = async () => {
 		setProvidersLoading(true);
 		try {
-			const data = await getProvidersApi();
+			const data = await activeProvidersApi();
 			setProviders(data || []);
 		} catch (err) {
 			setError(err.message || "Failed to load providers");
@@ -58,11 +55,10 @@ export const DataProvider = ({ children }) => {
 			setProvidersLoading(false);
 		}
 	};
-
 	const fetchCallQueues = async () => {
 		setCallQueuesLoading(true);
 		try {
-			const data = await getQueueListApi();
+			const data = await activeQueuesApi();
 			setCallQueues(data || []);
 		} catch (err) {
 			setError(err.message || "Failed to load call queues");

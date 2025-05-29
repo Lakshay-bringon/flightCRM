@@ -1,5 +1,22 @@
 import API from "../axios";
 
+// Get active currency list
+export const activeCurrencyListApi = async () => {
+	try {
+		const res = await API.get("/activCurrencyList");
+		const { status, msg, data } = res.data;
+		if (status !== 200)
+			throw new Error(msg || "Failed to fetch active currencies");
+		return data;
+	} catch (err) {
+		if (err.response)
+			throw new Error(
+				err.response.data.msg || "Failed to fetch active currencies"
+			);
+		throw new Error("Get active currencies error: " + err.message);
+	}
+};
+
 // Add a new currency
 export const addCurrencyApi = async (currency) => {
 	try {

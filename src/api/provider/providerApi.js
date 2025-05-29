@@ -11,6 +11,23 @@ function flattenErrorMessages(error) {
 	return [String(error)];
 }
 
+// Get active providers
+export const activeProvidersApi = async () => {
+	try {
+		const res = await API.get("/activeProviders");
+		const { status, msg, data } = res.data;
+		if (status !== 200)
+			throw new Error(msg || "Failed to fetch active providers");
+		return data;
+	} catch (err) {
+		if (err.response)
+			throw new Error(
+				err.response.data.msg || "Failed to fetch active providers"
+			);
+		throw new Error("Get active providers error: " + err.message);
+	}
+};
+
 // Add a new provider
 export const addProviderApi = async (providerData) => {
 	try {

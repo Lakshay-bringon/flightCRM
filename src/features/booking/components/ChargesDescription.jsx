@@ -1,9 +1,13 @@
 import React from "react";
 import { Plus, X } from "lucide-react";
-import { useDataContext } from "../../../context/DataContext";
 
-function ChargesDescription({ charges, register, addCharge, removeCharge }) {
-	const { currencies } = useDataContext();
+function ChargesDescription({
+	charges,
+	currency,
+	register,
+	addCharge,
+	removeCharge,
+}) {
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg">
 			<div className="flex items-center justify-between mb-2">
@@ -27,31 +31,22 @@ function ChargesDescription({ charges, register, addCharge, removeCharge }) {
 					</tr>
 				</thead>
 				<tbody>
-					{charges.map((charge, index) => (
-						<tr key={charge.id}>
+					{charges.map((_, index) => (
+						<tr key={index}>
 							<td className="px-2 py-2">{index + 1}</td>
 							<td className="px-2 py-2 flex items-center gap-1">
 								<input
-									{...register(`charges.${index}.amount`)}
+									{...register(`charge_data.${index}.amount`)}
 									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-24"
 									placeholder="Amount"
 								/>
-								<select
-									{...register(`charges.${index}.currency`)}
-									className="bg-gray-700 border border-gray-600 rounded px-1 py-1 text-sm"
-								>
-									{currencies.map((currency) => (
-										<option key={currency.id} value={currency.Currency}>
-											{currency.Currency}
-										</option>
-									))}
-								</select>
+								{currency}
 							</td>
 							<td className="px-2 py-2">
 								<input
-									{...register(`charges.${index}.merchant`)}
+									{...register(`charge_data.${index}.description`)}
 									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"
-									placeholder="Description (Merchant Name)"
+									placeholder="Description"
 								/>
 							</td>
 							<td className="px-2 py-2">

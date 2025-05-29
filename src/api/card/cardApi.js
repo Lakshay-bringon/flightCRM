@@ -1,5 +1,19 @@
 import API from "../axios";
 
+// Get active cards
+export const activeCardsApi = async () => {
+	try {
+		const res = await API.get("/activeGetCard");
+		const { status, msg, data } = res.data;
+		if (status !== 200) throw new Error(msg || "Failed to fetch active cards");
+		return data;
+	} catch (err) {
+		if (err.response)
+			throw new Error(err.response.data.msg || "Failed to fetch active cards");
+		throw new Error("Get active cards error: " + err.message);
+	}
+};
+
 export const addCardApi = async ({ card, shortName }, email, token) => {
 	try {
 		const res = await API.post("/addCard", {

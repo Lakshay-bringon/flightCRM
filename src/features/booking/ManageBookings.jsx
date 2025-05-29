@@ -11,8 +11,8 @@ const formSchema = z.object({
 	transactionType: z
 		.string()
 		.min(1, { message: "Transaction type is required" }),
-	provider: z.string().min(1, { message: "Provider is required" }),
-	callQueue: z.string().min(1, { message: "Call Queue is required" }),
+	providerId: z.string().min(1, { message: "Provider is required" }),
+	queueId: z.string().min(1, { message: "Call Queue is required" }),
 });
 
 function ManageBookings() {
@@ -43,7 +43,7 @@ function ManageBookings() {
 
 	const onSubmit = (data) => {
 		switch (data.transactionType) {
-			case "booking":
+			case "new_booking":
 				navigate("/manage-bookings/new-booking", { state: data });
 				break;
 			case "exchange":
@@ -117,7 +117,7 @@ function ManageBookings() {
 							</label>
 							<select
 								id="provider"
-								{...register("provider")}
+								{...register("providerId")}
 								className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
 								disabled={providersLoading}
 							>
@@ -126,14 +126,14 @@ function ManageBookings() {
 								</option>
 								{!providersLoading &&
 									providers.map((provider) => (
-										<option key={provider.id} value={provider.name}>
+										<option key={provider.id} value={provider.id}>
 											{provider.name}
 										</option>
 									))}
 							</select>
-							{errors.provider && (
+							{errors.providerId && (
 								<p className="mt-1 text-xs text-red-400">
-									{errors.provider.message}
+									{errors.providerId.message}
 								</p>
 							)}
 						</div>
@@ -147,7 +147,7 @@ function ManageBookings() {
 							</label>
 							<select
 								id="callQueue"
-								{...register("callQueue")}
+								{...register("queueId")}
 								className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
 								disabled={callQueuesLoading}
 							>
@@ -161,9 +161,9 @@ function ManageBookings() {
 										</option>
 									))}
 							</select>
-							{errors.callQueue && (
+							{errors.queueId && (
 								<p className="mt-1 text-xs text-red-400">
-									{errors.callQueue.message}
+									{errors.queueId.message}
 								</p>
 							)}
 						</div>

@@ -47,16 +47,16 @@ export default function CallQueueSection({ onClose }) {
 		});
 		setShowModal(true);
 	};
-
 	const handleDelete = async (id) => {
 		await showPromiseToast(deleteQueueApi(id), {
 			loading: "Deleting call queue...",
 			success: "Call queue deleted successfully!",
 			error: "Failed to delete call queue",
 		});
-		setCallQueues((prev) => prev.filter((q) => q.id !== id));
+		// Refresh data after delete
+		const freshQueues = await getQueueListApi();
+		setCallQueues(freshQueues);
 	};
-
 	const handleToggleStatus = async (id) => {
 		setCallQueues((prev) =>
 			prev.map((q) => (q.id === id ? { ...q, _statusLoading: true } : q))
@@ -66,25 +66,10 @@ export default function CallQueueSection({ onClose }) {
 			success: "Status updated!",
 			error: "Failed to update status",
 		});
-		setCallQueues((prev) =>
-			prev.map((q) =>
-				q.id === id
-					? {
-							...q,
-							status:
-								q.status === 1 ||
-								q.status === "1" ||
-								q.status === "ACTIVE" ||
-								q.status === "Active"
-									? 0
-									: 1,
-							_statusLoading: false,
-					  }
-					: q
-			)
-		);
+		// Refresh data after status toggle
+		const freshQueues = await getQueueListApi();
+		setCallQueues(freshQueues);
 	};
-
 	const handleFormSubmit = async (formData) => {
 		setShowModal(false);
 		setEditData(null);
@@ -94,8 +79,9 @@ export default function CallQueueSection({ onClose }) {
 				success: "Call queue added!",
 				error: "Failed to add call queue",
 			});
-			const newQueue = await addQueueApi(formData.name, formData.phone);
-			setCallQueues((prev) => [{ ...newQueue }, ...prev]);
+			// Refresh data after add
+			const freshQueues = await getQueueListApi();
+			setCallQueues(freshQueues);
 		} else if (modalType === "edit") {
 			await showPromiseToast(
 				updateQueueApi({
@@ -109,6 +95,7 @@ export default function CallQueueSection({ onClose }) {
 					error: "Failed to update call queue",
 				}
 			);
+			// Refresh data after edit
 			const freshQueues = await getQueueListApi();
 			setCallQueues(freshQueues);
 		}

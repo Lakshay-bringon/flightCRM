@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import ItineraryDetailsInput from "./ItineraryDetailsInput";
 import ImagePreviewModal from "../ImagePreviewModal";
@@ -8,90 +9,182 @@ import PassengerDetails from "./PassengerDetails";
 import PurchaseSummary from "./PurchaseSummary";
 import AttachmentsSection from "./AttachmentsSection";
 import AuthorizeSection from "./AuthorizeSection";
+import { showPromiseToast } from "../../../utils/showPromiseToast";
+import bookingService from "../services/bookingService";
+import { bookingSchema } from "../schemas/bookingSchema";
 
 function CancelForFutureCredit({ initialData, onBack }) {
-	const [passengers, setPassengers] = useState([{ id: 1 }]);
-	const [charges, setCharges] = useState([{ id: 1 }, { id: 2 }]);
-	const [attachments, setAttachments] = useState([]);
 	const [itineraryDetails, setItineraryDetails] = useState("");
 	const [itineraryImage, setItineraryImage] = useState(null);
 	const [showPreview, setShowPreview] = useState(false);
 	const [previewImage, setPreviewImage] = useState(null);
+	const [attachments, setAttachments] = useState([]);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const navigate = useNavigate();
 
-	const { register, handleSubmit, watch, setValue } = useForm({
+	const {
+		register,
+		handleSubmit,
+		watch,
+		setValue,
+		formState: { errors },
+	} = useForm({
+		resolver: zodResolver(bookingSchema),
 		defaultValues: {
-			bookingType: "NEW BOOKING",
+			bookingType: "CANCEL_FOR_CREDIT",
 			pnr: "",
 			customerName: "",
 			totalCost: "",
 			cardType: "VISA",
-			cardNumber: "4444000000000000",
-			chargeAmount: "",
+			cardNumber: "",
 			airline: "",
 			date: new Date().toISOString().split("T")[0],
 			email: "",
 			phone: "",
-			billingAddress: "",
+			cardholderName: "",
 			paymentMethod: "VISA",
-			charge1Amount: "",
-			charge1Merchant: "",
-			charge1Currency: "USD",
-			charge2Amount: "",
-			charge2Merchant: "",
-			charge2Currency: "USD",
-			authorizer: "MARTIN F HOFFMAN",
-			passengers: [{}],
 			address: {
-				street: "",
+				streetAddress: "",
+				locality: "",
 				city: "",
 				state: "",
 				zip: "",
+				country: "US",
 			},
-			charges: [
-				{ amount: "", currency: "USD", merchant: "" },
-				{ amount: "", currency: "USD", merchant: "" },
+			passengers: [
+				{
+					type: "ADT",
+					firstName: "",
+					middleName: "",
+					lastName: "",
+					dob: "",
+				},
 			],
+			charges: [
+				{
+					amount: "",
+					merchant: "",
+					currency: "USD",
+				},
+				{
+					amount: "",
+					merchant: "",
+					currency: "USD",
+				},
+			],
+			itineraryDetails: "",
+			itineraryImage: "",
+			attachments: [],
 		},
 	});
 
+	// Watch for form fields
 	const pnr = watch("pnr");
 	const bookingType = watch("bookingType");
 	const airline = watch("airline");
-	const cardNumber = watch("cardNumber");
 	const cardType = watch("cardType");
+	const cardNumber = watch("cardNumber");
+	const passengers = watch("passengers");
+	const charges = watch("charges");
 
 	const addPassenger = () => {
-		const newId = passengers.length + 1;
-		setPassengers([...passengers, { id: newId }]);
+		const currentPassengers = watch("passengers") || [];
+		setValue("passengers", [
+			...currentPassengers,
+			{
+				type: "ADT",
+				firstName: "",
+				middleName: "",
+				lastName: "",
+				dob: "",
+			},
+		]);
 	};
 
 	const removePassenger = (index) => {
-		if (passengers.length > 1) {
-			setPassengers(passengers.filter((_, i) => i !== index));
+		const currentPassengers = watch("passengers") || [];
+		if (currentPassengers.length > 1) {
+			const newPassengers = currentPassengers.filter((_, i) => i !== index);
+			setValue("passengers", newPassengers);
 		}
 	};
 
 	const addCharge = () => {
-		setCharges([...charges, { id: Date.now() }]);
+		const currentCharges = watch("charges") || [];
+		setValue("charges", [
+			...currentCharges,
+			{
+				amount: "",
+				merchant: "",
+				currency: "USD",
+			},
+		]);
 	};
 
 	const removeCharge = (index) => {
-		if (charges.length > 1) {
-			setCharges(charges.filter((_, i) => i !== index));
+		const currentCharges = watch("charges") || [];
+		if (currentCharges.length > 1) {
+			const newCharges = currentCharges.filter((_, i) => i !== index);
+			setValue("charges", newCharges);
 		}
 	};
 
-	const onSubmit = (data) => {
-		const type = data.bookingType || "NEW BOOKING";
-		if (type === "NEW BOOKING") {
-			navigate("/transaction/new-booking", { state: data });
-		} else if (type === "CHANGE BOOKING") {
-			navigate("/transaction/change-booking", { state: data });
-		} else if (type === "CANCEL BOOKING") {
-			navigate("/transaction/cancel-booking", { state: data });
-		} else {
-			console.log(data);
+	// Helper function to convert file to base64
+	const convertToBase64 = (file) => {
+		return new Promise((resolve, reject) => {
+			if (typeof file === "string") {
+				resolve(file); // Already base64
+				return;
+			}
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = (error) => reject(error);
+		});
+	};
+
+	const onSubmit = async (data) => {
+		setIsSubmitting(true);
+
+		try {
+			// Convert images to base64 if they exist
+			let itineraryImageBase64 = "";
+			if (itineraryImage) {
+				itineraryImageBase64 = await convertToBase64(itineraryImage);
+			}
+
+			const attachmentsBase64 = [];
+			for (const attachment of attachments) {
+				if (attachment) {
+					const base64 = await convertToBase64(attachment);
+					attachmentsBase64.push(base64);
+				}
+			}
+
+			// Prepare complete form data
+			const completeData = {
+				...data,
+				itineraryDetails,
+				itineraryImage: itineraryImageBase64,
+				attachments: attachmentsBase64,
+			};
+
+			// Create the booking using showPromiseToast
+			await showPromiseToast(bookingService.createBooking(completeData), {
+				loading: "Processing cancellation for future credit...",
+				success: "Cancellation request processed successfully!",
+				error: "Failed to process cancellation request",
+			})
+				.then(() => {
+					navigate("/booking");
+				})
+				.catch((error) => {
+					console.error("Error processing cancellation:", error);
+				});
+		} catch (error) {
+			console.error("Error processing cancellation:", error);
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
@@ -197,7 +290,7 @@ function CancelForFutureCredit({ initialData, onBack }) {
 									placeholder="Amount"
 								/>
 							</p>
-						</div>
+						</div>{" "}
 						<ChargesDescription
 							charges={charges}
 							register={register}
@@ -237,12 +330,15 @@ function CancelForFutureCredit({ initialData, onBack }) {
 							cardNumber={cardNumber}
 							setValue={setValue}
 						/>
-					</div>
+					</div>{" "}
 					<button
 						type="submit"
-						className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 text-sm"
+						disabled={isSubmitting}
+						className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						Confirm Refund Request
+						{isSubmitting
+							? "Processing..."
+							: "Confirm Cancellation for Future Credit"}
 					</button>
 				</form>
 				{showPreview && (

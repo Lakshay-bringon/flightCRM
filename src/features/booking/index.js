@@ -11,8 +11,5 @@ export { default as Comments } from "./Comments";
 export { default as Section } from "./Section";
 export { default as ImagePreviewModal } from "./ImagePreviewModal";
 
-// Hooks
-export { useBooking } from "./hooks/useBooking";
-
 // Services
 export { default as bookingService } from "./services/bookingService";

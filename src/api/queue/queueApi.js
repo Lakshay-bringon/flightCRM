@@ -1,5 +1,19 @@
 import API from "../axios";
 
+// Get active queue
+export const activeQueuesApi = async () => {
+	try {
+		const res = await API.get("/activeQueues");
+		const { status, msg, data } = res.data;
+		if (status !== 200) throw new Error(msg || "Failed to fetch active queue");
+		return data;
+	} catch (err) {
+		if (err.response)
+			throw new Error(err.response.data.msg || "Failed to fetch active queue");
+		throw new Error("Get active queue error: " + err.message);
+	}
+};
+
 // Add a new queue
 export const addQueueApi = async (queue, number) => {
 	try {
