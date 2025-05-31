@@ -1,41 +1,44 @@
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { Dashboard, Sidebar } from "../components/layout";
-import { ManageBookings, ReservationMGMT } from "../features/booking";
-import { Revenue } from "../features/revenue";
-import { IPSetting } from "../features/ip";
-import EmailPreviewPage from "../pages/EmailPreviewPage";
-import FindBookings from "../features/booking/FindBookings";
-import ManageUsers from "../features/user/ManageUsers";
-import ManageData from "../features/data/ManageData";
-import RevenueDetails from "../features/revenue/RevenueDetails";
-import UserProfile from "../features/user/UserProfile";
-import Login from "../pages/Login";
-import ProfilePage from "../features/user/ProfilePage";
-import BookingDetails from "../features/booking/BookingDetails";
-import NewBooking from "../features/booking/components/NewBooking";
-import Exchange from "../features/booking/components/Exchange";
-import SeatAssignment from "../features/booking/components/SeatAssignment";
-import Upgrade from "../features/booking/components/Upgrade";
-import CancelForRefund from "../features/booking/components/CancelForRefund";
-import CancelForFutureCredit from "../features/booking/components/CancelForFutureCredit";
-import OtpScreen from "../pages/OtpScreen";
-import RoleProtectedRoute from "../auth/RoleProtectedRoute";
-import AccessDenied from "../pages/AccessDenied";
-import ProtectedRoute from "../auth/ProtectedRoute";
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Dashboard, Sidebar } from '../components/layout';
+import { ManageBookings } from '../features/booking';
+import { Revenue } from '../features/revenue';
+import { IPSetting } from '../features/ip';
+import EmailPreviewPage from '../pages/EmailPreviewPage';
+import FindBookings from '../features/booking/FindBookings';
+import ManageUsers from '../features/user/ManageUsers';
+import ManageData from '../features/data/ManageData';
+import RevenueDetails from '../features/revenue/RevenueDetails';
+import UserProfile from '../features/user/UserProfile';
+import Login from '../pages/Login';
+import ProfilePage from '../features/user/ProfilePage';
+import BookingDetails from '../features/booking/BookingDetails';
+import NewBooking from '../features/booking/components/NewBooking';
+import Exchange from '../features/booking/components/Exchange';
+import SeatAssignment from '../features/booking/components/SeatAssignment';
+import Upgrade from '../features/booking/components/Upgrade';
+import CancelForRefund from '../features/booking/components/CancelForRefund';
+import CancelForFutureCredit from '../features/booking/components/CancelForFutureCredit';
+import OtpScreen from '../pages/OtpScreen';
+import RoleProtectedRoute from '../auth/RoleProtectedRoute';
+import AccessDenied from '../pages/AccessDenied';
+import ProtectedRoute from '../auth/ProtectedRoute';
 
 export default function AppRoutes() {
 	const navigate = useNavigate();
 
 	// Initialize sidebar state from localStorage or default to false
 	const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-		const saved = localStorage.getItem("sidebarCollapsed");
+		const saved = sessionStorage.getItem('sidebarCollapsed');
 		return saved ? JSON.parse(saved) : false;
 	});
 
 	// Save sidebar state to localStorage whenever it changes
 	useEffect(() => {
-		localStorage.setItem("sidebarCollapsed", JSON.stringify(sidebarCollapsed));
+		sessionStorage.setItem(
+			'sidebarCollapsed',
+			JSON.stringify(sidebarCollapsed)
+		);
 	}, [sidebarCollapsed]);
 
 	const handleToggleSidebar = () => {
@@ -106,7 +109,14 @@ export default function AppRoutes() {
 												element={<RevenueDetails />}
 											/>
 
-											<Route path="manage-users" element={<ManageUsers />} />
+											<Route
+												path="manage-users"
+												element={
+													<RoleProtectedRoute allowedRoles={['1', '2']}>
+														<ManageUsers />
+													</RoleProtectedRoute>
+												}
+											/>
 											<Route
 												path="details/user/:id"
 												element={<ProfilePage />}
@@ -114,7 +124,7 @@ export default function AppRoutes() {
 											<Route
 												path="manage-data"
 												element={
-													<RoleProtectedRoute allowedRoles={["1"]}>
+													<RoleProtectedRoute allowedRoles={['1']}>
 														<ManageData />
 													</RoleProtectedRoute>
 												}
@@ -122,7 +132,7 @@ export default function AppRoutes() {
 											<Route
 												path="ip-setting"
 												element={
-													<RoleProtectedRoute allowedRoles={["1"]}>
+													<RoleProtectedRoute allowedRoles={['1']}>
 														<IPSetting />
 													</RoleProtectedRoute>
 												}

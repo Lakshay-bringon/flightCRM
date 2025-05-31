@@ -1,15 +1,15 @@
-import axios from "axios";
+import axios from 'axios';
 
 const API = axios.create({
 	baseURL: import.meta.env.VITE_API_BASE_URL,
 	headers: {
-		"Content-Type": "application/json",
+		'Content-Type': 'application/json',
 	},
 });
 
 // Add token if available
 API.interceptors.request.use((config) => {
-	const token = localStorage.getItem("jwt_token");
+	const token = sessionStorage.getItem('jwt_token');
 	if (token) {
 		config.headers.Authorization = `Bearer ${token}`;
 	}

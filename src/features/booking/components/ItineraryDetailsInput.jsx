@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import { CloudUpload, Trash } from "lucide-react";
+import React, { useRef, useState, useEffect } from 'react';
+import { CloudUpload, Trash } from 'lucide-react';
 
 export default function ItineraryDetailsInput({
 	value,
@@ -11,13 +11,34 @@ export default function ItineraryDetailsInput({
 	const fileInputRef = useRef(null);
 	const [preview, setPreview] = useState(image || null);
 
+	// Ensure preview updates correctly when `value` changes
+	useEffect(() => {
+		if (value && typeof value === 'string') {
+			const baseRoute = import.meta.env.VITE_UPLOADS_BASE_URL || '';
+			const constructedUrl = value.startsWith(baseRoute)
+				? value
+				: `${baseRoute}${value}`;
+
+			setPreview(constructedUrl);
+		} else {
+			setPreview(null);
+		}
+	}, [value]);
+
 	const handleImageUpload = (e) => {
 		const file = e.target.files[0];
 		if (file) {
 			const reader = new FileReader();
 			reader.onloadend = () => {
-				setPreview(reader.result);
-				setImage && setImage(reader.result);
+				if (
+					typeof reader.result === 'string' &&
+					reader.result.startsWith('data:image/')
+				) {
+					setPreview(reader.result);
+					setImage && setImage(reader.result);
+				} else {
+					console.warn('Invalid base64 image string:', reader.result);
+				}
 			};
 			reader.readAsDataURL(file);
 		}
@@ -26,17 +47,24 @@ export default function ItineraryDetailsInput({
 	const handleImageRemove = () => {
 		setPreview(null);
 		setImage && setImage(null);
-		if (fileInputRef.current) fileInputRef.current.value = "";
+		if (fileInputRef.current) fileInputRef.current.value = '';
 	};
 
 	const handleDrop = (e) => {
 		e.preventDefault();
 		const file = e.dataTransfer.files[0];
-		if (file && file.type.startsWith("image/")) {
+		if (file && file.type.startsWith('image/')) {
 			const reader = new FileReader();
 			reader.onloadend = () => {
-				setPreview(reader.result);
-				setImage && setImage(reader.result);
+				if (
+					typeof reader.result === 'string' &&
+					reader.result.startsWith('data:image/')
+				) {
+					setPreview(reader.result);
+					setImage && setImage(reader.result);
+				} else {
+					console.warn('Invalid base64 image string:', reader.result);
+				}
 			};
 			reader.readAsDataURL(file);
 		}
@@ -53,7 +81,11 @@ export default function ItineraryDetailsInput({
 						onClick={(e) => {
 							e.preventDefault();
 							e.stopPropagation();
-							onImageClick();
+							if (preview) {
+								onImageClick(preview);
+							} else {
+								console.warn('No image available for preview');
+							}
 						}}
 						className="flex items-center space-x-4 w-full overflow-hidden cursor-pointer"
 					>

@@ -1,117 +1,62 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import ItineraryDetailsInput from "./ItineraryDetailsInput";
-import ImagePreviewModal from "../ImagePreviewModal";
-import ChargesDescription from "./ChargesDescription";
-import PassengerDetails from "./PassengerDetails";
-import PurchaseSummary from "./PurchaseSummary";
-import AttachmentsSection from "./AttachmentsSection";
-import AuthorizeSection from "./AuthorizeSection";
+import React from 'react';
+import BookingComponent from './BookingComponent.jsx';
+import ChargesDescription from './ChargesDescription.jsx';
+import ItineraryDetailsInput from './ItineraryDetailsInput.jsx';
+import PurchaseSummary from './PurchaseSummary.jsx';
+import AttachmentsSection from './AttachmentsSection.jsx';
+import AuthorizeSection from './AuthorizeSection.jsx';
+import cancelForRefundSchema from '../schemas/cancelForRefundSchema.js';
 
-function CancelForRefund({ initialData, onBack }) {
-	const [passengers, setPassengers] = useState([{ id: 1 }]);
-	const [charges, setCharges] = useState([{ id: 1 }, { id: 2 }]);
-	const [attachments, setAttachments] = useState([]);
-	const [itineraryDetails, setItineraryDetails] = useState("");
-	const [itineraryImage, setItineraryImage] = useState(null);
-	const [showPreview, setShowPreview] = useState(false);
-	const [previewImage, setPreviewImage] = useState(null);
-	const navigate = useNavigate();
+function CancelForRefund({ bookingData, onBack }) {
+	const RefundForm = ({
+		register,
+		handleSubmit,
+		watch,
+		setValue,
+		errors,
+		onSubmit,
+		onInvalid,
+		isSubmitting,
+		currencies,
+		currency,
+		setCurrency,
+		itineraryDetails,
+		setItineraryDetails,
+		itineraryImage,
+		setItineraryImage,
+		showPreview,
+		setShowPreview,
+		previewImage,
+		setPreviewImage,
+		attachments,
+		setAttachments,
+		addCharge,
+		removeCharge,
+	}) => {
+		// Watch values for dynamic updates - using the correct field names
+		const pnr = watch('pnr');
+		const airline = watch('airline_name');
+		const cardNumber = watch('card_number');
 
-	const { register, handleSubmit, watch, setValue } = useForm({
-		defaultValues: {
-			bookingType: "NEW BOOKING",
-			pnr: "",
-			customerName: "",
-			totalCost: "",
-			cardType: "VISA",
-			cardNumber: "4444000000000000",
-			chargeAmount: "",
-			airline: "",
-			date: new Date().toISOString().split("T")[0],
-			email: "",
-			phone: "",
-			billingAddress: "",
-			paymentMethod: "VISA",
-			charge1Amount: "",
-			charge1Merchant: "",
-			charge1Currency: "USD",
-			charge2Amount: "",
-			charge2Merchant: "",
-			charge2Currency: "USD",
-			authorizer: "MARTIN F HOFFMAN",
-			passengers: [{}],
-			address: {
-				street: "",
-				city: "",
-				state: "",
-				zip: "",
-			},
-			charges: [
-				{ amount: "", currency: "USD", merchant: "" },
-				{ amount: "", currency: "USD", merchant: "" },
-			],
-		},
-	});
-
-	const pnr = watch("pnr");
-	const bookingType = watch("bookingType");
-	const airline = watch("airline");
-	const cardNumber = watch("cardNumber");
-	const cardType = watch("cardType");
-
-	const addPassenger = () => {
-		const newId = passengers.length + 1;
-		setPassengers([...passengers, { id: newId }]);
-	};
-
-	const removePassenger = (index) => {
-		if (passengers.length > 1) {
-			setPassengers(passengers.filter((_, i) => i !== index));
-		}
-	};
-
-	const addCharge = () => {
-		setCharges([...charges, { id: Date.now() }]);
-	};
-
-	const removeCharge = (index) => {
-		if (charges.length > 1) {
-			setCharges(charges.filter((_, i) => i !== index));
-		}
-	};
-
-	const onSubmit = (data) => {
-		const type = data.bookingType || "NEW BOOKING";
-		if (type === "NEW BOOKING") {
-			navigate("/transaction/new-booking", { state: data });
-		} else if (type === "CHANGE BOOKING") {
-			navigate("/transaction/change-booking", { state: data });
-		} else if (type === "CANCEL BOOKING") {
-			navigate("/transaction/cancel-booking", { state: data });
-		} else {
-			console.log(data);
-		}
-	};
-
-	return (
-		<div className="p-3 max-w-4xl mx-auto">
-			<div className="mb-4 p-4 rounded-xl bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700 shadow-xl">
+		return (
+			<>
 				<div className="flex justify-between items-center mb-4">
 					<h2 className="text-xl font-bold text-white flex items-center gap-2">
 						<input
-							{...register("airline")}
+							{...register('airline_name')}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-40 font-bold text-white mr-2"
-							style={{ textTransform: "uppercase" }}
+							style={{ textTransform: 'uppercase' }}
 							placeholder="Airline Name"
 							value={airline}
-							onChange={(e) => setValue("airline", e.target.value)}
+							onChange={(e) => setValue('airline_name', e.target.value)}
 						/>
 						REFUND CONFIRMATION –
 						<input
-							{...register("pnr")}
+							{...register('pnr')}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-32 font-bold text-white ml-2"
+							value={pnr}
+							onChange={(e) => setValue('pnr', e.target.value)}
+							placeholder="PNR"
 						/>
 					</h2>
 					<button
@@ -123,76 +68,82 @@ function CancelForRefund({ initialData, onBack }) {
 				</div>
 
 				<form
-					onSubmit={handleSubmit(onSubmit)}
+					onSubmit={handleSubmit(onSubmit, onInvalid)}
 					className="space-y-6 text-gray-300 text-sm"
 					style={{ lineHeight: 2 }}
 				>
 					<div className="space-y-6">
 						<div className="p-3 border border-gray-700 rounded-lg">
-							<p className="leading-loose">
+							<div className="leading-loose">
 								Dear
 								<input
-									{...register("customerName")}
+									{...register('customer_name')}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 60 }}
 									placeholder="Customer Name"
 								/>
 								,
-							</p>
-							<p className="leading-loose">Thank you for contacting us!</p>
-							<p className="leading-loose">
+							</div>
+							<div className="leading-loose">Thank you for contacting us!</div>
+							<div className="leading-loose">
 								You can contact us on this number +1-877-413-0030 for any
 								related request.
-							</p>
-							<p className="leading-loose">
+							</div>
+							<div className="leading-loose">
 								As per our conversation and as agreed, We have cancelled your
 								reservation under Confirmation number
 								<input
-									{...register("pnr")}
+									{...register('pnr')}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 60 }}
 									value={pnr}
-									onChange={(e) => setValue("pnr", e.target.value)}
+									onChange={(e) => setValue('pnr', e.target.value)}
 									placeholder="PNR"
 								/>
-								on
+								on{' '}
 								<input
-									{...register("airline")}
+									{...register('airline_name')}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 60, textTransform: "uppercase" }}
+									style={{ minWidth: 60, textTransform: 'uppercase' }}
 									placeholder="Airline Name"
 									value={airline}
-									onChange={(e) => setValue("airline", e.target.value)}
-								/>{" "}
+									onChange={(e) => setValue('airline_name', e.target.value)}
+								/>{' '}
 								and will now submit the request to the airlines/consolidator to
 								refund your ticket.
-							</p>
-							<p>
+							</div>
+							<div className="leading-loose">
 								Upon the airline's approval and after deducting all
 								non-refundable amounts (base fare, penalties, taxes, and fees)
-								as per fare rules, you will receive a total refund of USD
+								as per fare rules, you will receive a total refund of
 								<input
-									{...register("totalCost")}
+									{...register('amount')}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 40 }}
 									placeholder="Amount"
-								/>{" "}
-								to your original form of payment used.
-							</p>
-							<p>
-								To process cancellation of your flights for a refund, there will
-								be a new charge of USD
-								<input
-									{...register("totalCost")}
-									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 40 }}
-									placeholder="Amount"
-								/>
-							</p>
+								/>{' '}
+								<select
+									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
+									value={currency}
+									onChange={(e) => setCurrency(e.target.value)}
+								>
+									{currencies && currencies.length > 0 ? (
+										currencies.map((currency) => (
+											<option key={currency.id} value={currency.Currency}>
+												{currency.Currency}
+											</option>
+										))
+									) : (
+										<option value="">Select Currency</option>
+									)}
+								</select>{' '}
+								(Including all taxes and fees) as per the below description.
+							</div>
 						</div>
 						<ChargesDescription
-							charges={charges}
+							charges={watch('charge_data')}
 							register={register}
+							currency={currency}
 							addCharge={addCharge}
 							removeCharge={removeCharge}
 						/>
@@ -206,46 +157,56 @@ function CancelForRefund({ initialData, onBack }) {
 								setShowPreview(true);
 							}}
 						/>
-						<PassengerDetails
-							passengers={passengers}
+						<PurchaseSummary
 							register={register}
-							addPassenger={addPassenger}
-							removePassenger={removePassenger}
+							watch={watch}
+							setValue={setValue}
+							errors={errors}
 						/>
-						<PurchaseSummary register={register} />
 						<AttachmentsSection
 							images={attachments}
 							setImages={setAttachments}
+							onPreview={(img) => {
+								setPreviewImage(img);
+								setShowPreview(true);
+							}}
 						/>
 						<div className="p-3 border border-gray-700 rounded-lg leading-loose">
-							<p className="flex flex-wrap items-center gap-2">
+							<div className="flex flex-wrap items-center gap-2">
 								Make sure that the displayed flight information is as you
 								planned. Please review the Names, Dates, Cities, and Departure –
 								Arrival times properly
-							</p>
-						</div>
+							</div>
+						</div>{' '}
 						<AuthorizeSection
-							register={register}
-							cardNumber={cardNumber}
-							setValue={setValue}
+							cardholderName={watch('card_holder')}
+							cardType={watch('payment_method')}
+							cardNumber={watch('card_number')}
 						/>
 					</div>
 					<button
 						type="submit"
-						className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 text-sm"
+						disabled={isSubmitting}
+						className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						Confirm Refund Request
+						{isSubmitting ? 'Processing Refund...' : 'Confirm Refund Request'}
 					</button>
 				</form>
-				{showPreview && (
-					<ImagePreviewModal
-						isOpen={showPreview}
-						onClose={() => setShowPreview(false)}
-						imageUrl={previewImage}
-					/>
-				)}
-			</div>
-		</div>
+			</>
+		);
+	};
+	return (
+		<BookingComponent
+			onBack={onBack}
+			type="CANCEL_FOR_REFUND"
+			schema={cancelForRefundSchema}
+			loadingMessage="Processing refund request..."
+			successMessage="Refund request submitted successfully!"
+			errorMessage="Failed to submit refund request"
+			defaultValues={bookingData}
+		>
+			<RefundForm />
+		</BookingComponent>
 	);
 }
 

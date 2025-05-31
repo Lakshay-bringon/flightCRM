@@ -2,7 +2,7 @@ import React from "react";
 import { Plus, X } from "lucide-react";
 
 function ChargesDescription({
-	charges,
+	charges = [],
 	currency,
 	register,
 	addCharge,

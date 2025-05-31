@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { useAuthContext } from "./AuthProvider";
+import { createContext, useContext, useState, useEffect } from 'react';
+import { useAuthContext } from './AuthProvider';
 
 const LoginContext = createContext();
 
@@ -11,7 +11,7 @@ export const LoginProvider = ({ children }) => {
 
 	// Check for remembered credentials on mount
 	useEffect(() => {
-		const rememberedEmail = localStorage.getItem("rememberedEmail");
+		const rememberedEmail = sessionStorage.getItem('rememberedEmail');
 		if (rememberedEmail) {
 			setRememberMe(true);
 		}
@@ -26,14 +26,14 @@ export const LoginProvider = ({ children }) => {
 
 			// Handle remember me functionality
 			if (rememberMe && credentials.email) {
-				localStorage.setItem("rememberedEmail", credentials.email);
+				sessionStorage.setItem('rememberedEmail', credentials.email);
 			} else {
-				localStorage.removeItem("rememberedEmail");
+				sessionStorage.removeItem('rememberedEmail');
 			}
 
 			return result;
 		} catch (error) {
-			setLoginError(error.message || "Login failed");
+			setLoginError(error.message || 'Login failed');
 			throw error;
 		} finally {
 			setLoginLoading(false);
@@ -46,10 +46,10 @@ export const LoginProvider = ({ children }) => {
 			await logout();
 			// Clear remember me if needed
 			if (!rememberMe) {
-				localStorage.removeItem("rememberedEmail");
+				sessionStorage.removeItem('rememberedEmail');
 			}
 		} catch (error) {
-			setLoginError(error.message || "Logout failed");
+			setLoginError(error.message || 'Logout failed');
 			throw error;
 		} finally {
 			setLoginLoading(false);
@@ -61,7 +61,7 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	const getRememberedEmail = () => {
-		return localStorage.getItem("rememberedEmail");
+		return sessionStorage.getItem('rememberedEmail');
 	};
 
 	const value = {
@@ -82,12 +82,12 @@ export const LoginProvider = ({ children }) => {
 		getRememberedEmail,
 
 		// Utility functions
-		isAdmin: () => user?.role_id === 1 || user?.role === "admin",
-		isLeader: () => user?.role_id === 2 || user?.role === "leader",
-		isAgent: () => user?.role_id === 3 || user?.role === "agent",
+		isAdmin: () => user?.role_id === '1' || user?.role === 'admin',
+		isLeader: () => user?.role_id === '2' || user?.role === 'leader',
+		isAgent: () => user?.role_id === '3' || user?.role === 'agent',
 
 		hasRole: (role) => {
-			if (typeof role === "string") {
+			if (typeof role === 'string') {
 				return user?.role === role;
 			}
 			return user?.role_id === role;
@@ -95,7 +95,7 @@ export const LoginProvider = ({ children }) => {
 
 		hasAnyRole: (roles) => {
 			return roles.some((role) => {
-				if (typeof role === "string") {
+				if (typeof role === 'string') {
 					return user?.role === role;
 				}
 				return user?.role_id === role;
@@ -126,7 +126,7 @@ export const LoginProvider = ({ children }) => {
 export const useLoginContext = () => {
 	const context = useContext(LoginContext);
 	if (!context) {
-		throw new Error("useLoginContext must be used within a LoginProvider");
+		throw new Error('useLoginContext must be used within a LoginProvider');
 	}
 	return context;
 };

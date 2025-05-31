@@ -5,27 +5,30 @@ import {
 	Mails,
 	X,
 	ChevronDown,
-} from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+	Edit,
+} from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import {
 	Button,
 	Popover,
 	PopoverTrigger,
 	PopoverContent,
-} from "../../components/ui";
-import { useNavigate } from "react-router-dom";
-import { Modal } from "../../components/common";
-import Comments from "./Comments";
-import Activity from "./Actvity";
+} from '../../components/ui';
+import { useNavigate } from 'react-router-dom';
+import { Modal } from '../../components/common';
+import Comments from './Comments';
+import Activity from './Actvity';
 
 export default function BookingDetailsHeader({
-	bookingId = "1",
+	bookingId = '1',
 	isEditing = false,
+	onUpdateDetails,
+	onRefresh,
 }) {
 	const [showComments, setShowComments] = useState(false);
 	const [showActivity, setShowActivity] = useState(false);
 	const [showCloseModal, setShowCloseModal] = useState(false);
-	const [closeComment, setCloseComment] = useState("");
+	const [closeComment, setCloseComment] = useState('');
 	const [commentError, setCommentError] = useState(false);
 	const textareaRef = useRef(null);
 	const navigate = useNavigate();
@@ -64,39 +67,47 @@ export default function BookingDetailsHeader({
 						<button
 							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
 							type="button"
-							onClick={() => navigate("/email-preview/newBooking")}
+							// onClick={() => navigate('/email-preview/newBooking')}
 						>
 							Auth
 						</button>
 						<button
 							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
 							type="button"
-							onClick={() => navigate("/email-preview/newBooking")}
+							// onClick={() => navigate('/email-preview/newBooking')}
 						>
 							Confirmation
 						</button>
 						<button
 							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
 							type="button"
-							onClick={() => navigate("/email-preview/newBooking")}
+							// onClick={() => navigate('/email-preview/newBooking')}
 						>
 							Card Declined
 						</button>
 					</PopoverContent>
-				</Popover>
+				</Popover>{' '}
 				<Button
 					variant="secondary"
 					className="flex items-center gap-2 cursor-pointer"
 					title="Refresh"
+					onClick={onRefresh}
 				>
 					<RefreshCcw size={18} /> Refresh
-				</Button>
+				</Button>{' '}
 			</div>
-			<div className="flex">
+			<div className="flex gap-2">
+				{/* <Button
+					variant="secondary"
+					className="flex items-center gap-2 cursor-pointer"
+					onClick={onUpdateDetails}
+				>
+					<Edit size={18} /> Update Details
+				</Button> */}
 				<Button
 					variant="destructive"
 					className={`flex items-center gap-2 ${
-						isEditing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+						isEditing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
 					}`}
 					onClick={() => !isEditing && setShowCloseModal(true)}
 					disabled={isEditing}
@@ -121,7 +132,7 @@ export default function BookingDetailsHeader({
 				isOpen={showCloseModal}
 				onClose={() => {
 					setShowCloseModal(false);
-					setCloseComment("");
+					setCloseComment('');
 					setCommentError(false);
 				}}
 				title="Close Booking"
@@ -144,7 +155,7 @@ export default function BookingDetailsHeader({
 						id="close-comment"
 						ref={textareaRef}
 						className={`bg-gray-900 text-gray-100 rounded-lg p-4 min-h-[120px] border-2 ${
-							commentError ? "border-red-500" : "border-gray-700"
+							commentError ? 'border-red-500' : 'border-gray-700'
 						} focus:border-blue-500 resize-none w-full text-base shadow-md focus:outline-none focus:ring focus:ring-blue-500/30 transition-all`}
 						value={closeComment}
 						onChange={(e) => {
@@ -162,7 +173,7 @@ export default function BookingDetailsHeader({
 							}
 							// Handle closing booking with comment
 							setShowCloseModal(false);
-							setCloseComment("");
+							setCloseComment('');
 							setCommentError(false);
 						}}
 					>
