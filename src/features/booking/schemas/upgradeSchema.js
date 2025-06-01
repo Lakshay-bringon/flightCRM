@@ -7,7 +7,8 @@ import { bookingSchema } from './bookingSchema';
 export const upgradeSchema = bookingSchema.extend({
 	// We could add upgrade-specific fields or modify existing validation rules if needed
 	// For example, making fare_class required for upgrades:
-	fare_class: z.string().min(1, 'Fare class is required for upgrades'),
+	initial_class: z.string().min(1, 'initial class is required for upgrades'),
+	upgraded_class: z.string().min(1, 'upgraded class is required for upgrades'),
 });
 
 export default upgradeSchema;

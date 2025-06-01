@@ -32,6 +32,9 @@ function CancelForRefund({ bookingData, onBack }) {
 		setAttachments,
 		addCharge,
 		removeCharge,
+		onBack,
+		isEditMode,
+		type,
 	}) => {
 		// Watch values for dynamic updates - using the correct field names
 		const pnr = watch('pnr');
@@ -41,7 +44,11 @@ function CancelForRefund({ bookingData, onBack }) {
 		return (
 			<>
 				<div className="flex justify-between items-center mb-4">
-					<h2 className="text-xl font-bold text-white flex items-center gap-2">
+					<h2
+						className={`text-xl font-bold text-white flex items-center gap-2 ${
+							isEditMode ? 'justify-center w-full' : ''
+						}`}
+					>
 						<input
 							{...register('airline_name')}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-40 font-bold text-white mr-2"
@@ -59,12 +66,14 @@ function CancelForRefund({ bookingData, onBack }) {
 							placeholder="PNR"
 						/>
 					</h2>
-					<button
-						onClick={onBack}
-						className="px-3 py-1.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
-					>
-						Back
-					</button>
+					{!isEditMode && (
+						<button
+							onClick={onBack}
+							className="px-3 py-1.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+						>
+							Back
+						</button>
+					)}
 				</div>
 
 				<form
@@ -183,13 +192,19 @@ function CancelForRefund({ bookingData, onBack }) {
 							cardType={watch('payment_method')}
 							cardNumber={watch('card_number')}
 						/>
-					</div>
+					</div>{' '}
 					<button
 						type="submit"
 						disabled={isSubmitting}
 						className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isSubmitting ? 'Processing Refund...' : 'Confirm Refund Request'}
+						{isSubmitting
+							? isEditMode
+								? 'Updating Refund...'
+								: 'Processing Refund...'
+							: isEditMode
+							? 'Update'
+							: 'Confirm Refund Request'}
 					</button>
 				</form>
 			</>
@@ -197,13 +212,26 @@ function CancelForRefund({ bookingData, onBack }) {
 	};
 	return (
 		<BookingComponent
+			defaultValues={bookingData}
 			onBack={onBack}
 			type="CANCEL_FOR_REFUND"
 			schema={cancelForRefundSchema}
-			loadingMessage="Processing refund request..."
-			successMessage="Refund request submitted successfully!"
-			errorMessage="Failed to submit refund request"
-			defaultValues={bookingData}
+			loadingMessage={
+				bookingData
+					? 'Updating refund request...'
+					: 'Processing refund request...'
+			}
+			successMessage={
+				bookingData
+					? 'Refund request updated successfully!'
+					: 'Refund request submitted successfully!'
+			}
+			errorMessage={
+				bookingData
+					? 'Failed to update refund request'
+					: 'Failed to submit refund request'
+			}
+			isEditMode={!!bookingData}
 		>
 			<RefundForm />
 		</BookingComponent>

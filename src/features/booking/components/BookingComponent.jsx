@@ -5,10 +5,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ImagePreviewModal from '../ImagePreviewModal.jsx';
 import { useDataContext } from '../../../context/DataContext.jsx';
 import { showPromiseToast } from '../../../utils/showPromiseToast.js';
-import { createReservationApi } from '../../../api/booking/bookingApi.js';
+import {
+	createReservationApi,
+	updateBookingApi,
+} from '../../../api/booking/bookingApi.js';
 import { bookingSchema } from '../schemas/bookingSchema.js';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../../auth/hooks/useAuth.jsx';
+import { processBookingImagesForApi } from '../../../utils/imageUtils.js';
 
 /**
  * BookingFormWrapper - A reusable component that handles all the common booking logic
@@ -22,6 +26,7 @@ import { useAuth } from '../../../auth/hooks/useAuth.jsx';
  * @param {String} props.successMessage - Message to show on success
  * @param {String} props.errorMessage - Message to show on error
  * @param {Object} props.schema - Custom Zod schema for form validation
+ * @param {Boolean} props.isEditMode - Whether component is in edit mode (when bookingData is provided)
  */
 function BookingComponent({
 	children,
@@ -32,6 +37,7 @@ function BookingComponent({
 	successMessage = 'Processed successfully!',
 	errorMessage = 'Processing failed',
 	schema = bookingSchema, // Use the base bookingSchema as default
+	isEditMode = false,
 }) {
 	const { currencies, cards, fetchCurrencies, fetchCards } = useDataContext();
 	const location = useLocation();
@@ -163,42 +169,103 @@ function BookingComponent({
 			const newCharges = currentCharges.filter((_, i) => i !== index);
 			setValue('charge_data', newCharges);
 		}
-	};
-	// Form submission
+	}; // Form submission
 	const onSubmit = async (data) => {
 		if (!user) {
-			toast.error(`You must be logged in to create a ${type}`);
+			toast.error(
+				`You must be logged in to ${isEditMode ? 'update' : 'create'} a ${type}`
+			);
 			return;
 		}
 
 		setIsSubmitting(true);
 
 		try {
-			const itineraryImageBase64 = itineraryImage || '';
-			const attachmentsBase64 = attachments;
-
-			const completeData = {
-				transactionType,
-				userId: user.id,
-				providerId,
-				queueId,
-				email: data.email,
-				cchName: data.card_holder,
-				billingPhone: data.phone,
-				itinerary: itineraryImageBase64,
-				attachments: attachmentsBase64,
-				bookingData: { ...data, currency: currency },
-			};
-
-			await showPromiseToast(createReservationApi(completeData), {
-				loading: loadingMessage,
-				success: successMessage,
-				error: errorMessage,
+			// Process images to ensure proper format for API
+			console.log('Processing images for API submission...');
+			const processedImages = await processBookingImagesForApi({
+				itineraryImage,
+				attachments,
+				itineraryDetails,
 			});
 
-			// setIsSubmitting(true); // Keep button disabled after successful creation
+			console.log('Processed images:', {
+				itinerary: processedImages.itinerary ? 'converted' : 'not provided',
+				attachments: processedImages.attachments.length,
+			});
+
+			if (isEditMode) {
+				// In edit mode, use bid instead of providerId/queueId/transactionType
+				const updateData = {
+					bid: defaultValues?.BID || defaultValues?.bid,
+					userId: user.id, // Add missing userId field
+					email: data.email,
+					cchName: data.card_holder,
+					billingPhone: data.phone,
+					itinerary: processedImages.itinerary,
+					attachments: processedImages.attachments,
+					bookingData: { ...data, currency: currency },
+				};
+
+				console.log('Update booking data being sent:', {
+					...updateData,
+					itinerary: updateData.itinerary ? 'base64 data' : 'none',
+					attachments: `${updateData.attachments.length} attachments`,
+				});
+
+				await showPromiseToast(updateBookingApi(updateData), {
+					loading: loadingMessage,
+					success: successMessage,
+					error: (err) => {
+						console.error('Update booking error:', err);
+						return err.message || errorMessage;
+					},
+				});
+			} else {
+				// Normal create mode
+				const completeData = {
+					transactionType,
+					userId: user.id,
+					providerId,
+					queueId,
+					email: data.email,
+					cchName: data.card_holder,
+					billingPhone: data.phone,
+					itinerary: processedImages.itinerary,
+					attachments: processedImages.attachments,
+					bookingData: { ...data, currency: currency },
+				};
+
+				console.log('Create booking data being sent:', {
+					...completeData,
+					itinerary: completeData.itinerary ? 'base64 data' : 'none',
+					attachments: `${completeData.attachments.length} attachments`,
+				});
+
+				await showPromiseToast(createReservationApi(completeData), {
+					loading: loadingMessage,
+					success: successMessage,
+					error: (err) => {
+						console.error('Create booking error:', err);
+						return err.message || errorMessage;
+					},
+				});
+			} // setIsSubmitting(true); // Keep button disabled after successful creation/update
 		} catch (error) {
-			console.error(`Error creating ${type}:`, error);
+			console.error(
+				`Error ${isEditMode ? 'updating' : 'creating'} ${type}:`,
+				error
+			);
+
+			// Handle specific API validation errors
+			if (error.message && error.message.includes('Validation errors:')) {
+				toast.error(error.message);
+			} else if (error.message) {
+				toast.error(error.message);
+			} else {
+				toast.error(`Failed to ${isEditMode ? 'update' : 'create'} ${type}`);
+			}
+
 			setIsSubmitting(false);
 		}
 	};
@@ -224,7 +291,6 @@ function BookingComponent({
 	const onInvalid = (formErrors) => {
 		showAllErrors(formErrors);
 	};
-
 	// Create props to pass to the children
 	const childrenProps = {
 		register,
@@ -253,10 +319,11 @@ function BookingComponent({
 		addCharge,
 		removeCharge,
 		onBack,
-	};
-	// Render the wrapper with children components
+		isEditMode,
+		type,
+	}; // Render the wrapper with children components
 	return (
-		<div className="p-3 space-y-4">
+		<div className="p-3 space-y-4" data-form-section="true">
 			<div className="mb-4 p-3 rounded-xl bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700 shadow-xl">
 				{React.Children.map(children, (child) =>
 					React.cloneElement(child, { ...childrenProps })

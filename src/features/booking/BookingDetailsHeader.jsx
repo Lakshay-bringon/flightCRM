@@ -18,10 +18,13 @@ import { useNavigate } from 'react-router-dom';
 import { Modal } from '../../components/common';
 import Comments from './Comments';
 import Activity from './Actvity';
+import { generateEmailHTML } from '../../utils/emailGenerator.jsx';
+import { TRANSACTION_TYPES } from '../../constants';
 
 export default function BookingDetailsHeader({
 	bookingId = '1',
 	isEditing = false,
+	formData,
 	onUpdateDetails,
 	onRefresh,
 }) {
@@ -37,6 +40,39 @@ export default function BookingDetailsHeader({
 			textareaRef.current.focus();
 		}
 	}, [showCloseModal]);
+	const handleEmailAction = (emailType) => {
+		console.log('Email Type:', emailType, 'Form Data:', formData); // Debugging log
+
+		let transactionType;
+		switch (emailType) {
+			case 'auth':
+				transactionType =
+					formData.transaction_type || TRANSACTION_TYPES.NEW_BOOKING;
+				break;
+			case 'declined':
+				transactionType = TRANSACTION_TYPES.CANCEL_FOR_REFUND;
+				break;
+			default:
+				transactionType =
+					formData.transaction_type || TRANSACTION_TYPES.NEW_BOOKING;
+		}
+
+		const emailHTML = generateEmailHTML(transactionType, formData);
+		console.log('Generated emailHTML for type:', transactionType); // Debugging log
+		console.log('Navigating to /email-preview with state:', {
+			emailHTML,
+			emailType,
+		}); // Debugging log
+
+		navigate(`/email-preview/${emailType}`, {
+			state: {
+				emailHTML,
+				emailType,
+				transactionType,
+			},
+		});
+	};
+
 	return (
 		<div className="sticky top-0 z-10 flex items-center py-4 bg-transparent ">
 			<div className="flex flex-1 gap-3">
@@ -67,21 +103,21 @@ export default function BookingDetailsHeader({
 						<button
 							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
 							type="button"
-							// onClick={() => navigate('/email-preview/newBooking')}
+							onClick={() => handleEmailAction('auth')}
 						>
 							Auth
 						</button>
 						<button
 							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
 							type="button"
-							// onClick={() => navigate('/email-preview/newBooking')}
+							onClick={() => handleEmailAction('confirmation')}
 						>
 							Confirmation
 						</button>
 						<button
 							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
 							type="button"
-							// onClick={() => navigate('/email-preview/newBooking')}
+							onClick={() => handleEmailAction('declined')}
 						>
 							Card Declined
 						</button>

@@ -63,7 +63,6 @@ export default function AppRoutes() {
 									<div className="p-4">
 										<Routes>
 											<Route index element={<Dashboard />} />
-
 											<Route
 												path="manage-bookings"
 												element={<ManageBookings />}
@@ -96,19 +95,16 @@ export default function AppRoutes() {
 													<CancelForFutureCredit onBack={() => navigate(-1)} />
 												}
 											/>
-
 											<Route path="find-bookings" element={<FindBookings />} />
 											<Route
 												path="details/booking/:id"
 												element={<BookingDetails />}
 											/>
-
 											<Route path="revenue" element={<Revenue />} />
 											<Route
 												path="revenue/details/:type"
 												element={<RevenueDetails />}
 											/>
-
 											<Route
 												path="manage-users"
 												element={
@@ -136,14 +132,17 @@ export default function AppRoutes() {
 														<IPSetting />
 													</RoleProtectedRoute>
 												}
-											/>
+											/>{' '}
 											<Route path="access-denied" element={<AccessDenied />} />
 											<Route
 												path="email-preview/:emailType"
 												element={<EmailPreviewPage />}
 											/>
+											<Route
+												path="email-preview"
+												element={<EmailPreviewPage />}
+											/>
 											<Route path="profile" element={<ProfilePage />} />
-
 											<Route path="*" element={<Navigate to="/" />} />
 										</Routes>
 									</div>

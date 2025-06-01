@@ -35,6 +35,9 @@ function SeatAssignment({ bookingData, onBack }) {
 		removePassenger,
 		addCharge,
 		removeCharge,
+		onBack,
+		isEditMode,
+		type,
 	}) => {
 		// Watch values for dynamic updates
 		const pnr = watch('pnr');
@@ -44,7 +47,11 @@ function SeatAssignment({ bookingData, onBack }) {
 		return (
 			<>
 				<div className="flex justify-between items-center mb-4">
-					<h2 className="text-xl font-bold text-white flex items-center gap-2">
+					<h2
+						className={`text-xl font-bold text-white flex items-center gap-2 ${
+							isEditMode ? 'justify-center w-full' : ''
+						}`}
+					>
 						<input
 							{...register('airline_name')}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-40 font-bold text-white mr-2"
@@ -63,12 +70,14 @@ function SeatAssignment({ bookingData, onBack }) {
 							placeholder="PNR"
 						/>
 					</h2>
-					<button
-						onClick={onBack}
-						className="px-3 py-1.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
-					>
-						Back
-					</button>
+					{!isEditMode && (
+						<button
+							onClick={onBack}
+							className="px-3 py-1.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+						>
+							Back
+						</button>
+					)}
 				</div>
 
 				<form
@@ -186,15 +195,18 @@ function SeatAssignment({ bookingData, onBack }) {
 							cardType={watch('payment_method')}
 							cardNumber={watch('card_number')}
 						/>
-					</div>
-
+					</div>{' '}
 					<button
 						type="submit"
 						disabled={isSubmitting}
 						className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isSubmitting
-							? 'Processing Seat Assignment...'
+							? isEditMode
+								? 'Updating Seat Assignment...'
+								: 'Processing Seat Assignment...'
+							: isEditMode
+							? 'Update'
 							: 'Confirm Seat Assignment'}
 					</button>
 				</form>
@@ -203,13 +215,26 @@ function SeatAssignment({ bookingData, onBack }) {
 	};
 	return (
 		<BookingComponent
+			defaultValues={bookingData}
 			onBack={onBack}
 			type="SEAT_ASSIGNMENT"
 			schema={seatAssignmentSchema} // Use the seat assignment-specific schema
-			loadingMessage="Processing seat assignment..."
-			successMessage="Seat assignment processed successfully!"
-			errorMessage="Failed to process seat assignment"
-			defaultValues={bookingData} // Pass default values for autofill
+			loadingMessage={
+				bookingData
+					? 'Updating seat assignment...'
+					: 'Processing seat assignment...'
+			}
+			successMessage={
+				bookingData
+					? 'Seat assignment updated successfully!'
+					: 'Seat assignment processed successfully!'
+			}
+			errorMessage={
+				bookingData
+					? 'Failed to update seat assignment'
+					: 'Failed to process seat assignment'
+			}
+			isEditMode={!!bookingData}
 		>
 			<SeatAssignmentForm />
 		</BookingComponent>

@@ -1,6 +1,10 @@
 // Email HTML generator utility
 // This module generates dynamic email HTML from booking form data
 
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { DynamicEmailTemplate } from '../features/booking/emailTemplates';
+
 /**
  * Generates email HTML that exactly matches the NewBooking component design
  * @param {Object} bookingData - The booking form data
@@ -9,27 +13,27 @@
 export const generateBookingEmailHTML = (bookingData) => {
 	// Extract form data
 	const {
-		airline_name = "",
-		customer_name = "",
-		pnr = "",
-		amount = "",
-		email = "",
-		phone = "",
-		card_holder = "",
-		card_number = "",
-		payment_method = "VISA",
+		airline_name = '',
+		customer_name = '',
+		pnr = '',
+		amount = '',
+		email = '',
+		phone = '',
+		card_holder = '',
+		card_number = '',
+		payment_method = 'VISA',
 
-		purchase_date = "",
-		billing_address = "",
-		city = "",
-		state = "",
-		zip = "",
-		country = "US",
+		purchase_date = '',
+		billing_address = '',
+		city = '',
+		state = '',
+		zip = '',
+		country = 'US',
 		passenger_data = [],
 		charge_data = [],
-		image_itinerary = "",
+		image_itinerary = '',
 		attachments = [],
-		currency = "USD",
+		currency = 'USD',
 	} = bookingData; // Format passenger details in tabular form
 	const formatPassengerDetails = () => {
 		if (!passenger_data || passenger_data.length === 0) {
@@ -64,25 +68,25 @@ export const generateBookingEmailHTML = (bookingData) => {
 		const tableRows = passenger_data
 			.map((passenger, index) => {
 				const {
-					type = "ADT",
-					firstName = "",
-					middleName = "",
-					lastName = "",
-					dob = "",
+					type = 'ADT',
+					firstName = '',
+					middleName = '',
+					lastName = '',
+					dob = '',
 				} = passenger;
 
 				return `
 					<tr>
 						<td>${index + 1}</td>
 						<td><span class="passenger-type">${type}</span></td>
-						<td>${firstName || "Not provided"}</td>
-						<td>${middleName || "-"}</td>
-						<td>${lastName || "Not provided"}</td>
-						<td>${dob || "Not provided"}</td>
+						<td>${firstName || 'Not provided'}</td>
+						<td>${middleName || '-'}</td>
+						<td>${lastName || 'Not provided'}</td>
+						<td>${dob || 'Not provided'}</td>
 					</tr>
 				`;
 			})
-			.join("");
+			.join('');
 
 		return `
 			<div class="passengers-table">
@@ -120,7 +124,7 @@ export const generateBookingEmailHTML = (bookingData) => {
 						<tbody>
 							<tr>
 								<td>1</td>
-								<td>${amount || "0.00"} ${currency}</td>
+								<td>${amount || '0.00'} ${currency}</td>
 								<td>Total booking amount</td>
 							</tr>
 						</tbody>
@@ -131,19 +135,19 @@ export const generateBookingEmailHTML = (bookingData) => {
 
 		const tableRows = charge_data
 			.map((charge, index) => {
-				const { amount: chargeAmount = "", description = "" } = charge;
-				if (!chargeAmount && !description) return "";
+				const { amount: chargeAmount = '', description = '' } = charge;
+				if (!chargeAmount && !description) return '';
 
 				return `
 					<tr>
 						<td>${index + 1}</td>
-						<td>${chargeAmount || "0.00"} ${currency}</td>
-						<td>${description || "No description"}</td>
+						<td>${chargeAmount || '0.00'} ${currency}</td>
+						<td>${description || 'No description'}</td>
 					</tr>
 				`;
 			})
 			.filter(Boolean)
-			.join("");
+			.join('');
 
 		return `
 			<div class="charges-table">
@@ -169,9 +173,9 @@ export const generateBookingEmailHTML = (bookingData) => {
 				const chargeAmount = parseFloat(charge.amount) || 0;
 				return sum + chargeAmount;
 			}, 0);
-			return total > 0 ? total.toFixed(2) : amount || "0.00";
+			return total > 0 ? total.toFixed(2) : amount || '0.00';
 		}
-		return amount || "0.00";
+		return amount || '0.00';
 	};
 	// Format billing address in grid format
 	const formatBillingAddress = () => {
@@ -179,39 +183,39 @@ export const generateBookingEmailHTML = (bookingData) => {
 			<div class="purchase-summary-grid">
 				<div class="grid-item">
 					<label>Card Holder:</label>
-					<span class="value">${card_holder || customer_name || "Not provided"}</span>
+					<span class="value">${card_holder || customer_name || 'Not provided'}</span>
 				</div>
 				<div class="grid-item">
 					<label>Email:</label>
-					<span class="value">${email || "Not provided"}</span>
+					<span class="value">${email || 'Not provided'}</span>
 				</div>
 				<div class="grid-item">
 					<label>Phone:</label>
-					<span class="value">${phone || "Not provided"}</span>
+					<span class="value">${phone || 'Not provided'}</span>
 				</div>
 				<div class="grid-item">
 					<label>Billing Address:</label>
-					<span class="value">${billing_address || "Not provided"}</span>
+					<span class="value">${billing_address || 'Not provided'}</span>
 				</div>
 				<div class="grid-item">
 					<label>City:</label>
-					<span class="value">${city || "Not provided"}</span>
+					<span class="value">${city || 'Not provided'}</span>
 				</div>
 				<div class="grid-item">
 					<label>State:</label>
-					<span class="value">${state || "Not provided"}</span>
+					<span class="value">${state || 'Not provided'}</span>
 				</div>
 				<div class="grid-item">
 					<label>ZIP:</label>
-					<span class="value">${zip || "Not provided"}</span>
+					<span class="value">${zip || 'Not provided'}</span>
 				</div>
 				<div class="grid-item">
 					<label>Country:</label>
-					<span class="value">${country || "US"}</span>
+					<span class="value">${country || 'US'}</span>
 				</div>
 				<div class="grid-item">
 					<label>Payment Method:</label>
-					<span class="value">${payment_method || "VISA"}</span>
+					<span class="value">${payment_method || 'VISA'}</span>
 				</div>
 				<div class="grid-item">
 					<label>Purchase Date:</label>
@@ -258,7 +262,7 @@ export const generateBookingEmailHTML = (bookingData) => {
 					</tr>
 				`;
 			})
-			.join("");
+			.join('');
 
 		return `
 			<div class="attachments-table">
@@ -283,8 +287,8 @@ export const generateBookingEmailHTML = (bookingData) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${airline_name || "AIRLINE"} RESERVATION CONFIRMATION – ${
-		pnr || "PNR"
+    <title>${airline_name || 'AIRLINE'} RESERVATION CONFIRMATION – ${
+		pnr || 'PNR'
 	}</title>
     <style>
         * {
@@ -314,12 +318,8 @@ export const generateBookingEmailHTML = (bookingData) => {
 
         .email-content {
             padding: 24px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        }        .header {
+            text-align: center;
             margin-bottom: 24px;
         }
 
@@ -330,26 +330,27 @@ export const generateBookingEmailHTML = (bookingData) => {
             display: flex;
             align-items: center;
             gap: 8px;
+            justify-content: center;
+            line-height: 1.4;
         }
 
         .airline-input, .pnr-input {
-            background: #374151;
-            border: 1px solid #4b5563;
-            border-radius: 6px;
-            padding: 4px 8px;
-            font-size: 14px;
+            background: transparent;
+            border: 0;
+            border-bottom: 1px dashed #6b7280;
             color: #ffffff;
             font-weight: 700;
             text-transform: uppercase;
+            padding: 0 4px;
+            outline: none;
+            display: inline;
         }
 
         .airline-input {
-            width: 160px;
             margin-right: 8px;
         }
 
         .pnr-input {
-            width: 128px;
             margin-left: 8px;
             min-width: 60px;
         }
@@ -777,10 +778,10 @@ export const generateBookingEmailHTML = (bookingData) => {
             <div class="header">
                 <h1>
                     <span class="airline-input">${
-											airline_name || "AIRLINE NAME"
+											airline_name || 'AIRLINE NAME'
 										}</span>
                     RESERVATION CONFIRMATION –
-                    <span class="pnr-input">${pnr || "PNR"}</span>
+                    <span class="pnr-input">${pnr || 'PNR'}</span>
                 </h1>
             </div>
 
@@ -788,7 +789,7 @@ export const generateBookingEmailHTML = (bookingData) => {
             <div class="section">
                 <div class="intro-text">
                     Dear <span class="customer-name">${
-											customer_name || "Customer Name"
+											customer_name || 'Customer Name'
 										}</span>,
                 </div>
                 <div class="intro-text">Thank you for contacting us!</div>
@@ -797,9 +798,9 @@ export const generateBookingEmailHTML = (bookingData) => {
                 </div>
                 <div class="intro-text">
                     As per our conversation and as agreed, we have booked your reservation under Confirmation number
-                    <span class="customer-name">${pnr || "PNR"}</span> on 
+                    <span class="customer-name">${pnr || 'PNR'}</span> on 
                     <span class="customer-name">${
-											airline_name || "AIRLINE NAME"
+											airline_name || 'AIRLINE NAME'
 										}</span> with a charge of
                     <span class="amount-input">${
 											amount || calculateTotalAmount()
@@ -863,11 +864,11 @@ export const generateBookingEmailHTML = (bookingData) => {
                 
                 <p class="auth-paragraph">
                     "I hereby certify that I, <span class="auth-highlight">${
-											card_holder || "___________"
+											card_holder || '___________'
 										}</span>, am the authorized user of the <span class="auth-highlight">${
-		payment_method || "VISA"
+		payment_method || 'VISA'
 	}</span> bearing the number <span class="auth-highlight">${
-		card_number || "___________"
+		card_number || '___________'
 	}</span>, and I will not dispute the payment with my credit/debit card company or bank. I acknowledge that this amount is being charged for my personal travel expenses."
                 </p>
                 
@@ -897,11 +898,11 @@ export const generateBookingEmailHTML = (bookingData) => {
  */
 export const downloadEmailHTML = (
 	emailHTML,
-	filename = "booking-confirmation.html"
+	filename = 'booking-confirmation.html'
 ) => {
-	const blob = new Blob([emailHTML], { type: "text/html" });
+	const blob = new Blob([emailHTML], { type: 'text/html' });
 	const url = URL.createObjectURL(blob);
-	const link = document.createElement("a");
+	const link = document.createElement('a');
 	link.href = url;
 	link.download = filename;
 	document.body.appendChild(link);
@@ -926,7 +927,7 @@ export const previewEmailHTML = (emailHTML) => {
  * @returns {string} - Email subject line
  */
 export const generateEmailSubject = (bookingData) => {
-	const { airline_name = "", pnr = "" } = bookingData;
+	const { airline_name = '', pnr = '' } = bookingData;
 	if (airline_name && pnr) {
 		return `${airline_name.toUpperCase()} RESERVATION CONFIRMATION – ${pnr}`;
 	} else if (pnr) {
@@ -934,5 +935,46 @@ export const generateEmailSubject = (bookingData) => {
 	} else if (airline_name) {
 		return `${airline_name.toUpperCase()} RESERVATION CONFIRMATION`;
 	}
-	return "RESERVATION CONFIRMATION";
+	return 'RESERVATION CONFIRMATION';
+};
+
+/**
+ * Sends an email preview by sending the HTML string to the API for email handling
+ * @param {Object} params - The email parameters
+ * @param {string} params.html - HTML content of the email
+ * @returns {Promise} - Promise resolving to the result of the send operation
+ */
+export const sendEmailPreview = async ({ html }) => {
+	// This function sends the HTML string to the API for email handling
+	const response = await fetch('/api/send-email', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ html }),
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to send email preview');
+	}
+
+	return response.json();
+};
+
+/**
+ * Generates static HTML for the email template without requiring dynamic transaction types in the route
+ * @param {string} transactionType - The type of the transaction (e.g., "booking", "cancellation")
+ * @param {Object} formData - The form data for the email
+ * @returns {string} - Static HTML string for the email
+ */
+export const generateEmailHTML = (transactionType, formData) => {
+	const htmlString = renderToStaticMarkup(
+		<DynamicEmailTemplate
+			transactionType={transactionType}
+			formData={formData}
+		/>
+	);
+
+	// Ensure the HTML string is properly escaped for rendering
+	return `<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>${htmlString}</body></html>`;
 };

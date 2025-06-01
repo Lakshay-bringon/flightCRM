@@ -133,6 +133,49 @@ const parsePassengers = (apiData, bookingData) => {
 	return { adult: 1, child: 0, infant: 0 };
 };
 
+export const updateBookingApi = async (updateData) => {
+	try {
+		const res = await API.post('/updateBooking', updateData, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+		});
+		const { status, msg, data } = res.data;
+		if (status !== 200 && status !== 201) {
+			throw new Error(msg || 'Failed to update booking');
+		}
+		return data;
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			const errorMsg = err.response.data?.msg || 'Failed to update booking';
+			const errorDetails = err.response.data?.errors;
+
+			if (errorDetails && typeof errorDetails === 'object') {
+				// Handle validation errors from server
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(', ') : messages
+							}`
+					)
+					.join('; ');
+				throw new Error(`Validation errors: ${validationErrors}`);
+			}
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error('Network error: Unable to connect to server');
+		}
+
+		throw new Error('Update booking error: ' + err.message);
+	}
+};
+
 export const createReservationApi = async (reservationData) => {
 	try {
 		const res = await API.post('/createReservation', reservationData, {
@@ -164,11 +207,277 @@ export const createReservationApi = async (reservationData) => {
 					.join('; ');
 				throw new Error(`Validation errors: ${validationErrors}`);
 			}
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error('Network error: Unable to connect to server');
+		}
+
+		throw new Error('Create reservation error: ' + err.message);
+	}
+};
+
+/**
+ * Update booking provider details
+ * @param {Object} providerData - The provider details to update
+ * @param {string} providerData.bid - The booking ID
+ * @param {string} providerData.authStatus - Auth status (Pending, Confirmed, Rejected)
+ * @param {string} providerData.bidStatus - Bid status (Pending, Active, Cancelled, Completed, Expired)
+ * @param {string} [providerData.provider] - Provider name (optional)
+ * @param {string} [providerData.agent] - Agent name (optional)
+ * @returns {Promise<Object>} Updated booking data
+ */
+export const updateBookingProviderDetails = async (providerData) => {
+	try {
+		const res = await API.post('/updateBookingProviderDetails', providerData, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+		});
+
+		const { status, msg, data } = res.data;
+
+		if (status !== 200 && status !== 201) {
+			throw new Error(msg || 'Failed to update provider details');
+		}
+
+		return data;
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			const errorMsg =
+				err.response.data?.msg || 'Failed to update provider details';
+			const errorDetails = err.response.data?.errors;
+
+			// Log the error for debugging
+			console.error('Update provider details API error:', {
+				status: err.response.status,
+				data: err.response.data,
+				providerData,
+			});
+
+			if (errorDetails && typeof errorDetails === 'object') {
+				// Handle validation errors from server
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(', ') : messages
+							}`
+					)
+					.join('; ');
+				throw new Error(`Validation errors: ${validationErrors}`);
+			}
 
 			throw new Error(errorMsg);
 		}
 
-		throw new Error('Create reservation error: ' + err.message);
+		// Handle network errors
+		if (err.request) {
+			throw new Error('Network error: Unable to connect to server');
+		}
+
+		throw new Error('Update provider details error: ' + err.message);
+	}
+};
+
+/**
+ * Update booking refund details
+ * @param {Object} refundData - The refund details to update
+ * @param {string} refundData.bid - The booking ID
+ * @param {string} refundData.amount - Refund amount
+ * @param {string} refundData.refundedOn - Refund date
+ * @param {string} refundData.status - Refund status (Pending, Processing, Completed, Rejected)
+ * @returns {Promise<Object>} Updated booking data
+ */
+export const updateRefundDetails = async (refundData) => {
+	try {
+		const res = await API.post('/updateRefundDetails', refundData, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+		});
+
+		const { status, msg, data } = res.data;
+
+		if (status !== 200 && status !== 201) {
+			throw new Error(msg || 'Failed to update refund details');
+		}
+
+		return data;
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			const errorMsg =
+				err.response.data?.msg || 'Failed to update refund details';
+			const errorDetails = err.response.data?.errors;
+
+			// Log the error for debugging
+			console.error('Update refund details API error:', {
+				status: err.response.status,
+				data: err.response.data,
+				refundData,
+			});
+
+			if (errorDetails && typeof errorDetails === 'object') {
+				// Handle validation errors from server
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(', ') : messages
+							}`
+					)
+					.join('; ');
+				throw new Error(`Validation errors: ${validationErrors}`);
+			}
+
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error('Network error: Unable to connect to server');
+		}
+
+		throw new Error('Update refund details error: ' + err.message);
+	}
+};
+
+/**
+ * Update booking chargeback details
+ * @param {Object} chargebackData - The chargeback details to update
+ * @param {string} chargebackData.bid - The booking ID
+ * @param {string} chargebackData.amount - Chargeback amount
+ * @param {string} chargebackData.chargebackDate - Chargeback date
+ * @param {string} chargebackData.status - Chargeback status (Pending, Under Review, Won, Lost, Closed)
+ * @returns {Promise<Object>} Updated booking data
+ */
+export const updateChargebackDetails = async (chargebackData) => {
+	try {
+		const res = await API.post('/updateChargebackDetails', chargebackData, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+		});
+
+		const { status, msg, data } = res.data;
+
+		if (status !== 200 && status !== 201) {
+			throw new Error(msg || 'Failed to update chargeback details');
+		}
+
+		return data;
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			const errorMsg =
+				err.response.data?.msg || 'Failed to update chargeback details';
+			const errorDetails = err.response.data?.errors;
+
+			// Log the error for debugging
+			console.error('Update chargeback details API error:', {
+				status: err.response.status,
+				data: err.response.data,
+				chargebackData,
+			});
+
+			if (errorDetails && typeof errorDetails === 'object') {
+				// Handle validation errors from server
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(', ') : messages
+							}`
+					)
+					.join('; ');
+				throw new Error(`Validation errors: ${validationErrors}`);
+			}
+
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error('Network error: Unable to connect to server');
+		}
+
+		throw new Error('Update chargeback details error: ' + err.message);
+	}
+};
+
+/**
+ * Update booking charging details
+ * @param {Object} chargingData - The charging details to update
+ * @param {string} chargingData.bid - The booking ID
+ * @param {string} chargingData.type - Charging type (MCO, AUTH)
+ * @param {string} chargingData.amount - Charging amount
+ * @param {string} chargingData.status - Charging status (Pending, Processed, Failed)
+ * @param {string} chargingData.chargedOn - Charged date
+ * @param {string} chargingData.chargedBy - Charged by user
+ * @param {string} chargingData.merchantName - Merchant name
+ * @param {string} chargingData.refundedOn - Refunded date
+ * @param {string} chargingData.transactionId - Transaction ID
+ * @returns {Promise<Object>} Updated booking data
+ */
+export const updateBookingChargingDetails = async (chargingData) => {
+	try {
+		const res = await API.post('/updateBookingChargingDetails', chargingData, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+		});
+
+		const { status, msg, data } = res.data;
+
+		if (status !== 200 && status !== 201) {
+			throw new Error(msg || 'Failed to update charging details');
+		}
+
+		return data;
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			const errorMsg =
+				err.response.data?.msg || 'Failed to update charging details';
+			const errorDetails = err.response.data?.errors;
+
+			// Log the error for debugging
+			console.error('Update charging details API error:', {
+				status: err.response.status,
+				data: err.response.data,
+				chargingData,
+			});
+
+			if (errorDetails && typeof errorDetails === 'object') {
+				// Handle validation errors from server
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(', ') : messages
+							}`
+					)
+					.join('; ');
+				throw new Error(`Validation errors: ${validationErrors}`);
+			}
+
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error('Network error: Unable to connect to server');
+		}
+
+		throw new Error('Update charging details error: ' + err.message);
 	}
 };
 
