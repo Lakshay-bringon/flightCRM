@@ -12,14 +12,14 @@ function ChargesDescription({
 		<div className="p-3 border border-gray-700 rounded-lg">
 			<div className="flex items-center justify-between mb-2">
 				<h3 className="font-semibold">Charges Description</h3>
-				<button
+				{/* <button
 					type="button"
 					onClick={addCharge}
 					className="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 text-sm"
 				>
 					<Plus className="w-4 h-4" />
 					Add Charge
-				</button>
+				</button> */}
 			</div>
 			<table className="w-full text-sm border border-gray-700 rounded">
 				<thead>

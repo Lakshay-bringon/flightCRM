@@ -1,40 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StatsCard } from "../../features/dashboard/widgets/StatsCard";
 import { TopPerformers } from "../../features/dashboard/widgets/TopPerformers";
-import { PerformanceComparison } from "../../features/dashboard/widgets/PerformanceComparison";
 import { Plane, Users, TrendingUp, AlertTriangle } from "lucide-react";
 import { TimelineSelector } from "../common";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useHasRole } from "../../auth/hooks/useRole";
+import {
+	dashboardSummaryApi,
+	topBottomAgentReportApi,
+} from "../../api/dashboard/dashboardApi";
+import { showPromiseToast } from "../../utils/showPromiseToast";
 
 export default function AdminDashboard() {
 	const [dateRange, setDateRange] = useState({
 		start: new Date(),
 		end: new Date(),
 	});
+	const [summary, setSummary] = useState(null);
+	const [topBottom, setTopBottom] = useState(null);
 	const { user } = useAuth();
 	const isAgent = useHasRole("agent");
+
+	const fetchDashboardData = async (range) => {
+		const payload = {
+			dateFilter: "custom",
+			startDate: range.start.toISOString().slice(0, 10),
+			endDate: range.end.toISOString().slice(0, 10),
+		};
+		try {
+			const [summaryRes, topBottomRes] = await showPromiseToast(
+				Promise.all([
+					dashboardSummaryApi(payload),
+					topBottomAgentReportApi(payload),
+				]),
+				{
+					loading: "Loading dashboard...",
+					success: "Dashboard loaded!",
+					error: "Failed to load dashboard",
+				}
+			);
+			const summaryData = summaryRes;
+			const topBottomData = topBottomRes;
+			console.log("Dashboard Summary:", summaryData);
+			console.log("Top/Bottom Agents:", topBottomData);
+			setSummary(summaryData);
+			setTopBottom(topBottomData);
+		} catch (err) {
+			setSummary(null);
+			setTopBottom(null);
+		}
+	};
+
+	useEffect(() => {
+		fetchDashboardData(dateRange);
+	}, [dateRange]);
+
 	const handleDateRangeChange = (range) => {
 		setDateRange(range);
-	};
-
-	// Sample data for demonstration
-	const topPerformer = {
-		id: 1,
-		name: "Sarah Wilson",
-		role: "Senior Agent",
-		revenue: 184500,
-		bookings: 145,
-		chargeback: 2500, // Monthly chargeback + refund
-	};
-
-	const currentAgent = {
-		id: 4,
-		name: "John Doe",
-		role: "Travel Agent",
-		revenue: 145000,
-		bookings: 120,
-		chargeback: 4200, // Monthly chargeback + refund
 	};
 
 	return (
@@ -51,39 +73,65 @@ export default function AdminDashboard() {
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 						<StatsCard
 							title="Total Bookings"
-							value="2,543"
+							value={summary ? summary.totalBooking : "-"}
 							icon={Plane}
 							color="blue"
 						/>
 						<StatsCard
 							title="Active Agents"
-							value="165"
+							value={summary ? summary.totalActiveAgents : "-"}
 							icon={Users}
 							color="green"
 						/>
 						<StatsCard
 							title="Revenue"
-							value="$1.2M"
+							value={summary ? summary.totalMcoAmount : "-"}
 							icon={TrendingUp}
 							color="purple"
 						/>
 						<StatsCard
 							title="Chargeback + Refund"
-							value="$6.5K"
+							value={
+								summary
+									? Number(summary.totalChargebackAmount || 0) +
+									  Number(summary.totalRefundAmount || 0)
+									: "-"
+							}
 							icon={AlertTriangle}
 							color="red"
 						/>
 					</div>
 
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-						<TopPerformers dateRange={dateRange} />
+						<TopPerformers
+							dateRange={dateRange}
+							data={
+								Array.isArray(topBottom?.top_agents)
+									? topBottom.top_agents.map((agent) => ({
+											id: agent.agentName,
+											name: agent.agentName,
+											revenue: agent.totalMCO,
+											bookings: agent.totalBookings,
+											badge: "Top Performer",
+									  }))
+									: []
+							}
+						/>
 						{!isAgent && (
-							<TopPerformers dateRange={dateRange} showBottom={true} />
-						)}
-						{isAgent && (
-							<PerformanceComparison
-								agentData={currentAgent}
-								topPerformer={topPerformer}
+							<TopPerformers
+								dateRange={dateRange}
+								data={
+									Array.isArray(topBottom?.bottom_agents)
+										? topBottom.bottom_agents.map((agent) => ({
+												id: agent.agentName,
+												name: agent.agentName,
+												revenue: agent.totalMCO,
+												bookings: agent.totalBookings,
+												badge: "Bottom Performer",
+										  }))
+										: []
+								}
+								showBottom={true}
 							/>
 						)}
 					</div>

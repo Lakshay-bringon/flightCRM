@@ -8,7 +8,7 @@
  * @returns {boolean} - True if the string is base64 encoded image
  */
 export const isBase64Image = (str) => {
-	if (!str || typeof str !== 'string') return false;
+	if (!str || typeof str !== "string") return false;
 
 	// Check for data URL format: data:image/[type];base64,[data]
 	const base64Pattern = /^data:image\/(jpeg|jpg|png|gif|bmp|webp);base64,/i;
@@ -21,11 +21,11 @@ export const isBase64Image = (str) => {
  * @returns {boolean} - True if the string is a URL
  */
 export const isUrl = (str) => {
-	if (!str || typeof str !== 'string') return false;
+	if (!str || typeof str !== "string") return false;
 
 	try {
 		const url = new URL(str);
-		return url.protocol === 'http:' || url.protocol === 'https:';
+		return url.protocol === "http:" || url.protocol === "https:";
 	} catch {
 		return false;
 	}
@@ -52,7 +52,7 @@ export const urlToBase64 = async (url) => {
 			reader.readAsDataURL(blob);
 		});
 	} catch (error) {
-		console.error('Error converting URL to base64:', error);
+		console.error("Error converting URL to base64:", error);
 		throw new Error(`Failed to convert URL to base64: ${error.message}`);
 	}
 };
@@ -65,7 +65,7 @@ export const urlToBase64 = async (url) => {
 export const fileToBase64 = (file) => {
 	return new Promise((resolve, reject) => {
 		if (!file || !(file instanceof File)) {
-			reject(new Error('Invalid file object'));
+			reject(new Error("Invalid file object"));
 			return;
 		}
 
@@ -97,13 +97,13 @@ export const convertImagesToBase64 = async (images) => {
 			try {
 				return await urlToBase64(image);
 			} catch (error) {
-				console.warn('Failed to convert URL to base64:', image, error);
+				console.warn("Failed to convert URL to base64:", image, error);
 				return null; // Return null for failed conversions
 			}
 		}
 
 		// If it's neither base64 nor URL, return null
-		console.warn('Unknown image format:', image);
+		console.warn("Unknown image format:", image);
 		return null;
 	});
 
@@ -138,7 +138,7 @@ export const processBookingImagesForApi = async (bookingData) => {
 					processedData.image_itinerary
 				);
 			} catch (error) {
-				console.warn('Failed to convert image_itinerary URL to base64:', error);
+				console.warn("Failed to convert image_itinerary URL to base64:", error);
 				// Keep the original value if conversion fails
 			}
 		}
@@ -154,7 +154,7 @@ export const processBookingImagesForApi = async (bookingData) => {
 				);
 			} catch (error) {
 				console.warn(
-					'Failed to convert itinerary_details URL to base64:',
+					"Failed to convert itinerary_details URL to base64:",
 					error
 				);
 				// Keep the original value if conversion fails
@@ -163,10 +163,10 @@ export const processBookingImagesForApi = async (bookingData) => {
 
 		// Process any other image fields that might exist in the booking data
 		const imageFields = [
-			'passport_copy',
-			'visa_copy',
-			'id_copy',
-			'payment_proof',
+			"passport_copy",
+			"visa_copy",
+			"id_copy",
+			"payment_proof",
 		];
 		for (const field of imageFields) {
 			if (processedData[field] && isUrl(processedData[field])) {
@@ -181,7 +181,7 @@ export const processBookingImagesForApi = async (bookingData) => {
 
 		return processedData;
 	} catch (error) {
-		console.error('Error processing booking images:', error);
+		console.error("Error processing booking images:", error);
 		return bookingData; // Return original data if processing fails
 	}
 };

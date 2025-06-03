@@ -7,3 +7,5 @@ export * from "./card/cardApi.js";
 export * from "./currency/currencyApi.js";
 export * from "./queue/queueApi.js";
 export * from "./booking/bookingApi.js";
+export * from "./revenue/revenueApi.js";
+export * from "./dashboard/dashboardApi.js";

@@ -1,42 +1,42 @@
-import React from 'react';
+import React from "react";
 import {
 	UserCircle,
 	Ticket,
 	Users,
 	CreditCard,
 	DollarSign,
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function BookingCard({ bookingDetails }) {
 	const navigate = useNavigate();
 
 	const getStatusColor = (status) => {
 		switch (status?.toLowerCase()) {
-			case 'confirmed':
-				return 'text-green-400 bg-green-400/10';
-			case 'pending':
-				return 'text-yellow-400 bg-yellow-400/10';
-			case 'cancelled':
-				return 'text-red-400 bg-red-400/10';
+			case "confirmed":
+				return "text-green-400 bg-green-400/10";
+			case "pending":
+				return "text-yellow-400 bg-yellow-400/10";
+			case "cancelled":
+				return "text-red-400 bg-red-400/10";
 			default:
-				return 'text-gray-400 bg-gray-400/10';
+				return "text-gray-400 bg-gray-400/10";
 		}
 	};
 	const getTransactionTypeLabel = (type) => {
-		if (!type) return 'N/A';
+		if (!type) return "N/A";
 
 		// Convert snake_case to proper case
 		return type
-			.split('_')
+			.split("_")
 			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-			.join(' ');
+			.join(" ");
 	};
 
 	return (
 		<div
 			className="p-4 hover:bg-gray-700/50 transition-all duration-200 cursor-pointer group border-b border-gray-700 last:border-b-0"
-			onClick={() => navigate(`/details/booking/${bookingDetails.BID}`)}
+			onClick={() => navigate(`/find-bookings/${bookingDetails.BID}`)}
 		>
 			<div className="flex items-start justify-between">
 				{/* Left Side - Main Info */}
@@ -50,7 +50,7 @@ export default function BookingCard({ bookingDetails }) {
 						</div>
 						<div className="flex flex-wrap gap-3 text-xs text-gray-400 mt-1">
 							<span className="flex items-center">
-								PNR:{' '}
+								PNR:{" "}
 								<span className="text-white ml-1">{bookingDetails.PNR}</span>
 							</span>
 
@@ -71,14 +71,14 @@ export default function BookingCard({ bookingDetails }) {
 							)}`}
 						>
 							{bookingDetails.status}
-						</span>{' '}
+						</span>{" "}
 						<span className="px-2 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400">
 							{getTransactionTypeLabel(bookingDetails.transactionType)}
 						</span>
 						<span className="px-2 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400">
 							{bookingDetails.provider}
 						</span>
-					</div>{' '}
+					</div>{" "}
 					<div className="flex items-center gap-3 text-xs text-gray-400">
 						<span className="flex items-center">
 							<UserCircle className="w-3 h-3 mr-1" />

@@ -1,642 +1,1476 @@
-import React from 'react';
+import React from "react";
+
+// Utility function to handle different image sources
+const getImageSrc = (imageData, baseUrl = "") => {
+	if (!imageData) return null;
+
+	// If it's already a complete URL (http/https)
+	if (imageData.startsWith("http://") || imageData.startsWith("https://")) {
+		return imageData;
+	}
+
+	// If it's a relative path, construct full URL
+	const baseRoute = import.meta.env.VITE_UPLOADS_BASE_URL || baseUrl;
+	return `${baseRoute}${imageData}`;
+};
 
 const EmailNewBooking = ({ bookingData }) => {
 	const {
-		airline_name = '',
-		customer_name = '',
-		pnr = '',
-		amount = '',
-		email = '',
-		phone = '',
-		card_holder = '',
-		card_number = '',
-		payment_method = 'VISA',
-		purchase_date = '',
-		billing_address = '',
-		city = '',
-		state = '',
-		zip = '',
-		country = 'US',
+		airline_name = "",
+		customer_name = "",
+		pnr = "",
+		amount = "",
+		email = "",
+		phone = "",
+		card_holder = "",
+		card_number = "",
+		payment_method = "VISA",
+		purchase_date = "",
+		billing_address = "",
+		city = "",
+		state = "",
+		zip = "",
+		country = "US",
 		passenger_data = [],
 		charge_data = [],
-		image_itinerary = '',
+		itinerary_details = "",
 		attachments = [],
-		currency = 'USD',
+		currency = "USD",
+		id = "",
+		bid = "",
 	} = bookingData;
 
-	// Format passenger details
-	const renderPassengerDetails = () => {
-		if (!passenger_data || passenger_data.length === 0) {
-			return (
-				<div className="passengers-table">
-					<table>
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Type</th>
-								<th>First Name</th>
-								<th>Middle Name</th>
-								<th>Last Name</th>
-								<th>Date of Birth</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>1</td>
-								<td>
-									<span className="passenger-type">ADT</span>
-								</td>
-								<td>Not provided</td>
-								<td>-</td>
-								<td>Not provided</td>
-								<td>Not provided</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			);
-		}
-
-		return (
-			<div className="passengers-table">
-				<table>
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Type</th>
-							<th>First Name</th>
-							<th>Middle Name</th>
-							<th>Last Name</th>
-							<th>Date of Birth</th>
-						</tr>
-					</thead>
-					<tbody>
-						{passenger_data.map((passenger, index) => {
-							const {
-								type = 'ADT',
-								firstName = '',
-								middleName = '',
-								lastName = '',
-								dob = '',
-							} = passenger;
-
-							return (
-								<tr key={index}>
-									<td>{index + 1}</td>
-									<td>
-										<span className="passenger-type">{type}</span>
-									</td>
-									<td>{firstName || 'Not provided'}</td>
-									<td>{middleName || '-'}</td>
-									<td>{lastName || 'Not provided'}</td>
-									<td>{dob || 'Not provided'}</td>
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-			</div>
-		);
-	};
-
-	// Format charges
-	const renderCharges = () => {
-		if (!charge_data || charge_data.length === 0) {
-			return (
-				<div className="charges-table">
-					<table>
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Amount</th>
-								<th>Description</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>1</td>
-								<td>
-									{amount || '0.00'} {currency}
-								</td>
-								<td>Total booking amount</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			);
-		}
-
-		return (
-			<div className="charges-table">
-				<table>
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Amount</th>
-							<th>Description</th>
-						</tr>
-					</thead>
-					<tbody>
-						{charge_data.map((charge, index) => {
-							const { amount: chargeAmount = '', description = '' } = charge;
-							return (
-								<tr key={index}>
-									<td>{index + 1}</td>
-									<td>
-										{chargeAmount || '0.00'} {currency}
-									</td>
-									<td>{description || 'No description'}</td>
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-			</div>
-		);
-	};
-
-	// Format attachments
-	const renderAttachments = () => {
-		if (!attachments || attachments.length === 0) {
-			return (
-				<div className="attachments-table">
-					<table>
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>File Name</th>
-								<th>Preview</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td colSpan="3" className="no-attachments">
-									No additional attachments
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			);
-		}
-
-		return (
-			<div className="attachments-table">
-				<table>
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>File Name</th>
-							<th>Preview</th>
-						</tr>
-					</thead>
-					<tbody>
-						{attachments.map((attachment, index) => (
-							<tr key={index}>
-								<td>{index + 1}</td>
-								<td>Attachment_{index + 1}.jpg</td>
-								<td className="attachment-preview">
-									<img
-										src={attachment}
-										alt={`Attachment ${index + 1}`}
-										className="attachment-thumbnail"
-									/>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
-		);
-	};
-
+	// Get the booking ID from either id or bid field
+	const bookingId = bid || id;
 	return (
-		<div>
-			<style>{`
-        * {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
-        }
-
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-          background: #0f172a;
-          color: #d1d5db;
-          line-height: 1.6;
-          padding: 20px;
-        }
-
-        .email-container {
-          max-width: 896px;
-          margin: 0 auto;
-          background: rgba(31, 41, 55, 0.5);
-          backdrop-filter: blur(16px);
-          border: 1px solid #374151;
-          border-radius: 12px;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-          overflow: hidden;
-        }
-
-        .email-content {
-          padding: 24px;
-        }        .header {
-          text-align: center;
-          margin-bottom: 24px;
-        }
-
-        .header h1 {
-          color: #ffffff;
-          font-size: 20px;
-          font-weight: 700;
-          line-height: 1.4;
-        }
-
-        .airline-input, .pnr-input {
-          background: transparent;
-          border: 0;
-          border-bottom: 1px dashed #6b7280;
-          color: #ffffff;
-          font-weight: 700;
-          text-transform: uppercase;
-          padding: 0 4px;
-          outline: none;
-          display: inline;
-        }
-
-        .airline-input:focus, .pnr-input:focus {
-          border-bottom: 1px dashed #3b82f6;
-        }
-
-        .section {
-          background: #1f2937;
-          border: 1px solid #374151;
-          border-radius: 8px;
-          padding: 16px;
-          margin-bottom: 24px;
-        }
-
-        .section-title {
-          color: #ffffff;
-          font-size: 16px;
-          font-weight: 600;
-          margin-bottom: 16px;
-          padding-bottom: 8px;
-          border-bottom: 1px solid #374151;
-        }
-
-        .intro-text {
-          line-height: 1.75;
-          margin-bottom: 16px;
-        }
-
-        .customer-name {
-          border-bottom: 1px dashed #6b7280;
-          padding: 0 4px;
-          color: #ffffff;
-          background: transparent;
-        }
-
-        .amount-input {
-          border-bottom: 1px dashed #6b7280;
-          padding: 0 4px;
-          color: #ffffff;
-          background: transparent;
-          min-width: 40px;
-        }
-
-        .currency-select {
-          background: #374151;
-          border: 1px solid #4b5563;
-          border-radius: 4px;
-          padding: 4px 8px;
-          font-size: 14px;
-          color: #ffffff;
-          margin-left: 8px;
-        }
-
-        .charges-table, .passengers-table, .attachments-table {
-          background: #111827;
-          border: 1px solid #374151;
-          border-radius: 8px;
-          overflow: hidden;
-        }
-
-        .charges-table table, .passengers-table table, .attachments-table table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 0;
-        }
-
-        .charges-table th, .charges-table td,
-        .passengers-table th, .passengers-table td,
-        .attachments-table th, .attachments-table td {
-          padding: 12px 16px;
-          text-align: left;
-          border-bottom: 1px solid #374151;
-        }
-
-        .charges-table th, .passengers-table th, .attachments-table th {
-          background: #1f2937;
-          color: #ffffff;
-          font-weight: 600;
-          font-size: 14px;
-          text-transform: uppercase;
-          letter-spacing: 0.025em;
-        }
-
-        .charges-table td, .passengers-table td, .attachments-table td {
-          color: #d1d5db;
-          font-size: 14px;
-        }
-
-        .passenger-type {
-          background: #1e40af;
-          color: #ffffff;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 600;
-        }
-
-        .attachment-thumbnail {
-          max-width: 80px;
-          max-height: 60px;
-          border: 1px solid #374151;
-          border-radius: 4px;
-          object-fit: cover;
-        }
-
-        .no-attachments {
-          color: #6b7280;
-          font-style: italic;
-          text-align: center;
-          padding: 16px;
-        }
-
-        .purchase-summary-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 12px;
-          background: #111827;
-          border: 1px solid #374151;
-          border-radius: 8px;
-          padding: 12px;
-        }
-
-        .grid-item {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          padding: 8px 10px;
-          background: #1f2937;
-          border: 1px solid #374151;
-          border-radius: 4px;
-        }
-
-        .grid-item label {
-          color: #9ca3af;
-          font-size: 12px;
-          font-weight: 500;
-        }
-
-        .grid-item .value {
-          color: #ffffff;
-          font-size: 13px;
-          font-weight: 500;
-        }
-
-        .itinerary-image {
-          max-width: 100%;
-          height: auto;
-          border: 1px solid #374151;
-          border-radius: 8px;
-          margin: 16px 0;
-        }
-
-        .authorization-section {
-          background: #1f2937;
-          border: 1px solid #374151;
-          border-radius: 8px;
-          padding: 24px;
-          margin: 24px 0;
-          line-height: 1.75;
-        }
-
-        .auth-title {
-          color: #ffffff;
-          font-size: 18px;
-          font-weight: 600;
-          margin-bottom: 16px;
-          text-align: center;
-        }
-
-        .auth-paragraph {
-          color: #d1d5db;
-          margin-bottom: 16px;
-          text-align: justify;
-        }
-
-        .auth-highlight {
-          color: #10b981;
-          font-weight: 600;
-          background: rgba(16, 185, 129, 0.1);
-          padding: 2px 6px;
-          border-radius: 4px;
-          border-bottom: 1px solid #10b981;
-        }
-
-        .auth-button-container {
-          text-align: center;
-          margin-top: 24px;
-        }
-
-        .auth-button {
-          background: linear-gradient(135deg, #10b981, #059669);
-          color: #ffffff;
-          border: none;
-          padding: 12px 32px;
-          border-radius: 8px;
-          font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer {
-          text-align: center;
-          padding: 24px;
-          border-top: 1px solid #374151;
-          background: rgba(17, 24, 39, 0.5);
-          color: #6b7280;
-          font-size: 14px;
-        }
-      `}</style>
-
-			<div className="email-container">
-				<div className="email-content">
-					{' '}
+		<div
+			style={{
+				fontFamily:
+					"-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+				background: "#0f172a",
+				color: "#d1d5db",
+				lineHeight: "1.6",
+				padding: "20px",
+				margin: "0",
+				boxSizing: "border-box",
+			}}
+		>
+			<div
+				style={{
+					maxWidth: "896px",
+					margin: "0 auto",
+					background: "rgba(31, 41, 55, 0.9)",
+					border: "1px solid #374151",
+					borderRadius: "12px",
+					boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+					overflow: "hidden",
+				}}
+			>
+				{" "}
+				<div style={{ padding: "24px" }}>
 					{/* Header */}
-					<div className="header">
-						<h1>
-							<span className="airline-input">
-								{airline_name || 'AIRLINE NAME'}
-							</span>{' '}
-							RESERVATION CONFIRMATION –{' '}
-							<span className="pnr-input">{pnr || 'PNR'}</span>
+					<div style={{ textAlign: "center", marginBottom: "24px" }}>
+						<h1
+							style={{
+								color: "#ffffff",
+								fontSize: "20px",
+								fontWeight: "700",
+								lineHeight: "1.4",
+								margin: "0",
+							}}
+						>
+							<span
+								style={{
+									background: "transparent",
+									border: "0",
+									borderBottom: "1px dashed #6b7280",
+									color: "#ffffff",
+									fontWeight: "700",
+									textTransform: "uppercase",
+									padding: "0 4px",
+									outline: "none",
+									display: "inline",
+								}}
+							>
+								{airline_name || "AIRLINE NAME"}
+							</span>{" "}
+							RESERVATION CONFIRMATION –{" "}
+							<span
+								style={{
+									background: "transparent",
+									border: "0",
+									borderBottom: "1px dashed #6b7280",
+									color: "#ffffff",
+									fontWeight: "700",
+									textTransform: "uppercase",
+									padding: "0 4px",
+									outline: "none",
+									display: "inline",
+									minWidth: "60px",
+								}}
+							>
+								{pnr || "PNR"}
+							</span>
 						</h1>
-					</div>
+					</div>{" "}
 					{/* Introduction Section */}
-					<div className="section">
-						<div className="intro-text">
-							Dear{' '}
-							<span className="customer-name">
-								{customer_name || 'Customer Name'}
+					<div
+						style={{
+							background: "#1f2937",
+							border: "1px solid #374151",
+							borderRadius: "8px",
+							padding: "16px",
+							marginBottom: "24px",
+						}}
+					>
+						<div style={{ lineHeight: "1.75", marginBottom: "16px" }}>
+							Dear{" "}
+							<span
+								style={{
+									borderBottom: "1px dashed #6b7280",
+									padding: "0 4px",
+									color: "#ffffff",
+									background: "transparent",
+								}}
+							>
+								{customer_name || "FIRST NAME OF CUSTOMER"}
 							</span>
 							,
 						</div>
-						<div className="intro-text">Thank you for contacting us!</div>
-						<div className="intro-text">
+						<div style={{ lineHeight: "1.75", marginBottom: "16px" }}>
+							Thank you for contacting us!
+						</div>
+						<div style={{ lineHeight: "1.75", marginBottom: "16px" }}>
 							You can contact us on this number +1-877-413-0030 for any related
 							request.
 						</div>
-						<div className="intro-text">
+						<div style={{ lineHeight: "1.75", marginBottom: "16px" }}>
 							As per our conversation and as agreed, we have booked your
-							reservation under Confirmation number
-							<span className="customer-name"> {pnr || 'PNR'}</span> on
-							<span className="customer-name">
-								{' '}
-								{airline_name || 'AIRLINE NAME'}
-							</span>{' '}
+							reservation under Confirmation Number
+							<span
+								style={{
+									borderBottom: "1px dashed #6b7280",
+									padding: "0 4px",
+									color: "#ffffff",
+									background: "transparent",
+								}}
+							>
+								{" "}
+								{pnr || "PNR"}
+							</span>{" "}
+							on
+							<span
+								style={{
+									borderBottom: "1px dashed #6b7280",
+									padding: "0 4px",
+									color: "#ffffff",
+									background: "transparent",
+								}}
+							>
+								{" "}
+								{airline_name || "AIRLINE NAME"}
+							</span>{" "}
 							with a charge of
-							<span className="amount-input"> {amount || '0.00'}</span>
-							<select className="currency-select" disabled>
-								<option>{currency}</option>
-							</select>
-							(Including all taxes and fees) as per the below description.
+							<span
+								style={{
+									borderBottom: "1px dashed #6b7280",
+									padding: "0 4px",
+									color: "#ffffff",
+									background: "transparent",
+									minWidth: "40px",
+								}}
+							>
+								{" "}
+								{amount || "0.00"} {currency}
+							</span>
+							all inclusive of taxes and fees as per the below description.
 						</div>
-					</div>
+					</div>{" "}
 					{/* Charges Description Section */}
-					<div className="section">
-						<div className="section-title">Charges Description</div>
-						{renderCharges()}
-					</div>
-					{/* Itinerary Details Section */}
-					<div className="section">
-						<div className="section-title">Itinerary Details</div>
-						{image_itinerary ? (
-							<div style={{ textAlign: 'center' }}>
+					<div
+						style={{
+							background: "#1f2937",
+							border: "1px solid #374151",
+							borderRadius: "8px",
+							padding: "16px",
+							marginBottom: "24px",
+						}}
+					>
+						<div
+							style={{
+								color: "#ffffff",
+								fontSize: "16px",
+								fontWeight: "600",
+								marginBottom: "16px",
+								paddingBottom: "8px",
+								borderBottom: "1px solid #374151",
+							}}
+						>
+							Charges Description
+						</div>
+						<div
+							style={{
+								background: "#111827",
+								border: "1px solid #374151",
+								borderRadius: "8px",
+								overflow: "hidden",
+							}}
+						>
+							<table
+								style={{
+									width: "100%",
+									borderCollapse: "collapse",
+									margin: "0",
+								}}
+							>
+								<thead>
+									<tr>
+										<th
+											style={{
+												padding: "12px 16px",
+												textAlign: "left",
+												borderBottom: "1px solid #374151",
+												background: "#1f2937",
+												color: "#ffffff",
+												fontWeight: "600",
+												fontSize: "14px",
+												textTransform: "uppercase",
+												letterSpacing: "0.025em",
+											}}
+										>
+											#
+										</th>
+										<th
+											style={{
+												padding: "12px 16px",
+												textAlign: "left",
+												borderBottom: "1px solid #374151",
+												background: "#1f2937",
+												color: "#ffffff",
+												fontWeight: "600",
+												fontSize: "14px",
+												textTransform: "uppercase",
+												letterSpacing: "0.025em",
+											}}
+										>
+											Amount
+										</th>
+										<th
+											style={{
+												padding: "12px 16px",
+												textAlign: "left",
+												borderBottom: "1px solid #374151",
+												background: "#1f2937",
+												color: "#ffffff",
+												fontWeight: "600",
+												fontSize: "14px",
+												textTransform: "uppercase",
+												letterSpacing: "0.025em",
+											}}
+										>
+											Description
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{charge_data.map((charge, index) => {
+										const { amount: chargeAmount = "", description = "" } =
+											charge;
+										return (
+											<tr key={index}>
+												<td
+													style={{
+														padding: "12px 16px",
+														textAlign: "left",
+														borderBottom:
+															index === charge_data.length - 1
+																? "none"
+																: "1px solid #374151",
+														color: "#d1d5db",
+														fontSize: "14px",
+													}}
+												>
+													{index + 1}
+												</td>
+												<td
+													style={{
+														padding: "12px 16px",
+														textAlign: "left",
+														borderBottom:
+															index === charge_data.length - 1
+																? "none"
+																: "1px solid #374151",
+														color: "#d1d5db",
+														fontSize: "14px",
+													}}
+												>
+													{chargeAmount || "0.00"} {currency}
+												</td>
+												<td
+													style={{
+														padding: "12px 16px",
+														textAlign: "left",
+														borderBottom:
+															index === charge_data.length - 1
+																? "none"
+																: "1px solid #374151",
+														color: "#d1d5db",
+														fontSize: "14px",
+													}}
+												>
+													{description || "No description"}
+												</td>
+											</tr>
+										);
+									})}
+								</tbody>
+							</table>
+						</div>
+					</div>{" "}
+					{/* Flight Details Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							border: "1px solid #374151",
+							borderRadius: "8px",
+							padding: "16px",
+							marginBottom: "24px",
+						}}
+					>
+						<div
+							style={{
+								color: "#ffffff",
+								fontSize: "16px",
+								fontWeight: "600",
+								marginBottom: "16px",
+								paddingBottom: "8px",
+								borderBottom: "1px solid #374151",
+							}}
+						>
+							Flight Details
+						</div>{" "}
+						{itinerary_details ? (
+							<div style={{ textAlign: "center" }}>
 								<img
-									src={image_itinerary}
+									src={getImageSrc(itinerary_details)}
 									alt="Flight Itinerary"
-									className="itinerary-image"
+									style={{
+										display: "block",
+										maxWidth: "100%",
+										height: "auto",
+										margin: "0 auto",
+										border: "1px solid #374151",
+										borderRadius: "8px",
+									}}
 								/>
 							</div>
 						) : (
-							<p className="no-attachments">No itinerary image provided</p>
+							<p
+								style={{
+									color: "#6b7280",
+									fontStyle: "italic",
+									textAlign: "center",
+									padding: "16px",
+									margin: "0",
+								}}
+							>
+								No itinerary image provided
+							</p>
 						)}
-					</div>
+					</div>{" "}
 					{/* Passenger Details Section */}
-					<div className="section">
-						<div className="section-title">Passenger Details</div>
-						{renderPassengerDetails()}
-					</div>
-					{/* Attachments Section */}
-					<div className="section">
-						<div className="section-title">Attachments</div>
-						{renderAttachments()}
-					</div>
+					<div
+						style={{
+							background: "#1f2937",
+							border: "1px solid #374151",
+							borderRadius: "8px",
+							padding: "16px",
+							marginBottom: "24px",
+						}}
+					>
+						<div
+							style={{
+								color: "#ffffff",
+								fontSize: "16px",
+								fontWeight: "600",
+								marginBottom: "16px",
+								paddingBottom: "8px",
+								borderBottom: "1px solid #374151",
+							}}
+						>
+							Passenger Details
+						</div>
+						<div
+							style={{
+								background: "#111827",
+								border: "1px solid #374151",
+								borderRadius: "8px",
+								overflow: "hidden",
+							}}
+						>
+							<table
+								style={{
+									width: "100%",
+									borderCollapse: "collapse",
+									margin: "0",
+								}}
+							>
+								<thead>
+									<tr>
+										<th
+											style={{
+												padding: "12px 16px",
+												textAlign: "left",
+												borderBottom: "1px solid #374151",
+												background: "#1f2937",
+												color: "#ffffff",
+												fontWeight: "600",
+												fontSize: "14px",
+												textTransform: "uppercase",
+												letterSpacing: "0.025em",
+											}}
+										>
+											#
+										</th>
+										<th
+											style={{
+												padding: "12px 16px",
+												textAlign: "left",
+												borderBottom: "1px solid #374151",
+												background: "#1f2937",
+												color: "#ffffff",
+												fontWeight: "600",
+												fontSize: "14px",
+												textTransform: "uppercase",
+												letterSpacing: "0.025em",
+											}}
+										>
+											Type
+										</th>
+										<th
+											style={{
+												padding: "12px 16px",
+												textAlign: "left",
+												borderBottom: "1px solid #374151",
+												background: "#1f2937",
+												color: "#ffffff",
+												fontWeight: "600",
+												fontSize: "14px",
+												textTransform: "uppercase",
+												letterSpacing: "0.025em",
+											}}
+										>
+											First Name
+										</th>
+										<th
+											style={{
+												padding: "12px 16px",
+												textAlign: "left",
+												borderBottom: "1px solid #374151",
+												background: "#1f2937",
+												color: "#ffffff",
+												fontWeight: "600",
+												fontSize: "14px",
+												textTransform: "uppercase",
+												letterSpacing: "0.025em",
+											}}
+										>
+											Middle Name
+										</th>
+										<th
+											style={{
+												padding: "12px 16px",
+												textAlign: "left",
+												borderBottom: "1px solid #374151",
+												background: "#1f2937",
+												color: "#ffffff",
+												fontWeight: "600",
+												fontSize: "14px",
+												textTransform: "uppercase",
+												letterSpacing: "0.025em",
+											}}
+										>
+											Last Name
+										</th>
+										<th
+											style={{
+												padding: "12px 16px",
+												textAlign: "left",
+												borderBottom: "1px solid #374151",
+												background: "#1f2937",
+												color: "#ffffff",
+												fontWeight: "600",
+												fontSize: "14px",
+												textTransform: "uppercase",
+												letterSpacing: "0.025em",
+											}}
+										>
+											Date of Birth
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{passenger_data && passenger_data.length > 0 ? (
+										passenger_data.map((passenger, index) => {
+											const {
+												type = "ADT",
+												firstName = "",
+												middleName = "",
+												lastName = "",
+												dob = "",
+											} = passenger;
+
+											return (
+												<tr key={index}>
+													<td
+														style={{
+															padding: "12px 16px",
+															textAlign: "left",
+															borderBottom:
+																index === passenger_data.length - 1
+																	? "none"
+																	: "1px solid #374151",
+															color: "#d1d5db",
+															fontSize: "14px",
+														}}
+													>
+														{index + 1}
+													</td>
+													<td
+														style={{
+															padding: "12px 16px",
+															textAlign: "left",
+															borderBottom:
+																index === passenger_data.length - 1
+																	? "none"
+																	: "1px solid #374151",
+															color: "#d1d5db",
+															fontSize: "14px",
+														}}
+													>
+														<span
+															style={{
+																background: "#1e40af",
+																color: "#ffffff",
+																padding: "4px 8px",
+																borderRadius: "4px",
+																fontSize: "12px",
+																fontWeight: "600",
+															}}
+														>
+															{type}
+														</span>
+													</td>
+													<td
+														style={{
+															padding: "12px 16px",
+															textAlign: "left",
+															borderBottom:
+																index === passenger_data.length - 1
+																	? "none"
+																	: "1px solid #374151",
+															color: "#d1d5db",
+															fontSize: "14px",
+														}}
+													>
+														{firstName || "Not provided"}
+													</td>
+													<td
+														style={{
+															padding: "12px 16px",
+															textAlign: "left",
+															borderBottom:
+																index === passenger_data.length - 1
+																	? "none"
+																	: "1px solid #374151",
+															color: "#d1d5db",
+															fontSize: "14px",
+														}}
+													>
+														{middleName || "-"}
+													</td>
+													<td
+														style={{
+															padding: "12px 16px",
+															textAlign: "left",
+															borderBottom:
+																index === passenger_data.length - 1
+																	? "none"
+																	: "1px solid #374151",
+															color: "#d1d5db",
+															fontSize: "14px",
+														}}
+													>
+														{lastName || "Not provided"}
+													</td>
+													<td
+														style={{
+															padding: "12px 16px",
+															textAlign: "left",
+															borderBottom:
+																index === passenger_data.length - 1
+																	? "none"
+																	: "1px solid #374151",
+															color: "#d1d5db",
+															fontSize: "14px",
+														}}
+													>
+														{dob || "Not provided"}
+													</td>
+												</tr>
+											);
+										})
+									) : (
+										<tr>
+											<td
+												style={{
+													padding: "12px 16px",
+													textAlign: "left",
+													color: "#d1d5db",
+													fontSize: "14px",
+												}}
+											>
+												1
+											</td>
+											<td
+												style={{
+													padding: "12px 16px",
+													textAlign: "left",
+													color: "#d1d5db",
+													fontSize: "14px",
+												}}
+											>
+												<span
+													style={{
+														background: "#1e40af",
+														color: "#ffffff",
+														padding: "4px 8px",
+														borderRadius: "4px",
+														fontSize: "12px",
+														fontWeight: "600",
+													}}
+												>
+													ADT
+												</span>
+											</td>
+											<td
+												style={{
+													padding: "12px 16px",
+													textAlign: "left",
+													color: "#d1d5db",
+													fontSize: "14px",
+												}}
+											>
+												Not provided
+											</td>
+											<td
+												style={{
+													padding: "12px 16px",
+													textAlign: "left",
+													color: "#d1d5db",
+													fontSize: "14px",
+												}}
+											>
+												-
+											</td>
+											<td
+												style={{
+													padding: "12px 16px",
+													textAlign: "left",
+													color: "#d1d5db",
+													fontSize: "14px",
+												}}
+											>
+												Not provided
+											</td>
+											<td
+												style={{
+													padding: "12px 16px",
+													textAlign: "left",
+													color: "#d1d5db",
+													fontSize: "14px",
+												}}
+											>
+												Not provided
+											</td>
+										</tr>
+									)}
+								</tbody>
+							</table>
+						</div>
+					</div>{" "}
 					{/* Purchase Summary Section */}
-					<div className="section">
-						<div className="section-title">Purchase Summary</div>
-						<div className="purchase-summary-grid">
-							<div className="grid-item">
-								<label>Card Holder:</label>
-								<span className="value">
-									{card_holder || customer_name || 'Not provided'}
+					<div
+						style={{
+							background: "#1f2937",
+							border: "1px solid #374151",
+							borderRadius: "8px",
+							padding: "16px",
+							marginBottom: "24px",
+						}}
+					>
+						<div
+							style={{
+								color: "#ffffff",
+								fontSize: "16px",
+								fontWeight: "600",
+								marginBottom: "16px",
+								paddingBottom: "8px",
+								borderBottom: "1px solid #374151",
+							}}
+						>
+							Purchase Summary
+						</div>
+						<div
+							style={{
+								display: "grid",
+								gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+								gap: "12px",
+								background: "#111827",
+								border: "1px solid #374151",
+								borderRadius: "8px",
+								padding: "12px",
+							}}
+						>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									padding: "8px 10px",
+									background: "#1f2937",
+									border: "1px solid #374151",
+									borderRadius: "4px",
+								}}
+							>
+								<label
+									style={{
+										color: "#9ca3af",
+										fontSize: "12px",
+										fontWeight: "500",
+										margin: "0",
+									}}
+								>
+									Name of Card Holder:
+								</label>
+								<span
+									style={{
+										color: "#ffffff",
+										fontSize: "13px",
+										fontWeight: "500",
+									}}
+								>
+									{card_holder || customer_name || "Not provided"}
 								</span>
 							</div>
-							<div className="grid-item">
-								<label>Email:</label>
-								<span className="value">{email || 'Not provided'}</span>
-							</div>
-							<div className="grid-item">
-								<label>Phone:</label>
-								<span className="value">{phone || 'Not provided'}</span>
-							</div>
-							<div className="grid-item">
-								<label>Billing Address:</label>
-								<span className="value">
-									{billing_address || 'Not provided'}
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									padding: "8px 10px",
+									background: "#1f2937",
+									border: "1px solid #374151",
+									borderRadius: "4px",
+								}}
+							>
+								<label
+									style={{
+										color: "#9ca3af",
+										fontSize: "12px",
+										fontWeight: "500",
+										margin: "0",
+									}}
+								>
+									Email ID:
+								</label>
+								<span
+									style={{
+										color: "#ffffff",
+										fontSize: "13px",
+										fontWeight: "500",
+									}}
+								>
+									{email || "Not provided"}
 								</span>
 							</div>
-							<div className="grid-item">
-								<label>City:</label>
-								<span className="value">{city || 'Not provided'}</span>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									padding: "8px 10px",
+									background: "#1f2937",
+									border: "1px solid #374151",
+									borderRadius: "4px",
+								}}
+							>
+								<label
+									style={{
+										color: "#9ca3af",
+										fontSize: "12px",
+										fontWeight: "500",
+										margin: "0",
+									}}
+								>
+									Billing Phone Number:
+								</label>
+								<span
+									style={{
+										color: "#ffffff",
+										fontSize: "13px",
+										fontWeight: "500",
+									}}
+								>
+									{phone || "Not provided"}
+								</span>
 							</div>
-							<div className="grid-item">
-								<label>State:</label>
-								<span className="value">{state || 'Not provided'}</span>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									padding: "8px 10px",
+									background: "#1f2937",
+									border: "1px solid #374151",
+									borderRadius: "4px",
+								}}
+							>
+								<label
+									style={{
+										color: "#9ca3af",
+										fontSize: "12px",
+										fontWeight: "500",
+										margin: "0",
+									}}
+								>
+									Billing Address:
+								</label>
+								<span
+									style={{
+										color: "#ffffff",
+										fontSize: "13px",
+										fontWeight: "500",
+									}}
+								>
+									{billing_address || "Not provided"}
+								</span>
 							</div>
-							<div className="grid-item">
-								<label>ZIP:</label>
-								<span className="value">{zip || 'Not provided'}</span>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									padding: "8px 10px",
+									background: "#1f2937",
+									border: "1px solid #374151",
+									borderRadius: "4px",
+								}}
+							>
+								<label
+									style={{
+										color: "#9ca3af",
+										fontSize: "12px",
+										fontWeight: "500",
+										margin: "0",
+									}}
+								>
+									Method of Payment:
+								</label>
+								<span
+									style={{
+										color: "#ffffff",
+										fontSize: "13px",
+										fontWeight: "500",
+									}}
+								>
+									{payment_method || "VISA"}
+								</span>
 							</div>
-							<div className="grid-item">
-								<label>Country:</label>
-								<span className="value">{country || 'US'}</span>
-							</div>
-							<div className="grid-item">
-								<label>Payment Method:</label>
-								<span className="value">{payment_method || 'VISA'}</span>
-							</div>
-							<div className="grid-item">
-								<label>Purchase Date:</label>
-								<span className="value">
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									padding: "8px 10px",
+									background: "#1f2937",
+									border: "1px solid #374151",
+									borderRadius: "4px",
+								}}
+							>
+								<label
+									style={{
+										color: "#9ca3af",
+										fontSize: "12px",
+										fontWeight: "500",
+										margin: "0",
+									}}
+								>
+									Date of Purchase:
+								</label>
+								<span
+									style={{
+										color: "#ffffff",
+										fontSize: "13px",
+										fontWeight: "500",
+									}}
+								>
 									{purchase_date || new Date().toLocaleDateString()}
 								</span>
 							</div>
 						</div>
-					</div>
-					{/* Authorization Section */}
-					<div className="authorization-section">
-						<div className="auth-title">Authorization</div>
-						<p className="auth-paragraph">
-							"I hereby certify that I,{' '}
-							<span className="auth-highlight">
-								{card_holder || '___________'}
-							</span>
-							, am the authorized user of the{' '}
-							<span className="auth-highlight">{payment_method || 'VISA'}</span>{' '}
-							bearing the number{' '}
-							<span className="auth-highlight">
-								{card_number || '___________'}
-							</span>
-							, and I will not dispute the payment with my credit/debit card
-							company or bank. I acknowledge that this amount is being charged
-							for my personal travel expenses."
-						</p>
-						<div className="auth-button-container">
-							<button
-								className="auth-button"
-								onClick={() =>
-									alert(
-										'Authorization confirmed! This booking is now authorized.'
-									)
-								}
-							>
-								✓ I Authorize This Transaction
-							</button>
+					</div>{" "}
+					{/* Review Information */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							Make sure that the displayed flight information is as you planned.
+							Please review the Names, Dates, Cities, and Departure – Arrival
+							times properly.
 						</div>
 					</div>
-				</div>
-
-				<div className="footer">
-					<p>
-						This booking confirmation was generated on{' '}
+					{/* Authorization Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							border: "1px solid #374151",
+							borderRadius: "8px",
+							padding: "24px",
+							margin: "24px 0",
+							lineHeight: "1.75",
+						}}
+					>
+						<p
+							style={{
+								color: "#d1d5db",
+								marginBottom: "16px",
+								textAlign: "justify",
+								margin: "0 0 16px 0",
+							}}
+						>
+							I certify that I{" "}
+							<span
+								style={{
+									color: "#10b981",
+									fontWeight: "600",
+									background: "rgba(16, 185, 129, 0.1)",
+									padding: "2px 6px",
+									borderRadius: "4px",
+									borderBottom: "1px solid #10b981",
+								}}
+							>
+								{card_holder || "CARD HOLDER NAME"}
+							</span>{" "}
+							is the authorized user of this card and I will not dispute the
+							payment with my credit/debit card company/bank as this amount is
+							being charged for my personal travel.
+						</p>
+						<p
+							style={{
+								color: "#d1d5db",
+								marginBottom: "16px",
+								textAlign: "justify",
+								margin: "0 0 16px 0",
+							}}
+						>
+							Awaiting your acceptance to the declaration "I Agree / I
+							Authorize".
+						</p>{" "}
+						<div style={{ textAlign: "center", marginTop: "24px" }}>
+							<a
+								href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bookingId}`}
+								style={{
+									background: "linear-gradient(135deg, #10b981, #059669)",
+									color: "#ffffff",
+									border: "none",
+									padding: "12px 32px",
+									borderRadius: "8px",
+									fontSize: "16px",
+									fontWeight: "600",
+									cursor: "pointer",
+									boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+									textDecoration: "none",
+									display: "inline-block",
+								}}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								✓ I Agree / I Authorize
+							</a>
+						</div>
+					</div>{" "}
+					{/* Important Notes Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "16px",
+							}}
+						>
+							Baggage fee may apply. Check with the airline for the most updated
+							baggage rules.
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "16px",
+							}}
+						>
+							<strong style={{ color: "#fbbf24" }}>Important:</strong> Your
+							e-tickets will be sent to you via email within 24 hours or early
+							if there is no delay from the airline's end. Please note that
+							fares are not guaranteed until paid and ticketed. If there will be
+							any restrictions, updates, or concerns from the airline, we will
+							contact you via email or phone. In case, you would like to make
+							any changes to this itinerary after the tickets are issued, you
+							will be responsible for the additional penalties, fare difference,
+							and fees.
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							<strong style={{ color: "#fbbf24" }}>Note:</strong> As agreed,
+							your credit card may be billed in split charges not exceeding the
+							total amount. All transaction service fees are 100%
+							non-refundable.
+						</div>
+					</div>{" "}
+					{/* Disclaimer Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#fbbf24",
+								fontSize: "18px",
+								fontWeight: "600",
+								marginBottom: "16px",
+							}}
+						>
+							Disclaimer
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "16px",
+							}}
+						>
+							SkylineTravels LLC is an independent travel Agency with no
+							third-party association. We shall not be associated with or
+							considered as an airline or an ally of any of the airlines or
+							brands. SkylineTravels is shown on your bank account details in
+							most cases. However, sometimes we have to split the payment with
+							the airline. SkylineTravels and the airline or another company of
+							that organization both will appear as recipients on your account.
+							All the service fee and convenience fee is non-refundable.
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							In case of any discrepancy and if an amendment is required, please
+							feel free to contact us at +1-877-413-0030 or email us at
+							booking@skylinetravelsllc.com within 24 hours and we will be happy
+							to assist you.
+						</div>
+					</div>{" "}
+					{/* Important Information Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#fbbf24",
+								fontSize: "18px",
+								fontWeight: "600",
+								marginBottom: "16px",
+							}}
+						>
+							Important Information
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "12px",
+							}}
+						>
+							Please review your itinerary carefully to ensure that the
+							following key items are correct:
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "12px",
+							}}
+						>
+							• Passenger names must be the same as on the passport
+							(International travel) OR any government-approved photo ID proof
+							for Domestic travel.
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "12px",
+							}}
+						>
+							• We advise all passengers to ensure that all travel documents
+							including Passports and required visas are issued and presented at
+							the time of travel.
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "12px",
+							}}
+						>
+							• All passengers are recommended to be present at the airport 3
+							hours before departure for international departures, and 2 before
+							domestic travel.
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "12px",
+							}}
+						>
+							• All International flights must be confirmed 72 hours before
+							departure.
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "12px",
+							}}
+						>
+							• Review departure/arrival dates, times, origin/destination
+							cities, stopovers, and connections.
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							• In case you get notified that your credit card was declined,
+							please call us right away at +1-877-413-0030. At least one adult
+							must accompany children below the age of 18 years. Children 12
+							years & above are considered adults for pricing purposes.
+						</div>
+					</div>{" "}
+					{/* Changes Query Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#fbbf24",
+								fontSize: "18px",
+								fontWeight: "600",
+								marginBottom: "16px",
+							}}
+						>
+							For Changes Query
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							Call us at +1-877-413-0030 to make any kind of changes to the
+							itinerary. Fees will apply due to airline penalties, fare
+							differences, and other factors to change the itinerary.
+						</div>
+					</div>
+					{/* Cancellations Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#fbbf24",
+								fontSize: "18px",
+								fontWeight: "600",
+								marginBottom: "16px",
+							}}
+						>
+							For Cancellations
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							• Call us at +1-877-413-0030, booking should be canceled at least
+							3-4 hours before the scheduled departure time of your flight to
+							avoid a no-show for a future travel / Refund credit if allowed by
+							the airline. Cancellations can only be processed over the phone.
+						</div>
+					</div>
+					{/* Seat Assignments Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#fbbf24",
+								fontSize: "18px",
+								fontWeight: "600",
+								marginBottom: "16px",
+							}}
+						>
+							Seat Assignments
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							Most airlines have restricted rules for advance seat assignment
+							and can only be done with a fee. Some fare restrictions only allow
+							seat assignment at the airport during the time of check-in. Please
+							refer to each operating airline for the most restricted rules.
+							Call us at +1-877-413-0030 for seat assignment, if applicable.
+						</div>
+					</div>
+					{/* Baggage Policy Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#fbbf24",
+								fontSize: "18px",
+								fontWeight: "600",
+								marginBottom: "16px",
+							}}
+						>
+							Baggage Policy
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							Your reservation may have a restricted baggage allowance and some
+							airlines may charge an additional fee for each allowed checked-in
+							or carry-on bag. Please refer to each operating airline for the
+							most restricted rules. Call us at +1-877-413-0030 for baggage, if
+							applicable.
+						</div>
+					</div>
+					{/* Visa/Travel Documents Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#fbbf24",
+								fontSize: "18px",
+								fontWeight: "600",
+								marginBottom: "16px",
+							}}
+						>
+							Visa/Travel Documents
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							All customers are advised to verify travel documents (transit
+							visa/entry visa) for the country through which they are transiting
+							or entering. We will not be responsible if proper travel documents
+							are not available and you are denied entry or transit into a
+							Country. We request you consult the embassy of the country(s) you
+							are visiting or transiting through. Please visit TSA for any
+							questions regarding this, as well as information on check-in
+							procedures and airport security.
+						</div>
+					</div>
+					{/* Check-In Section */}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#fbbf24",
+								fontSize: "18px",
+								fontWeight: "600",
+								marginBottom: "16px",
+							}}
+						>
+							Check-In
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							We recommend arriving at the airport 3 hours before your departure
+							for international flights and 2 hours before your departure for
+							domestic flights. For the most updated check-in rules, please
+							contact Airlines or TSA directly.
+						</div>
+					</div>
+					{/* Contact Information Section */}{" "}
+					<div
+						style={{
+							background: "#1f2937",
+							borderRadius: "8px",
+							padding: "24px",
+							marginBottom: "24px",
+							border: "1px solid #374151",
+						}}
+					>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+								marginBottom: "16px",
+							}}
+						>
+							Still, have questions? Call us at +1-877-413-0030. Our agents are
+							available 24 hours a day, 7 days a week to assist you. You can
+							also email us at booking@skylinetravelsllc.com
+						</div>
+						<div
+							style={{
+								color: "#d1d5db",
+								fontSize: "16px",
+								lineHeight: "1.6",
+							}}
+						>
+							We value your business and look forward to serving your travel
+							needs in the near future.
+						</div>
+					</div>
+				</div>{" "}
+				{/* Footer Section */}
+				<div
+					style={{
+						textAlign: "center",
+						padding: "24px",
+						borderTop: "1px solid #374151",
+						background: "rgba(17, 24, 39, 0.5)",
+						color: "#6b7280",
+						fontSize: "14px",
+					}}
+				>
+					<p style={{ margin: "0 0 8px 0" }}>
+						This booking confirmation was generated on{" "}
 						{new Date().toLocaleDateString()}
 					</p>
-					<p>SkylineTravels LLC &copy; 2025. All rights reserved.</p>
+					<p style={{ margin: "0" }}>
+						SkylineTravels LLC &copy; 2025. All rights reserved.
+					</p>
 				</div>
 			</div>
 		</div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
 	DollarSign,
@@ -11,14 +11,22 @@ import {
 } from "lucide-react";
 import { StatsCard } from "../../features/dashboard/widgets/StatsCard";
 import { TimelineSelector } from "../../components/common";
+import { getUserListApi } from "../../api/user/userApi";
+import { getProvidersApi } from "../../api/provider/providerApi";
+import {
+	getRevenueDashboardApi,
+	getDetailedRevenueApi,
+} from "../../api/revenue/revenueApi";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { showPromiseToast } from "../../utils/showPromiseToast";
 
 function Revenue() {
 	const navigate = useNavigate();
+	const { user } = useAuth();
 	const [dateRange, setDateRange] = useState({
 		start: new Date(),
 		end: new Date(),
 	});
-
 	const [filters, setFilters] = useState({
 		agent: "",
 		provider: "",
@@ -26,6 +34,27 @@ function Revenue() {
 		includeChargeback: true,
 		detailedReport: false,
 	});
+	const [agents, setAgents] = useState([]);
+	const [providers, setProviders] = useState([]);
+	const [dashboard, setDashboard] = useState(null);
+
+	useEffect(() => {
+		async function fetchData() {
+			try {
+				const [userList, providerList, dashboardData] = await Promise.all([
+					getUserListApi(),
+					getProvidersApi(),
+					getRevenueDashboardApi(user?.id),
+				]);
+				setAgents(userList || []);
+				setProviders(providerList || []);
+				setDashboard(dashboardData || null);
+			} catch (err) {
+				console.error("Failed to fetch data:", err);
+			}
+		}
+		if (user?.id) fetchData();
+	}, [user?.id]);
 
 	const handleDateRangeChange = (range) => {
 		setDateRange(range);
@@ -39,32 +68,39 @@ function Revenue() {
 		}));
 	};
 
-	const handleSearch = (e) => {
+	const handleSearch = async (e) => {
 		e.preventDefault();
-		// Navigate to details page with search parameters
-		navigate("/revenue/details", {
-			state: {
-				searchParams: {
-					dateRange,
-					filters,
-				},
-			},
-			replace: true,
-		});
+		const payload = {
+			userId: user?.id,
+			agentId: filters.agent || undefined,
+			providerId: filters.provider || undefined,
+			reportType: filters.detailedReport ? "1" : undefined,
+			refund: filters.includeRefund ? 1 : undefined,
+			chargeBack: filters.includeChargeback ? 1 : undefined,
+			dateFilter: "custom",
+			startDate: dateRange.start.toISOString().slice(0, 10),
+			endDate: dateRange.end.toISOString().slice(0, 10),
+		};
+
+		try {
+			const data = await showPromiseToast(getDetailedRevenueApi(payload), {
+				loading: "Fetching detailed revenue...",
+				success: "Revenue data loaded!",
+				error: "Failed to fetch detailed revenue",
+			});
+			if (Array.isArray(data) && data.length > 0) {
+				navigate("/revenue/details", {
+					state: {
+						searchParams: payload,
+						results: data,
+					},
+					replace: true,
+				});
+			}
+		} catch (err) {
+			console.error("Failed to fetch detailed revenue:", err);
+		}
 	};
-
-	// Sample data for dropdowns
-	const agents = [
-		{ id: 1, name: "Sarah Wilson" },
-		{ id: 2, name: "Michael Chen" },
-		{ id: 3, name: "Emma Rodriguez" },
-	];
-
-	const providers = [
-		{ id: 1, name: "Air Fare" },
-		{ id: 2, name: "Skyline" },
-		{ id: 3, name: "Global Travel" },
-	];
 
 	return (
 		<div className="max-w-7xl mx-auto space-y-6">
@@ -79,27 +115,25 @@ function Revenue() {
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 					<StatsCard
 						title="Total Revenue"
-						value="$1.2M"
+						value={dashboard ? dashboard.totalRevenue : "$0"}
 						icon={DollarSign}
-						trend="up"
-						trendValue="+8.2%"
 						color="blue"
 					/>
 					<StatsCard
 						title="Chargeback"
-						value="$4.2K"
+						value={dashboard ? dashboard.chargeBack : "$0"}
 						icon={AlertTriangle}
 						color="red"
 					/>
 					<StatsCard
 						title="Refund"
-						value="$2.3K"
+						value={dashboard ? dashboard.totalRefund : "$0"}
 						icon={RotateCcw}
 						color="orange"
 					/>
 					<StatsCard
 						title="Net Revenue"
-						value="$1.19M"
+						value={dashboard ? Math.round(dashboard.totalRevenue * 0.85) : "$0"}
 						icon={FileText}
 						color="green"
 					/>
@@ -140,6 +174,7 @@ function Revenue() {
 										value={filters.agent}
 										onChange={handleFilterChange}
 										className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+										style={{ appearance: "none" }}
 									>
 										<option value="">All Agents</option>
 										{agents.map((agent) => (

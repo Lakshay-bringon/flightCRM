@@ -1,9 +1,22 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Plus, X, Eye } from 'lucide-react';
+import React, { useRef, useEffect, useState } from "react";
+import { Plus, X, Eye } from "lucide-react";
 
 function AttachmentsSection({ images, setImages, onPreview }) {
 	const fileInputRef = useRef();
 	const [processedImages, setProcessedImages] = useState([]);
+
+	useEffect(() => {
+		if (images && Array.isArray(images)) {
+			const baseRoute = import.meta.env.VITE_UPLOADS_BASE_URL || "";
+			const updatedImages = images.map((img) => {
+				if (typeof img === "string" && img.startsWith("data:image/")) {
+					return img;
+				}
+				return img.startsWith(baseRoute) ? img : `${baseRoute}${img}`;
+			});
+			setProcessedImages(updatedImages);
+		}
+	}, [images]);
 
 	const handleAddImage = (e) => {
 		const files = Array.from(e.target.files);
@@ -12,8 +25,8 @@ function AttachmentsSection({ images, setImages, onPreview }) {
 				const reader = new FileReader();
 				reader.onloadend = () => {
 					if (
-						typeof reader.result === 'string' &&
-						reader.result.startsWith('data:image/')
+						typeof reader.result === "string" &&
+						reader.result.startsWith("data:image/")
 					) {
 						setImages((prev) => [...prev, reader.result]);
 					}
@@ -27,21 +40,6 @@ function AttachmentsSection({ images, setImages, onPreview }) {
 	const handleRemoveImage = (index) => {
 		setImages((prev) => prev.filter((_, i) => i !== index));
 	};
-
-	// Prevent repeated addition of base URL
-	useEffect(() => {
-		if (images && Array.isArray(images)) {
-			const baseRoute = import.meta.env.VITE_UPLOADS_BASE_URL || '';
-			const updatedImages = images.map((img) => {
-				// Exclude base64 strings from base URL addition
-				if (img.startsWith('data:image/')) {
-					return img;
-				}
-				return img.startsWith(baseRoute) ? img : `${baseRoute}${img}`;
-			});
-			setProcessedImages(updatedImages);
-		}
-	}, [images]);
 
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg mb-4">
@@ -66,7 +64,7 @@ function AttachmentsSection({ images, setImages, onPreview }) {
 			</div>
 			<div className="flex flex-wrap gap-4">
 				{processedImages.map((img, idx) =>
-					img && typeof img === 'string' ? (
+					img && typeof img === "string" ? (
 						<div
 							key={idx}
 							className="relative w-32 h-32 border border-gray-600 rounded overflow-hidden bg-gray-800"
@@ -77,8 +75,8 @@ function AttachmentsSection({ images, setImages, onPreview }) {
 								className="object-cover w-full h-full cursor-pointer"
 								onClick={() => onPreview && onPreview(img)}
 								onError={(e) => {
-									e.target.alt = 'Invalid image';
-									console.warn('Invalid base64 image string:', img);
+									e.target.alt = "Invalid image";
+									console.warn("Invalid base64 image string:", img);
 								}}
 							/>
 							<div className="absolute top-1 right-1 flex gap-1">

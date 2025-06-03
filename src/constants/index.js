@@ -16,52 +16,16 @@ export const TRANSACTION_TYPES = {
 };
 
 // Booking Status
-export const BOOKING_STATUS = {
-	PENDING: "pending",
-	CONFIRMED: "confirmed",
-	CANCELLED: "cancelled",
-	COMPLETED: "completed",
-};
+export const BOOKING_STATUS = [
+	"pending",
+	"in-progress",
+	"cancelled",
+	"Ticketed & MCO charged",
+];
+export const AUTH_STATUS = ["pending", "approved", "rejected"];
 
-// User Status
-export const USER_STATUS = {
-	ACTIVE: "active",
-	INACTIVE: "inactive",
-	SUSPENDED: "suspended",
-};
+export const CHARGING_STATUS = ["pending", "charged", "declined"];
 
-// Team Status
-export const TEAM_STATUS = {
-	ACTIVE: "active",
-	INACTIVE: "inactive",
-};
+export const REFUND_STATUS = ["pending", "approved", "rejected"];
 
-// Shift Types
-export const SHIFT_TYPES = {
-	MORNING: "morning",
-	AFTERNOON: "afternoon",
-	NIGHT: "night",
-};
-
-// Permission Types
-export const PERMISSIONS = {
-	BOOKING_MANAGEMENT: "booking_management",
-	TEAM_MANAGEMENT: "team_management",
-	USER_MANAGEMENT: "user_management",
-	REPORT_ACCESS: "report_access",
-	SYSTEM_SETTINGS: "system_settings",
-};
-
-// Access Levels
-export const ACCESS_LEVELS = {
-	READ: "read",
-	WRITE: "write",
-	ADMIN: "admin",
-};
-
-// API Response Status
-export const API_STATUS = {
-	SUCCESS: "success",
-	ERROR: "error",
-	PENDING: "pending",
-};
+export const CHARGEBACK_STATUS = ["pending", "won", "lost"];

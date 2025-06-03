@@ -13,7 +13,7 @@ import {
 } from "../../api/booking/bookingApi";
 import { showPromiseToast } from "../../utils/showPromiseToast";
 import { useAuth } from "../../auth/hooks/useAuth";
-
+import { useDataContext } from "../../context/DataContext";
 import {
 	AUTH_STATUS,
 	CHARGING_STATUS,
@@ -36,6 +36,7 @@ const BID_STATUS = Object.values(BOOKING_STATUS);
 export default function BookingDetails() {
 	const { bid } = useParams(); // Extract 'bid'
 	const { user } = useAuth();
+	const { providers } = useDataContext(); // Get providers from DataContext
 	const [isAnySectionEditing, setIsAnySectionEditing] = useState(false);
 	const [previewImage, setPreviewImage] = useState(null);
 	const [showPreview, setShowPreview] = useState(false);
@@ -43,6 +44,7 @@ export default function BookingDetails() {
 	const [error, setError] = useState(null);
 	const [apiData, setApiData] = useState(null);
 	// Get transaction type from booking data
+	const transactionType = apiData?.transaction_type || "new_booking";
 
 	// Fetch booking details function
 	const fetchBookingDetails = async () => {
@@ -222,15 +224,17 @@ export default function BookingDetails() {
 
 	// Update state when booking data is loaded
 	useEffect(() => {
+		console.log("api data updated:");
 		if (apiData) {
+			// console.log(apiData);
 			setProviderDetails({
-				bid: apiData.BID || bid || "",
-				provider: apiData.providerName || "",
-				transactionType: apiData.transaction_type || "",
+				bid: apiData.BID || bid || "N/A",
+				provider: apiData.providerName || "Air Fare/Flight",
+				transactionType: apiData.transaction_type || "new_booking",
 				dateCreated: apiData.created_at || new Date().toISOString(),
 				authStatus: apiData.auth_status,
 				bidStatus: apiData.bid_status,
-				agent: apiData.agent || apiData.userName || "",
+				agent: apiData.agent || apiData.userName || "N/A",
 			});
 
 			// Initialize refund details from booking data or default
@@ -277,7 +281,6 @@ export default function BookingDetails() {
 			transaction_type: apiData?.transaction_type,
 			...apiData?.bookingData,
 			itinerary_details: apiData?.itinerary_details || "",
-			attachments: apiData?.attachments || [],
 			bid: apiData?.bid,
 		};
 	}, [apiData]);
@@ -296,10 +299,10 @@ export default function BookingDetails() {
 
 		const commonProps = {
 			bookingData: bookingDataForForm,
-			// onBack: () => window.history.back(),
+			onBack: () => window.history.back(),
 		};
 
-		switch (apiData?.transaction_type) {
+		switch (transactionType) {
 			case "new_booking":
 				return <NewBooking {...commonProps} />;
 			case "exchange":
@@ -370,7 +373,6 @@ export default function BookingDetails() {
 				isEditing={isAnySectionEditing}
 				formData={bookingDataForForm}
 				onRefresh={handleRefresh}
-				providerId={apiData?.provider_id}
 			/>
 			{!apiData ? (
 				<div className="flex items-center justify-center min-h-[200px]">
@@ -405,11 +407,31 @@ export default function BookingDetails() {
 											PROVIDER
 										</label>
 										<div className="h-8">
-											<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
-												<div className="text-white">
-													{providerDetails.provider}
+											{isEditing ? (
+												<select
+													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm"
+													value={providerDetails.provider}
+													onChange={(e) =>
+														setProviderDetails((pd) => ({
+															...pd,
+															provider: e.target.value,
+														}))
+													}
+												>
+													<option value="">Select Provider</option>
+													{providers.map((provider) => (
+														<option key={provider.id} value={provider.name}>
+															{provider.name}
+														</option>
+													))}
+												</select>
+											) : (
+												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
+													<div className="text-white">
+														{providerDetails.provider}
+													</div>
 												</div>
-											</div>
+											)}
 										</div>
 									</div>
 									<div>
@@ -745,7 +767,7 @@ export default function BookingDetails() {
 						)}
 					</Section>{" "}
 					{/* Transaction-specific Form */}
-					<div>{renderFormComponent()}</div>
+					{/* <div>{renderFormComponent()}</div> */}
 					{/* Refund Details Section */}{" "}
 					<Section
 						title="Refund Details"

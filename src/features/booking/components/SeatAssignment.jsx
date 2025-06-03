@@ -1,11 +1,11 @@
-import React from 'react';
-import BookingComponent from './BookingComponent.jsx';
-import ItineraryDetailsInput from './ItineraryDetailsInput.jsx';
-import PassengerDetails from './PassengerDetails.jsx';
-import PurchaseSummary from './PurchaseSummary.jsx';
-import AttachmentsSection from './AttachmentsSection.jsx';
-import AuthorizeSection from './AuthorizeSection.jsx';
-import seatAssignmentSchema from '../schemas/seatAssignmentSchema.js';
+import React from "react";
+import BookingComponent from "./BookingComponent.jsx";
+import ItineraryDetailsInput from "./ItineraryDetailsInput.jsx";
+import PassengerDetails from "./PassengerDetails.jsx";
+import PurchaseSummary from "./PurchaseSummary.jsx";
+import AttachmentsSection from "./AttachmentsSection.jsx";
+import AuthorizeSection from "./AuthorizeSection.jsx";
+import seatAssignmentSchema from "../schemas/seatAssignmentSchema.js";
 
 function SeatAssignment({ bookingData, onBack }) {
 	// The actual form content for SeatAssignment
@@ -40,33 +40,33 @@ function SeatAssignment({ bookingData, onBack }) {
 		type,
 	}) => {
 		// Watch values for dynamic updates
-		const pnr = watch('pnr');
-		const airline = watch('airline_name');
-		const passengers = watch('passenger_data');
+		const pnr = watch("pnr");
+		const airline = watch("airline_name");
+		const passengers = watch("passenger_data");
 
 		return (
 			<>
 				<div className="flex justify-between items-center mb-4">
 					<h2
 						className={`text-xl font-bold text-white flex items-center gap-2 ${
-							isEditMode ? 'justify-center w-full' : ''
+							isEditMode ? "justify-center w-full" : ""
 						}`}
 					>
 						<input
-							{...register('airline_name')}
+							{...register("airline_name")}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-40 font-bold text-white mr-2"
-							style={{ textTransform: 'uppercase' }}
+							style={{ textTransform: "uppercase" }}
 							placeholder="Airline Name"
 							value={airline}
-							onChange={(e) => setValue('airline_name', e.target.value)}
+							onChange={(e) => setValue("airline_name", e.target.value)}
 						/>
 						SEAT ASSIGNMENT CONFIRMATION –
 						<input
-							{...register('pnr')}
+							{...register("pnr")}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-32 font-bold text-white ml-2"
 							style={{ minWidth: 60 }}
 							value={pnr}
-							onChange={(e) => setValue('pnr', e.target.value)}
+							onChange={(e) => setValue("pnr", e.target.value)}
 							placeholder="PNR"
 						/>
 					</h2>
@@ -90,7 +90,7 @@ function SeatAssignment({ bookingData, onBack }) {
 							<div className="leading-loose">
 								Dear
 								<input
-									{...register('customer_name')}
+									{...register("customer_name")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 60 }}
 									placeholder="Customer Name"
@@ -101,35 +101,35 @@ function SeatAssignment({ bookingData, onBack }) {
 							<div className="leading-loose">
 								You can contact us on this number +1-877-413-0030 for any
 								related request.
-							</div>{' '}
+							</div>{" "}
 							<div className="leading-loose">
-								{' '}
+								{" "}
 								As per our conversation and as agreed, We have assigned your
 								seats under Confirmation number
 								<input
-									{...register('pnr')}
+									{...register("pnr")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 60 }}
 									value={pnr}
-									onChange={(e) => setValue('pnr', e.target.value)}
+									onChange={(e) => setValue("pnr", e.target.value)}
 									placeholder="PNR"
 								/>
-								on{' '}
+								on{" "}
 								<input
-									{...register('airline_name')}
+									{...register("airline_name")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 60, textTransform: 'uppercase' }}
+									style={{ minWidth: 60, textTransform: "uppercase" }}
 									placeholder="Airline Name"
 									value={airline}
-									onChange={(e) => setValue('airline_name', e.target.value)}
-								/>{' '}
+									onChange={(e) => setValue("airline_name", e.target.value)}
+								/>{" "}
 								with a charge of
 								<input
-									{...register('amount')}
+									{...register("amount")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 40 }}
 									placeholder="Amount"
-								/>{' '}
+								/>{" "}
 								<select
 									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
 									value={currency}
@@ -144,14 +144,12 @@ function SeatAssignment({ bookingData, onBack }) {
 									) : (
 										<option value="">Select Currency</option>
 									)}
-								</select>{' '}
+								</select>{" "}
 								(Including all taxes and fees) as per the below description.
-							</div>{' '}
-						</div>
+							</div>{" "}
+						</div>{" "}
 						{/* Itinerary Details Section */}
 						<ItineraryDetailsInput
-							value={itineraryDetails}
-							onChange={setItineraryDetails}
 							image={itineraryImage}
 							setImage={setItineraryImage}
 							onImageClick={() => {
@@ -165,7 +163,7 @@ function SeatAssignment({ bookingData, onBack }) {
 							register={register}
 							addPassenger={addPassenger}
 							removePassenger={removePassenger}
-						/>{' '}
+						/>{" "}
 						{/* Purchase Summary Section */}
 						<PurchaseSummary
 							register={register}
@@ -188,14 +186,14 @@ function SeatAssignment({ bookingData, onBack }) {
 								planned. Please review the Names, Dates, Cities, and Departure –
 								Arrival times properly
 							</div>
-						</div>{' '}
+						</div>{" "}
 						{/* Authorization Section */}
 						<AuthorizeSection
-							cardholderName={watch('card_holder')}
-							cardType={watch('payment_method')}
-							cardNumber={watch('card_number')}
+							cardholderName={watch("card_holder")}
+							cardType={watch("payment_method")}
+							cardNumber={watch("card_number")}
 						/>
-					</div>{' '}
+					</div>{" "}
 					<button
 						type="submit"
 						disabled={isSubmitting}
@@ -203,11 +201,11 @@ function SeatAssignment({ bookingData, onBack }) {
 					>
 						{isSubmitting
 							? isEditMode
-								? 'Updating Seat Assignment...'
-								: 'Processing Seat Assignment...'
+								? "Updating Seat Assignment..."
+								: "Processing Seat Assignment..."
 							: isEditMode
-							? 'Update'
-							: 'Confirm Seat Assignment'}
+							? "Update"
+							: "Confirm Seat Assignment"}
 					</button>
 				</form>
 			</>
@@ -221,18 +219,18 @@ function SeatAssignment({ bookingData, onBack }) {
 			schema={seatAssignmentSchema} // Use the seat assignment-specific schema
 			loadingMessage={
 				bookingData
-					? 'Updating seat assignment...'
-					: 'Processing seat assignment...'
+					? "Updating seat assignment..."
+					: "Processing seat assignment..."
 			}
 			successMessage={
 				bookingData
-					? 'Seat assignment updated successfully!'
-					: 'Seat assignment processed successfully!'
+					? "Seat assignment updated successfully!"
+					: "Seat assignment processed successfully!"
 			}
 			errorMessage={
 				bookingData
-					? 'Failed to update seat assignment'
-					: 'Failed to process seat assignment'
+					? "Failed to update seat assignment"
+					: "Failed to process seat assignment"
 			}
 			isEditMode={!!bookingData}
 		>
