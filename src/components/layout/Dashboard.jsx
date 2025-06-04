@@ -12,6 +12,14 @@ import {
 import { showPromiseToast } from "../../utils/showPromiseToast";
 
 export default function AdminDashboard() {
+	// Helper: format a Date to local YYYY-MM-DD (avoids UTC shift)
+	const formatLocalDate = (d) => {
+		const year = d.getFullYear();
+		const month = String(d.getMonth() + 1).padStart(2, "0");
+		const day = String(d.getDate()).padStart(2, "0");
+		return `${year}-${month}-${day}`;
+	};
+
 	const [dateRange, setDateRange] = useState({
 		start: new Date(),
 		end: new Date(),
@@ -24,8 +32,8 @@ export default function AdminDashboard() {
 	const fetchDashboardData = async (range) => {
 		const payload = {
 			dateFilter: "custom",
-			startDate: range.start.toISOString().slice(0, 10),
-			endDate: range.end.toISOString().slice(0, 10),
+			startDate: formatLocalDate(range.start),
+			endDate: formatLocalDate(range.end),
 		};
 		try {
 			const [summaryRes, topBottomRes] = await showPromiseToast(

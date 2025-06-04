@@ -13,6 +13,7 @@ import {
 } from "../../api/booking/bookingApi";
 import { showPromiseToast } from "../../utils/showPromiseToast";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { formatLocalDateString } from '../../utils/formatters';
 
 import {
 	AUTH_STATUS,
@@ -662,7 +663,7 @@ export default function BookingDetails() {
 												<input
 													type="date"
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm z-10"
-													value={chargingDetails[0]?.chargedOn || ""}
+													value={chargingDetails[0]?.chargedOn}
 													onChange={(e) =>
 														setChargingDetails((cd) => [
 															{ ...cd[0], chargedOn: e.target.value },
@@ -799,7 +800,7 @@ export default function BookingDetails() {
 													key="refund-date-input"
 													type="date"
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm z-10"
-													value={refundDetails[0].refundedOn}
+													value={formatLocalDateString(refundDetails[0]?.refundedOn)}
 													onChange={(e) =>
 														setRefundDetails((rd) => [
 															{ ...rd[0], refundedOn: e.target.value },
@@ -810,7 +811,9 @@ export default function BookingDetails() {
 											) : (
 												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
 													<div className="text-white">
-														{refundDetails[0].refundedOn || "N/A"}
+														{refundDetails[0].refundedOn
+															? new Date(refundDetails[0].refundedOn).toLocaleDateString()
+															: "N/A"}
 													</div>
 												</div>
 											)}
@@ -910,7 +913,7 @@ export default function BookingDetails() {
 													key="chargeback-date-input"
 													type="date"
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm z-10"
-													value={chargebackDetails[0].chargebackDate}
+													value={formatLocalDateString(chargebackDetails[0]?.chargebackDate)}
 													onChange={(e) =>
 														setChargebackDetails((cd) => [
 															{ ...cd[0], chargebackDate: e.target.value },
@@ -921,7 +924,9 @@ export default function BookingDetails() {
 											) : (
 												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
 													<div className="text-white">
-														{chargebackDetails[0].chargebackDate || "N/A"}
+														{chargebackDetails[0].chargebackDate
+															? new Date(chargebackDetails[0].chargebackDate).toLocaleDateString()
+															: "N/A"}
 													</div>
 												</div>
 											)}

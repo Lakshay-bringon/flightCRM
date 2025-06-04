@@ -38,3 +38,13 @@ export const compactNumberFormatter = new Intl.NumberFormat("en-US", {
 	notation: "compact",
 	compactDisplay: "short",
 });
+
+// Local date string formatter (YYYY-MM-DD) without timezone shift
+export function formatLocalDateString(dateValue) {
+	if (!dateValue) return "";
+	const d = new Date(dateValue);
+	const year = d.getFullYear();
+	const month = String(d.getMonth() + 1).padStart(2, '0');
+	const day = String(d.getDate()).padStart(2, '0');
+	return `${year}-${month}-${day}`;
+}
