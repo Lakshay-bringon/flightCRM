@@ -644,3 +644,112 @@ export const dispatchEmailApi = async (emailData) => {
 		throw new Error("Dispatch email error: " + err.message);
 	}
 };
+
+/**
+ * Add a comment to a booking.
+ * @param {Object} payload - { bid: string, comment: string, userId: string }
+ * @returns {Promise<Object>} API response
+ */
+export const addCommentApi = async (payload) => {
+	try {
+		const res = await API.post("/addComment", payload, {
+			headers: {
+				"Content-Type": "application/json",
+				Accept: "application/json",
+			},
+		});
+
+		const { status, msg, data } = res.data;
+
+		if (status !== 200 && status !== 201) {
+			throw new Error(msg || "Failed to add comment");
+		}
+
+		return data;
+	} catch (err) {
+		if (err.response) {
+			const errorMsg = err.response.data?.msg || "Failed to add comment";
+			const errorDetails = err.response.data?.errors;
+
+			if (errorDetails && typeof errorDetails === "object") {
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(", ") : messages
+							}`
+					)
+					.join("; ");
+				throw new Error(`Validation errors: ${validationErrors}`);
+			}
+
+			throw new Error(errorMsg);
+		}
+
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
+		throw new Error("Add comment error: " + err.message);
+	}
+};
+
+/**
+ * Get comments for a booking by BID.
+ * @param {string} bid - Booking ID
+ * @returns {Promise<Object[]>} List of comments
+ */
+export const getCommentsByBidApi = async (bid) => {
+	try {
+		const res = await API.get(`/getCommentsByBid`, {
+			params: { bid },
+			headers: {
+				Accept: "application/json",
+			},
+		});
+		const { status, msg, data } = res.data;
+		if (status !== 200 && status !== 201) {
+			throw new Error(msg || "Failed to fetch comments");
+		}
+		return data;
+	} catch (err) {
+		if (err.response) {
+			const errorMsg = err.response.data?.msg || "Failed to fetch comments";
+			throw new Error(errorMsg);
+		}
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+		throw new Error("Get comments error: " + err.message);
+	}
+};
+
+/**
+ * Get activity for a booking by BID.
+ * @param {string} bid - Booking ID
+ * @returns {Promise<Object[]>} List of activities
+ */
+export const getActivityByBidApi = async (bid) => {
+	try {
+		const res = await API.get(`/getActivityByBid`, {
+			params: { bid },
+			headers: {
+				Accept: "application/json",
+			},
+		});
+		const { status, msg, data } = res.data;
+		if (status !== 200 && status !== 201) {
+			throw new Error(msg || "Failed to fetch activity");
+		}
+		return data;
+	} catch (err) {
+		if (err.response) {
+			const errorMsg = err.response.data?.msg || "Failed to fetch activity";
+			throw new Error(errorMsg);
+		}
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+		throw new Error("Get activity error: " + err.message);
+	}
+};

@@ -121,3 +121,17 @@ export const getTeamApi = async (leader_id) => {
 		throw new Error("Get team error: " + err.message);
 	}
 };
+
+// Delete a user by id
+export const deleteUserApi = async (id) => {
+	try {
+		const res = await API.get("/deleteUser", { params: { id } });
+		const { status, msg, data } = res.data;
+		if (status !== 200) throw new Error(msg || "Failed to delete user");
+		return data;
+	} catch (err) {
+		if (err.response)
+			throw new Error(err.response.data.msg || "Failed to delete user");
+		throw new Error("Delete user error: " + err.message);
+	}
+};

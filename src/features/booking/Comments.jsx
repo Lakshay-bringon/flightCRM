@@ -1,109 +1,86 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import AsideTable from "./AsideTable";
-// Example mock data (replace with API fetch in production)
-const MOCK_COMMENTS = [
-  {
-    id: 1,
-    date: "2025-05-13",
-    time: "18:30",
-    comment: "Booking confirmed.",
-    user: "Lakshay Sharma",
-    role: "Agent",
-  },
-  {
-    id: 2,
-    date: "2025-05-13",
-    time: "18:35",
-    comment: "Sent auth email.",
-    user: "Anurag Pandey",
-    role: "Admin",
-  },
-  {
-    id: 3,
-    date: "2025-05-12",
-    time: "16:10",
-    comment: "Requested docs.",
-    user: "Vivek Kumar",
-    role: "Agent",
-  },
-  {
-    id: 4,
-    date: "2025-05-13",
-    time: "18:35",
-    comment: "Sent auth email.",
-    user: "Anurag Pandey",
-    role: "Admin",
-  },
-  {
-    id: 5,
-    date: "2025-05-12",
-    time: "16:10",
-    comment: "Requested docs.",
-    user: "Vivek Kumar",
-    role: "Agent",
-  },
-  {
-    id: 6,
-    date: "2025-05-13",
-    time: "18:35",
-    comment: "Sent auth email.",
-    user: "Anurag Pandey",
-    role: "Admin",
-  },
-  {
-    id: 7,
-    date: "2025-05-12",
-    time: "16:10",
-    comment: "Requested docs.",
-    user: "Vivek Kumar",
-    role: "Agent",
-  },
-];
+import { getCommentsByBidApi } from "../../api/booking/bookingApi";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import { RefreshCw } from "lucide-react";
 
-const columns = [
-  { key: "date", label: "Date" },
-  { key: "time", label: "Time" },
-  { key: "comment", label: "Comment" },
-  { key: "user", label: "User Name" },
-  { key: "role", label: "Role" },
-];
+export default function Comments({ bid = "", open = false, onClose }) {
+	const [comments, setComments] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(null);
 
-function TableRow({ record }) {
-  // record = comment object
-  return (
-    <tr className="border-b border-gray-700/50 hover:bg-gray-700/50 transition-colors even:bg-gray-800/50">
-      <td className="py-3 px-4 text-gray-400 truncate">{record.date}</td>
-      <td className="py-3 px-4 text-gray-400 truncate">{record.time}</td>
-      <td className="py-3 px-4 text-gray-200 truncate">{record.comment}</td>
-      <td className="py-3 px-4 text-gray-300 truncate">{record.user}</td>
-      <td className="py-3 px-4 text-gray-400 truncate">{record.role}</td>
-    </tr>
-  );
-}
+	const fetchComments = useCallback(async () => {
+		if (!bid) return;
 
-export default function Comments({ bookingId = "", open = false, onClose }) {
-  // You would fetch comments based on bookingId in a real app
-  // For now, just filter by bookingId if needed
-  const comments = useMemo(() => MOCK_COMMENTS, []);
+		setLoading(true);
+		setError(null);
+		try {
+			const data = await getCommentsByBidApi(bid);
+			setComments(Array.isArray(data) ? data : []);
+		} catch (err) {
+			setError(err.message || "Failed to load comments");
+			setComments([]);
+		} finally {
+			setLoading(false);
+		}
+	}, [bid]);
 
-  const columns = [
-    { key: "date", label: "Date" },
-    { key: "time", label: "Time" },
-    { key: "comment", label: "Comment" },
-    { key: "user", label: "User Name" },
-    { key: "role", label: "Role" },
-  ];
+	const handleRefresh = useCallback(() => {
+		fetchComments();
+	}, [fetchComments]);
 
-  return (
-    <AsideTable
-      open={open}
-      onClose={onClose}
-      title="Comments"
-      columns={columns}
-      data={comments}
-      searchPlaceholder="Search comments..."
-      emptyMessage="No comments found."
-      pageSize={10}
-    />
-  );
+	useEffect(() => {
+		if (open && bid) {
+			fetchComments();
+		}
+	}, [open, bid, fetchComments]);
+
+	const columns = [
+		{ key: "datetime", label: "Date-Time" },
+
+		{ key: "comment", label: "Comment" },
+		{ key: "name", label: "User Name" },
+	];
+
+	// Determine what to render based on state
+	let emptyMessage = "No comments found.";
+	let displayData = comments;
+
+	if (loading) {
+		emptyMessage = (
+			<div className="flex items-center justify-center py-4">
+				<LoadingSpinner label="Loading comments..." />
+			</div>
+		);
+		displayData = [];
+	} else if (error) {
+		emptyMessage = <div className="text-red-400 py-4 text-center">{error}</div>;
+		displayData = [];
+	}
+
+	return (
+		<AsideTable
+			open={open}
+			onClose={onClose}
+			title="Comments"
+			columns={columns}
+			data={displayData}
+			searchPlaceholder="Search comments..."
+			emptyMessage={emptyMessage}
+			pageSize={8}
+			headerActions={
+				<button
+					onClick={handleRefresh}
+					disabled={loading}
+					className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-200 hover:text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-gray-600 hover:border-gray-500"
+					title="Refresh comments"
+				>
+					<RefreshCw
+						className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
+					/>
+					<span className="text-xs font-medium">Refresh</span>
+				</button>
+			}
+		/>
+	);
 }

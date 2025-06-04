@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { generateEmailHTML } from '../utils/emailGenerator';
-import { TRANSACTION_TYPES } from '../constants';
+import React, { useState } from "react";
+import { generateEmailHTML } from "../utils/emailGenerator";
+import { TRANSACTION_TYPES } from "../constants";
 
 /**
  * Demo component showing how to use the new email template system
@@ -9,83 +9,83 @@ const EmailTemplateDemo = () => {
 	const [selectedType, setSelectedType] = useState(
 		TRANSACTION_TYPES.NEW_BOOKING
 	);
-	const [generatedHTML, setGeneratedHTML] = useState('');
+	const [generatedHTML, setGeneratedHTML] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 
 	// Sample booking data for demonstration
 	const sampleData = {
-		airline_name: 'SkyLine Airways',
-		customer_name: 'John Doe',
-		pnr: 'ABC123XY',
-		amount: '299.99',
-		email: 'john.doe@example.com',
-		phone: '+1-555-0123',
-		currency: 'USD',
+		airline_name: "SkyLine Airways",
+		customer_name: "John Doe",
+		pnr: "ABC123XY",
+		amount: "299.99",
+		email: "john.doe@example.com",
+		phone: "+1-555-0123",
+		currency: "USD",
 		passenger_data: [
 			{
-				type: 'ADT',
-				firstName: 'John',
-				middleName: 'Michael',
-				lastName: 'Doe',
-				dob: '1985-01-15',
+				type: "ADT",
+				firstName: "John",
+				middleName: "Michael",
+				lastName: "Doe",
+				dob: "1985-01-15",
 			},
 			{
-				type: 'CHD',
-				firstName: 'Jane',
-				middleName: '',
-				lastName: 'Doe',
-				dob: '2010-06-20',
+				type: "CHD",
+				firstName: "Jane",
+				middleName: "",
+				lastName: "Doe",
+				dob: "2010-06-20",
 			},
 		],
 		charge_data: [
 			{
-				amount: '250.00',
-				description: 'Base fare',
+				amount: "250.00",
+				description: "Base fare",
 			},
 			{
-				amount: '49.99',
-				description: 'Taxes and fees',
+				amount: "49.99",
+				description: "Taxes and fees",
 			},
 		],
 		attachments: [
-			'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=',
+			"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
 		],
-		card_holder: 'John Doe',
-		card_number: '**** **** **** 1234',
-		payment_method: 'VISA',
-		billing_address: '123 Main Street',
-		city: 'New York',
-		state: 'NY',
-		zip: '10001',
-		country: 'US',
+		card_holder: "John Doe",
+		card_number: "**** **** **** 1234",
+		payment_method: "VISA",
+		billing_address: "123 Main Street",
+		city: "New York",
+		state: "NY",
+		zip: "10001",
+		country: "US",
 		purchase_date: new Date().toLocaleDateString(),
 
 		// Additional fields for different transaction types
-		original_class: 'Economy',
-		upgraded_class: 'Business',
-		upgrade_fee: '150.00',
+		original_class: "Economy",
+		upgraded_class: "Business",
+		upgrade_fee: "150.00",
 
-		original_flight: 'SL101 JFK-LAX',
-		new_flight: 'SL205 JFK-LAX',
-		exchange_fee: '75.00',
-		departure_date: '2025-07-15',
-		arrival_date: '2025-07-15',
-		exchange_reason: 'Schedule change',
+		original_flight: "SL101 JFK-LAX",
+		new_flight: "SL205 JFK-LAX",
+		exchange_fee: "75.00",
+		departure_date: "2025-07-15",
+		arrival_date: "2025-07-15",
+		exchange_reason: "Schedule change",
 
-		seat_numbers: '12A, 12B',
-		flight_number: 'SL101',
-		departure_time: '08:30 AM',
-		seat_fee: '25.00',
+		seat_numbers: "12A, 12B",
+		flight_number: "SL101",
+		departure_time: "08:30 AM",
+		seat_fee: "25.00",
 
-		refund_amount: '224.99',
-		refund_method: 'Original Payment Method',
-		processing_time: '7-10 business days',
-		cancellation_reason: 'Travel plans changed',
-		cancellation_fee: '75.00',
+		refund_amount: "224.99",
+		refund_method: "Original Payment Method",
+		processing_time: "7-10 business days",
+		cancellation_reason: "Travel plans changed",
+		cancellation_fee: "75.00",
 
-		credit_amount: '299.99',
-		credit_expiry: '2026-05-31',
-		credit_reference: 'FC-ABC123-789456',
+		credit_amount: "299.99",
+		credit_expiry: "2026-05-31",
+		credit_reference: "FC-ABC123-789456",
 	};
 
 	const handleGenerateEmail = async () => {
@@ -95,7 +95,7 @@ const EmailTemplateDemo = () => {
 			const html = generateEmailHTML(selectedType, sampleData);
 			setGeneratedHTML(html);
 		} catch (error) {
-			console.error('Error generating email:', error);
+			console.error("Error generating email:", error);
 			setGeneratedHTML(
 				`<div style="color: red;">Error generating email: ${error.message}</div>`
 			);
@@ -114,9 +114,9 @@ const EmailTemplateDemo = () => {
 
 	const handleDownload = () => {
 		if (generatedHTML) {
-			const blob = new Blob([generatedHTML], { type: 'text/html' });
+			const blob = new Blob([generatedHTML], { type: "text/html" });
 			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
+			const link = document.createElement("a");
 			link.href = url;
 			link.download = `email-${selectedType}-${Date.now()}.html`;
 			document.body.appendChild(link);
@@ -167,7 +167,7 @@ const EmailTemplateDemo = () => {
 						disabled={isLoading}
 						className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isLoading ? 'Generating...' : 'Generate Email'}
+						{isLoading ? "Generating..." : "Generate Email"}
 					</button>
 
 					{generatedHTML && (

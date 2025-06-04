@@ -232,6 +232,10 @@ function BookingComponent({
 						console.error("Update booking error:", err);
 						return err.message || errorMessage;
 					},
+				}).then((response) => {
+					if (response) {
+						navigate(`/find-bookings/${response?.bidId}`);
+					}
 				});
 			} else {
 				const {

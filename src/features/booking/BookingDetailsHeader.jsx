@@ -14,15 +14,17 @@ import {
 	PopoverTrigger,
 	PopoverContent,
 } from "../../components/ui";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Modal } from "../../components/common";
 import Comments from "./Comments";
 import Activity from "./Actvity";
 import { generateEmailHTML } from "../../utils/emailGenerator.jsx";
 import { TRANSACTION_TYPES } from "../../constants";
+import { addCommentApi } from "../../api/booking/bookingApi";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { showPromiseToast } from "../../utils/showPromiseToast";
 
 export default function BookingDetailsHeader({
-	bookingId = "1",
 	isEditing = false,
 	formData,
 	onRefresh,
@@ -35,22 +37,32 @@ export default function BookingDetailsHeader({
 	const [commentError, setCommentError] = useState(false);
 	const textareaRef = useRef(null);
 	const navigate = useNavigate();
+	const location = useLocation();
+	const { user } = useAuth();
+
 	useEffect(() => {
 		if (showCloseModal && textareaRef.current) {
 			textareaRef.current.focus();
 		}
 	}, [showCloseModal]);
-	const handleEmailAction = (emailType) => {
-		console.log("Email Type:", emailType, "Form Data:", formData); // Debugging log
 
+	// Smart navigation logic based on current route
+	const getNavigationPath = () => {
+		const currentPath = location.pathname;
+
+		// If we're on a revenue route, go back to revenue/details
+		if (currentPath.includes("/revenue/details/")) {
+			return "/revenue/details";
+		}
+
+		// Default to find-bookings for booking routes
+		return "/find-bookings";
+	};
+
+	const handleEmailAction = (emailType) => {
 		let transactionType = formData.transaction_type;
 
-		const emailHTML = generateEmailHTML(transactionType, formData);
-		console.log("Generated emailHTML for type:", transactionType); // Debugging log
-		console.log("Navigating to /email-preview with state:", {
-			emailHTML,
-			emailType,
-		}); // Debugging log
+		const emailHTML = generateEmailHTML(transactionType, formData, emailType);
 
 		navigate(`/email-preview/${emailType}`, {
 			state: {
@@ -62,6 +74,36 @@ export default function BookingDetailsHeader({
 				formData: formData, // Pass complete form data for fallback
 			},
 		});
+	};
+	const handleSaveCommentAndClose = async () => {
+		if (!closeComment.trim()) {
+			setCommentError(true);
+			return;
+		}
+		try {
+			await showPromiseToast(
+				addCommentApi({
+					bid: formData.bid,
+					comment: closeComment.trim(),
+					userId: user?.id,
+				}),
+				{
+					loading: "Saving comment...",
+					success: "Comment added and booking closed!",
+					error: "Failed to add comment. Please try again.",
+				}
+			);
+			setShowCloseModal(false);
+			setCloseComment("");
+			setCommentError(false);
+
+			// Smart navigation based on current route
+			const navigationPath = getNavigationPath();
+			navigate(navigationPath);
+		} catch (err) {
+			setCommentError(true);
+			// Optionally show error toast or message
+		}
 	};
 
 	return (
@@ -129,19 +171,19 @@ export default function BookingDetailsHeader({
 					disabled={isEditing}
 				>
 					<X size={18} /> Close Booking
-				</Button>
+				</Button>{" "}
 			</div>
 			{/* Comments Slide-in Panel */}
 			<Comments
 				open={showComments}
 				onClose={() => setShowComments(false)}
-				bookingId={bookingId}
+				bid={formData.bid}
 			/>
 			{/* Activity Slide-in Panel */}
 			<Activity
 				open={showActivity}
 				onClose={() => setShowActivity(false)}
-				bookingId={bookingId}
+				bid={formData.bid}
 			/>
 			{/* Close Booking Modal */}
 			<Modal
@@ -180,20 +222,7 @@ export default function BookingDetailsHeader({
 						}}
 						placeholder="Add a comment... (Required)"
 					/>
-					<Button
-						variant="destructive"
-						onClick={() => {
-							if (!closeComment.trim()) {
-								setCommentError(true);
-								return;
-							}
-							// Handle closing booking with comment
-							setShowCloseModal(false);
-							setCloseComment("");
-							setCommentError(false);
-							navigate(-1);
-						}}
-					>
+					<Button variant="destructive" onClick={handleSaveCommentAndClose}>
 						Save Comment and Close
 					</Button>
 				</div>

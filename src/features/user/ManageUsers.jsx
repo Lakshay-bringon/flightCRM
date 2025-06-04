@@ -8,6 +8,7 @@ import {
 	updateUserApi,
 	toggleUserStatusApi,
 	getUserByIdApi,
+	deleteUserApi,
 	getTeamApi,
 } from "../../api";
 import { useAuthContext } from "../../auth/AuthProvider";
@@ -75,6 +76,17 @@ export default function UserMGMT() {
 		setShowUserForm(true);
 	};
 
+	const handleDelete = async (id) => {
+		try {
+			await showPromiseToast(deleteUserApi(id), {
+				loading: "Deleting user...",
+				success: "User deleted successfully",
+				error: (err) => err.message || "Failed to delete user",
+			});
+			await fetchUsers();
+		} catch (err) {}
+	};
+
 	const filteredUsers = users.filter((u) => {
 		const value = String(u[searchBy] || "").toLowerCase();
 		return value.includes(search.toLowerCase());
@@ -92,12 +104,14 @@ export default function UserMGMT() {
 			{/* Search Form + Add User Button */}
 			<div className="mb-4 flex items-center w-full gap-2">
 				<form className="flex flex-1 gap-2 max-w-xl" onSubmit={handleSearch}>
+					{" "}
 					<select
 						value={searchBy}
 						onChange={(e) => setSearchBy(e.target.value)}
 						className="w-36 px-2 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white text-sm focus:outline-none focus:border-blue-500"
 					>
-						<option value="id">ID</option>
+						{/* Temporarily commented out ID option */}
+						{/* <option value="id">ID</option> */}
 						<option value="name">Name</option>
 						<option value="email">Email</option>
 						<option value="phone">Phone</option>
@@ -137,7 +151,9 @@ export default function UserMGMT() {
 						onEdit={() => {
 							handleEdit(record);
 						}}
-						onRemove={() => {}} // Implement if needed
+						onRemove={() => {
+							handleDelete(record.id);
+						}} // Implement if needed
 						onStatusChange={() => {
 							showPromiseToast(handleStatusChange(record.id), {
 								loading: "Updating status...",

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { RecordsList } from '../data';
-import BookingCard from './BookingCard';
-import { findBookingApi } from '../../api/booking/bookingApi';
-import { showPromiseToast } from '../../utils/showPromiseToast';
+import React, { useState } from "react";
+import { RecordsList } from "../data";
+import BookingCard from "./BookingCard";
+import { findBookingApi } from "../../api/booking/bookingApi";
+import { showPromiseToast } from "../../utils/showPromiseToast";
 
 export default function FindBookings() {
-	const [search, setSearch] = useState('');
-	const [searchBy, setSearchBy] = useState('cchName');
+	const [search, setSearch] = useState("");
+	const [searchBy, setSearchBy] = useState("cchName");
 	const [bookingPage, setBookingPage] = useState(1);
 	const [bookingPerPage, setBookingPerPage] = useState(5);
 	const [bookings, setBookings] = useState([]);
@@ -16,11 +16,10 @@ export default function FindBookings() {
 
 	// Map search options to API type values
 	const searchTypeMap = {
-		BID: 'bid',
-		cchName: 'cchName',
-		email: 'email',
-		billingPhone: 'billingPhone',
-		PNR: 'pnr',
+		BID: "bid",
+		cchName: "cchName",
+		email: "email",
+		billingPhone: "billingPhone",
 	};
 
 	// Handle search form submission
@@ -41,24 +40,24 @@ export default function FindBookings() {
 			};
 
 			const results = await showPromiseToast(findBookingApi(searchData), {
-				loading: 'Searching bookings...',
+				loading: "Searching bookings...",
 				success: (data) => `Found ${data?.length || 0} booking(s)`,
-				error: 'Failed to search bookings',
+				error: "Failed to search bookings",
 			});
 
 			setBookings(results || []);
 			setBookingPage(1); // Reset to first page on new search
 		} catch (error) {
 			setBookings([]);
-			setSearchError(error.message || 'An error occurred while searching');
-			console.error('Search error:', error);
+			setSearchError(error.message || "An error occurred while searching");
+			console.error("Search error:", error);
 		} finally {
 			setIsLoading(false);
 		}
 	};
 	// Clear search and results
 	const clearSearch = () => {
-		setSearch('');
+		setSearch("");
 		setBookings([]);
 		setHasSearched(false);
 		setSearchError(null);
@@ -79,11 +78,12 @@ export default function FindBookings() {
 						className="w-36 px-2 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white text-sm focus:outline-none focus:border-blue-500"
 						disabled={isLoading}
 					>
+						{" "}
 						<option value="BID">BOOKING ID</option>
 						<option value="cchName">CCH NAME</option>
 						<option value="email">EMAIL</option>
 						<option value="billingPhone">BILLING PHONE</option>
-						<option value="PNR">PNR</option>
+						{/* <option value="PNR">PNR</option> */}
 					</select>
 					<input
 						type="text"
@@ -91,7 +91,7 @@ export default function FindBookings() {
 						onChange={(e) => setSearch(e.target.value)}
 						className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:border-blue-500 transition-all"
 						placeholder={`Search booking by ${searchBy
-							.replace(/([A-Z])/g, ' $1')
+							.replace(/([A-Z])/g, " $1")
 							.toUpperCase()}...`}
 						disabled={isLoading}
 						required
@@ -101,7 +101,7 @@ export default function FindBookings() {
 						disabled={isLoading || !search.trim()}
 						className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm font-semibold whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isLoading ? 'Searching...' : 'Search'}
+						{isLoading ? "Searching..." : "Search"}
 					</button>
 					{hasSearched && (
 						<button
@@ -114,7 +114,7 @@ export default function FindBookings() {
 						</button>
 					)}
 				</form>
-			</div>{' '}
+			</div>{" "}
 			{/* Results Section */}
 			{hasSearched ? (
 				<div className="w-full">

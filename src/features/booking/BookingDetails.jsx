@@ -279,6 +279,7 @@ export default function BookingDetails() {
 			itinerary_details: apiData?.itinerary_details || "",
 			attachments: apiData?.attachments || [],
 			bid: apiData?.bid,
+			agent_name: apiData?.userName,
 		};
 	}, [apiData]);
 
@@ -293,10 +294,9 @@ export default function BookingDetails() {
 				</div>
 			);
 		}
-
 		const commonProps = {
 			bookingData: bookingDataForForm,
-			// onBack: () => window.history.back(),
+			onBack: () => window.history.back(),
 		};
 
 		switch (apiData?.transaction_type) {

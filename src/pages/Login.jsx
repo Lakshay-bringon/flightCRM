@@ -132,10 +132,11 @@ function Login() {
 								Reset Password
 							</button>
 						</div>
-					)}
+					)}{" "}
 				</form>
 
-				<div className="mt-6 text-center">
+				{/* Temporarily commented out - Forgot Password functionality */}
+				{/* <div className="mt-6 text-center">
 					<button
 						type="button"
 						onClick={() => setIsResetMode(!isResetMode)}
@@ -143,7 +144,7 @@ function Login() {
 					>
 						{isResetMode ? "Back to Login" : "Forgot Password?"}
 					</button>
-				</div>
+				</div> */}
 			</div>
 		</div>
 	);

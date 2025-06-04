@@ -8,7 +8,7 @@ import AuthorizeSection from "./AuthorizeSection.jsx";
 import PassengerDetails from "./PassengerDetails.jsx";
 import { bookingSchema } from "../schemas/bookingSchema.js";
 
-function NewBooking({ bookingData, onBack }) {
+function NewBooking({ bookingData, onBack, onRefresh }) {
 	// The actual form content for NewBooking
 	const NewBookingForm = ({
 		register,
@@ -242,11 +242,11 @@ function NewBooking({ bookingData, onBack }) {
 			</>
 		);
 	};
-
 	return (
 		<BookingComponent
 			defaultValues={bookingData}
 			onBack={onBack}
+			onRefresh={onRefresh} // Pass refresh function to BookingComponent
 			type="NEW BOOKING"
 			schema={bookingSchema}
 			loadingMessage={
