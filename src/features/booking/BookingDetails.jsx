@@ -325,7 +325,6 @@ export default function BookingDetails() {
 			</div>
 		);
 	}
-
 	if (error) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
@@ -342,7 +341,6 @@ export default function BookingDetails() {
 			</div>
 		);
 	}
-
 	// Show not found state if no booking data is available after loading
 	if (!loading && !apiData) {
 		return (
@@ -516,7 +514,7 @@ export default function BookingDetails() {
 							</div>
 						)}
 					</Section>{" "}
-					{/* Charging Details Section */}{" "}
+					{/* Charging Details Section */}
 					<Section
 						title="Charging Details"
 						editable={true}
@@ -527,8 +525,8 @@ export default function BookingDetails() {
 					>
 						{(isEditing, setIsEditing, editableFields) => (
 							<div className="p-3 space-y-4">
-								<div className="grid text-white grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-									{" "}
+								<div className="grid text-white grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+									{/* Type Field */}
 									<div>
 										<label className="block text-gray-400 text-xs mb-1">
 											TYPE
@@ -537,7 +535,7 @@ export default function BookingDetails() {
 											{isEditing ? (
 												<select
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm"
-													value={chargingDetails[0].type}
+													value={chargingDetails[0]?.type || "MCO"}
 													onChange={(e) =>
 														setChargingDetails((cd) => [
 															{ ...cd[0], type: e.target.value },
@@ -545,17 +543,21 @@ export default function BookingDetails() {
 													}
 												>
 													<option value="MCO">MCO</option>
-													<option value="AUTH">other</option>
+													<option value="AUTH">AUTH</option>
+													<option value="REFUND">REFUND</option>
+													<option value="OTHER">OTHER</option>
 												</select>
 											) : (
 												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
 													<div className="text-white">
-														{chargingDetails[0].type}
+														{chargingDetails[0]?.type || "N/A"}
 													</div>
 												</div>
 											)}
 										</div>
-									</div>{" "}
+									</div>
+
+									{/* Transaction ID Field */}
 									<div>
 										<label className="block text-gray-400 text-xs mb-1">
 											TRANSACTION ID
@@ -563,29 +565,27 @@ export default function BookingDetails() {
 										<div className="h-8">
 											{isEditing ? (
 												<input
-													key="transaction-id-text-input"
 													type="text"
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm"
-													value={chargingDetails[0].transactionId}
+													value={chargingDetails[0]?.transactionId || ""}
 													onChange={(e) =>
 														setChargingDetails((cd) => [
 															{ ...cd[0], transactionId: e.target.value },
 														])
 													}
-													onFocus={(e) => {
-														// Ensure input type remains text
-														e.target.type = "text";
-													}}
+													placeholder="Enter transaction ID"
 												/>
 											) : (
 												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
 													<div className="text-white">
-														{chargingDetails[0].transactionId || "123"}
+														{chargingDetails[0]?.transactionId || "N/A"}
 													</div>
 												</div>
 											)}
 										</div>
-									</div>{" "}
+									</div>
+
+									{/* Amount Field */}
 									<div>
 										<label className="block text-gray-400 text-xs mb-1">
 											AMOUNT
@@ -593,40 +593,38 @@ export default function BookingDetails() {
 										<div className="h-8">
 											{isEditing ? (
 												<input
-													key="charging-amount-number-input"
 													type="number"
 													step="0.01"
+													min="0"
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm"
-													value={chargingDetails[0].amount}
+													value={chargingDetails[0]?.amount || ""}
 													onChange={(e) =>
 														setChargingDetails((cd) => [
 															{ ...cd[0], amount: e.target.value },
 														])
 													}
-													onFocus={(e) => {
-														// Ensure input type remains number
-														e.target.type = "number";
-													}}
+													placeholder="0.00"
 												/>
 											) : (
 												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
 													<div className="text-white">
-														{chargingDetails[0].amount}
+														${chargingDetails[0]?.amount || "0.00"}
 													</div>
 												</div>
 											)}
 										</div>
-									</div>{" "}
+									</div>
+
+									{/* Status Field */}
 									<div>
 										<label className="block text-gray-400 text-xs mb-1">
 											STATUS
 										</label>
 										<div className="h-8">
-											{" "}
 											{isEditing ? (
 												<select
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm"
-													value={chargingDetails[0].status || ""}
+													value={chargingDetails[0]?.status ?? ""}
 													onChange={(e) =>
 														setChargingDetails((cd) => [
 															{ ...cd[0], status: e.target.value },
@@ -643,8 +641,8 @@ export default function BookingDetails() {
 											) : (
 												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
 													<div className="text-white">
-														{chargingDetails[0].status !== undefined &&
-														chargingDetails[0].status !== null
+														{chargingDetails[0]?.status !== undefined &&
+														chargingDetails[0]?.status !== null
 															? CHARGING_STATUS[chargingDetails[0].status] ||
 															  chargingDetails[0].status
 															: "N/A"}
@@ -652,34 +650,41 @@ export default function BookingDetails() {
 												</div>
 											)}
 										</div>
-									</div>{" "}
+									</div>
+
+									{/* Charged On Field */}
 									<div>
 										<label className="block text-gray-400 text-xs mb-1">
 											CHARGED ON
 										</label>
-										<div className="h-8">
+										<div className="h-8 relative">
 											{isEditing ? (
 												<input
-													key="charged-on-datetime-input"
 													type="date"
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm z-10"
-													value={chargingDetails[0].chargedOn}
+													value={chargingDetails[0]?.chargedOn || ""}
 													onChange={(e) =>
 														setChargingDetails((cd) => [
 															{ ...cd[0], chargedOn: e.target.value },
 														])
 													}
-													// onBlur={() => setIsAnySectionEditing(false)}
+													max={new Date().toISOString().split("T")[0]}
 												/>
 											) : (
 												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
 													<div className="text-white">
-														{chargingDetails[0].chargedOn || "N/A"}
+														{chargingDetails[0]?.chargedOn
+															? new Date(
+																	chargingDetails[0].chargedOn
+															  ).toLocaleDateString()
+															: "N/A"}
 													</div>
 												</div>
 											)}
 										</div>
-									</div>{" "}
+									</div>
+
+									{/* Charged By Field */}
 									<div>
 										<label className="block text-gray-400 text-xs mb-1">
 											CHARGED BY
@@ -687,29 +692,27 @@ export default function BookingDetails() {
 										<div className="h-8">
 											{isEditing ? (
 												<input
-													key="charged-by-text-input"
 													type="text"
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm"
-													value={chargingDetails[0].chargedBy || ""}
+													value={chargingDetails[0]?.chargedBy || ""}
 													onChange={(e) =>
 														setChargingDetails((cd) => [
 															{ ...cd[0], chargedBy: e.target.value },
 														])
 													}
-													onFocus={(e) => {
-														// Ensure input type remains text
-														e.target.type = "text";
-													}}
+													placeholder="Enter name"
 												/>
 											) : (
 												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
 													<div className="text-white">
-														{chargingDetails[0].chargedBy || "N/A"}
+														{chargingDetails[0]?.chargedBy || "N/A"}
 													</div>
 												</div>
 											)}
 										</div>
-									</div>{" "}
+									</div>
+
+									{/* Merchant Name Field */}
 									<div>
 										<label className="block text-gray-400 text-xs mb-1">
 											MERCHANT NAME
@@ -717,33 +720,29 @@ export default function BookingDetails() {
 										<div className="h-8">
 											{isEditing ? (
 												<input
-													key="merchant-name-text-input"
 													type="text"
 													className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-sm"
-													value={chargingDetails[0].merchantName || ""}
+													value={chargingDetails[0]?.merchantName || ""}
 													onChange={(e) =>
 														setChargingDetails((cd) => [
 															{ ...cd[0], merchantName: e.target.value },
 														])
 													}
-													onFocus={(e) => {
-														// Ensure input type remains text
-														e.target.type = "text";
-													}}
+													placeholder="Enter merchant name"
 												/>
 											) : (
 												<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">
 													<div className="text-white">
-														{chargingDetails[0].merchantName || "N/A"}
+														{chargingDetails[0]?.merchantName || "N/A"}
 													</div>
 												</div>
 											)}
-										</div>{" "}
-									</div>{" "}
+										</div>
+									</div>
 								</div>
 							</div>
 						)}
-					</Section>{" "}
+					</Section>
 					{/* Transaction-specific Form */}
 					<div>{renderFormComponent()}</div>
 					{/* Refund Details Section */}{" "}
