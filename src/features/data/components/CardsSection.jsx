@@ -116,7 +116,7 @@ export default function CardsSection({ onClose }) {
 				data={Array.isArray(filteredCards) ? filteredCards : []}
 				onEdit={handleEdit}
 				onDelete={handleDelete}
-				columns={["id", "name", "sort_name", "status"]}
+				columns={["name", "sort_name", "status"]}
 				loading={false}
 				loadingLabel="Loading cards..."
 				onToggleStatus={handleToggleStatus}

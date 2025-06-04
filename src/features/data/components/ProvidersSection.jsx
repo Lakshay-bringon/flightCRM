@@ -119,7 +119,7 @@ export default function ProvidersSection({ onClose }) {
 				data={Array.isArray(filteredProviders) ? filteredProviders : []}
 				onEdit={handleEdit}
 				onDelete={handleDelete}
-				columns={["id", "name", "logo", "status"]}
+				columns={["name", "logo", "status"]}
 				loading={false}
 				loadingLabel="Loading providers..."
 				onToggleStatus={handleToggleStatus}

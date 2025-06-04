@@ -120,7 +120,7 @@ export default function CallQueueSection({ onClose }) {
 				data={Array.isArray(filteredQueues) ? filteredQueues : []}
 				onEdit={handleEdit}
 				onDelete={handleDelete}
-				columns={["id", "name", "phone", "status"]}
+				columns={["name", "phone", "status"]}
 				loading={false}
 				loadingLabel="Loading call queues..."
 				onToggleStatus={handleToggleStatus}

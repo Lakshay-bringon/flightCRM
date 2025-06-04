@@ -132,7 +132,7 @@ export default function CurrencySection({ onClose }) {
 				data={Array.isArray(filteredCurrencies) ? filteredCurrencies : []}
 				onEdit={handleEdit}
 				onDelete={handleDelete}
-				columns={["id", "Currency", "status"]}
+				columns={["Currency", "status"]}
 				loading={false}
 				loadingLabel="Loading currencies..."
 				onToggleStatus={handleToggleStatus}
