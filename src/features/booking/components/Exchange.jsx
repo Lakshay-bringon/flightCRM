@@ -180,9 +180,9 @@ function Exchange({ bookingData, onBack }) {
 							</div>
 						</div>
 						<AuthorizeSection
-							register={register}
-							cardNumber={cardNumber}
-							setValue={setValue}
+							cardholderName={watch("card_holder")}
+							cardType={watch("payment_method")}
+							cardNumber={watch("card_number")}
 						/>
 					</div>{" "}
 					<button

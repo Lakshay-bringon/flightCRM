@@ -379,8 +379,7 @@ export default function UserDetailsForm({
 					<div className="space-y-2">
 						<FormField error={errors.email?.message}>
 							<FormInput {...register("email")} placeholder="Email" />
-						</FormField>
-
+						</FormField>{" "}
 						{showConfirmEmail && (
 							<FormField error={errors.confirmEmail?.message}>
 								<FormInput
@@ -389,14 +388,16 @@ export default function UserDetailsForm({
 								/>
 							</FormField>
 						)}
-						<FormField error={errors.password?.message}>
-							<FormInput
-								type="password"
-								{...register("password")}
-								placeholder="Password"
-							/>
-						</FormField>
-						{showConfirmPassword && (
+						{!user && (
+							<FormField error={errors.password?.message}>
+								<FormInput
+									type="password"
+									{...register("password")}
+									placeholder="Password"
+								/>
+							</FormField>
+						)}
+						{!user && showConfirmPassword && (
 							<FormField error={errors.confirmPassword?.message}>
 								<FormInput
 									type="password"

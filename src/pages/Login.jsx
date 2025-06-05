@@ -10,14 +10,16 @@ function Login() {
 	const [isResetMode, setIsResetMode] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [resetEmail, setResetEmail] = useState("");
 	const [error, setError] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
-	const { login } = useAuth();
-
+	const { login, forgetPassword } = useAuth();
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
+		setSuccessMessage("");
 
 		if (!isResetMode) {
 			try {
@@ -30,13 +32,28 @@ function Login() {
 				setError(err.message || "An error occurred during login");
 			}
 		} else {
-			// TODO: Implement password reset logic
-			setIsResetMode(false);
+			try {
+				setIsLoading(true);
+				const message = await forgetPassword(resetEmail);
+				setIsLoading(false);
+				setSuccessMessage(message);
+				// Reset form and switch back to login mode after successful reset
+				setTimeout(() => {
+					setIsResetMode(false);
+					setSuccessMessage("");
+					setResetEmail("");
+				}, 3000);
+			} catch (err) {
+				setIsLoading(false);
+				setError(err.message || "An error occurred during password reset");
+			}
 		}
 	};
-
 	if (isLoading) {
-		return <LoadingSpinner label="Logging you in..." fullPage />;
+		const loadingLabel = isResetMode
+			? "Sending reset link..."
+			: "Logging you in...";
+		return <LoadingSpinner label={loadingLabel} fullPage />;
 	}
 
 	return (
@@ -51,7 +68,6 @@ function Login() {
 						/>
 					</div>
 				</div>
-
 				<form onSubmit={handleSubmit} className="space-y-6">
 					{!isResetMode ? (
 						<>
@@ -97,9 +113,14 @@ function Login() {
 										)}
 									</button>
 								</div>
-							</div>
+							</div>{" "}
 							{error && (
 								<div className="text-red-500 text-sm mt-2">{error}</div>
+							)}
+							{successMessage && (
+								<div className="text-green-500 text-sm mt-2">
+									{successMessage}
+								</div>
 							)}
 							<button
 								type="submit"
@@ -119,32 +140,47 @@ function Login() {
 									<input
 										type="email"
 										required
+										value={resetEmail}
+										onChange={(e) => setResetEmail(e.target.value)}
 										className="w-full pl-12 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
 										placeholder="Enter your email"
 									/>
 								</div>
 							</div>
 
+							{error && (
+								<div className="text-red-500 text-sm mb-4">{error}</div>
+							)}
+							{successMessage && (
+								<div className="text-green-500 text-sm mb-4">
+									{successMessage}
+								</div>
+							)}
+
 							<button
 								type="submit"
-								className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
+								disabled={isLoading}
+								className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								Reset Password
+								{isLoading ? "Sending Reset Link..." : "Reset Password"}
 							</button>
 						</div>
 					)}{" "}
-				</form>
-
-				{/* Temporarily commented out - Forgot Password functionality */}
-				{/* <div className="mt-6 text-center">
+				</form>{" "}
+				<div className="mt-6 text-center">
 					<button
 						type="button"
-						onClick={() => setIsResetMode(!isResetMode)}
+						onClick={() => {
+							setIsResetMode(!isResetMode);
+							setError("");
+							setSuccessMessage("");
+							setResetEmail("");
+						}}
 						className="text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200"
 					>
 						{isResetMode ? "Back to Login" : "Forgot Password?"}
 					</button>
-				</div> */}
+				</div>
 			</div>
 		</div>
 	);

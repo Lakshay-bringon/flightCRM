@@ -69,6 +69,38 @@ export default function ItineraryDetailsInput({
 
 	const handleDragOver = (e) => e.preventDefault();
 
+	// Handle paste from clipboard
+	const handlePaste = (e) => {
+		e.stopPropagation();
+		e.preventDefault();
+		const items = e.clipboardData?.items;
+		if (!items) return;
+		for (const item of items) {
+			if (item.type.startsWith("image/")) {
+				const file = item.getAsFile();
+				const reader = new FileReader();
+				reader.onloadend = () => {
+					if (
+						typeof reader.result === "string" &&
+						reader.result.startsWith("data:image/")
+					) {
+						setPreview(reader.result);
+						setImage && setImage(reader.result);
+					}
+				};
+				reader.readAsDataURL(file);
+				break;
+			}
+		}
+	};
+
+	// Attach global paste listener so paste works even if container isn't focused
+	useEffect(() => {
+		const onGlobalPaste = (e) => handlePaste(e);
+		window.addEventListener('paste', onGlobalPaste);
+		return () => window.removeEventListener('paste', onGlobalPaste);
+	}, [handlePaste]);
+
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg mb-6">
 			<h3 className="font-semibold mb-2">Itinerary Details</h3>
@@ -102,11 +134,13 @@ export default function ItineraryDetailsInput({
 					className="border-dashed border-2 border-gray-400 p-6 text-center rounded cursor-pointer hover:border-blue-400 transition-colors mb-2"
 					onDrop={handleDrop}
 					onDragOver={handleDragOver}
+					onPaste={handlePaste}
+					tabIndex={0}
 					onClick={() => fileInputRef.current && fileInputRef.current.click()}
 				>
 					<p className="text-gray-400 flex flex-col items-center justify-center">
 						<CloudUpload className="w-10 h-10 mb-2" />
-						Drag and drop an image here, or click to select an image
+						Drag and drop, click to select, or paste an image here
 					</p>
 					<input
 						ref={fileInputRef}

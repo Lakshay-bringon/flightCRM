@@ -41,7 +41,7 @@ const EmailNewBooking = ({ bookingData }) => {
 	} = bookingData;
 
 	// Get the booking ID from either id or bid field
-	const bookingId = bid || id;
+	const bookingId = bid;
 	return (
 		<div
 			style={{
@@ -50,33 +50,37 @@ const EmailNewBooking = ({ bookingData }) => {
 				background: "#0f172a",
 				color: "#d1d5db",
 				lineHeight: "1.6",
-				padding: "20px",
 				margin: "0",
+				padding: "4px",
 				boxSizing: "border-box",
+				minWidth: "320px",
+				maxWidth: "100%",
 			}}
 		>
 			<div
 				style={{
 					maxWidth: "896px",
+					width: "100%",
 					margin: "0 auto",
 					background: "rgba(31, 41, 55, 0.9)",
 					border: "1px solid #374151",
 					borderRadius: "12px",
 					boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-					overflow: "hidden",
+					overflow: "auto",
 				}}
 			>
-				{" "}
-				<div style={{ padding: "24px" }}>
+				<div style={{ padding: "8px" }}>
 					{/* Header */}
-					<div style={{ textAlign: "center", marginBottom: "24px" }}>
+					<div style={{ textAlign: "center", marginBottom: "12px" }}>
 						<h1
 							style={{
 								color: "#ffffff",
-								fontSize: "20px",
+								fontSize: "14px",
 								fontWeight: "700",
 								lineHeight: "1.4",
 								margin: "0",
+								wordBreak: "break-word",
+								textAlign: "center",
 							}}
 						>
 							<span
@@ -87,12 +91,12 @@ const EmailNewBooking = ({ bookingData }) => {
 									color: "#ffffff",
 									fontWeight: "700",
 									textTransform: "uppercase",
-									padding: "0 4px",
+									padding: "0 2px",
 									outline: "none",
 									display: "inline",
 								}}
 							>
-								{airline_name || "AIRLINE NAME"}
+								{airline_name.toUpperCase()}
 							</span>{" "}
 							RESERVATION CONFIRMATION –{" "}
 							<span
@@ -103,54 +107,54 @@ const EmailNewBooking = ({ bookingData }) => {
 									color: "#ffffff",
 									fontWeight: "700",
 									textTransform: "uppercase",
-									padding: "0 4px",
+									padding: "0 2px",
 									outline: "none",
 									display: "inline",
-									minWidth: "60px",
 								}}
 							>
-								{pnr || "PNR"}
+								{pnr}
 							</span>
 						</h1>
-					</div>{" "}
+					</div>
+
 					{/* Introduction Section */}
 					<div
 						style={{
 							background: "#1f2937",
 							border: "1px solid #374151",
 							borderRadius: "8px",
-							padding: "16px",
-							marginBottom: "24px",
+							padding: "8px",
+							marginBottom: "12px",
 						}}
 					>
-						<div style={{ lineHeight: "1.75", marginBottom: "16px" }}>
+						<div style={{ lineHeight: "1.75", marginBottom: "4px" }}>
 							Dear{" "}
 							<span
 								style={{
 									borderBottom: "1px dashed #6b7280",
-									padding: "0 4px",
+									padding: "0 2px",
 									color: "#ffffff",
 									background: "transparent",
 								}}
 							>
-								{customer_name || "FIRST NAME OF CUSTOMER"}
+								{customer_name}
 							</span>
 							,
 						</div>
-						<div style={{ lineHeight: "1.75", marginBottom: "16px" }}>
+						<div style={{ lineHeight: "1.75", marginBottom: "4px" }}>
 							Thank you for contacting us!
 						</div>
-						<div style={{ lineHeight: "1.75", marginBottom: "16px" }}>
+						<div style={{ lineHeight: "1.75", marginBottom: "4px" }}>
 							You can contact us on this number +1-877-413-0030 for any related
 							request.
 						</div>
-						<div style={{ lineHeight: "1.75", marginBottom: "16px" }}>
+						<div style={{ lineHeight: "1.75", marginBottom: "4px" }}>
 							As per our conversation and as agreed, we have booked your
 							reservation under Confirmation Number
 							<span
 								style={{
 									borderBottom: "1px dashed #6b7280",
-									padding: "0 4px",
+									padding: "0 2px",
 									color: "#ffffff",
 									background: "transparent",
 								}}
@@ -162,7 +166,7 @@ const EmailNewBooking = ({ bookingData }) => {
 							<span
 								style={{
 									borderBottom: "1px dashed #6b7280",
-									padding: "0 4px",
+									padding: "0 2px",
 									color: "#ffffff",
 									background: "transparent",
 								}}
@@ -174,7 +178,7 @@ const EmailNewBooking = ({ bookingData }) => {
 							<span
 								style={{
 									borderBottom: "1px dashed #6b7280",
-									padding: "0 4px",
+									padding: "0 2px",
 									color: "#ffffff",
 									background: "transparent",
 									minWidth: "40px",
@@ -185,24 +189,25 @@ const EmailNewBooking = ({ bookingData }) => {
 							</span>
 							all inclusive of taxes and fees as per the below description.
 						</div>
-					</div>{" "}
-					{/* Charges Description Section */}
+					</div>
+
+					{/* Charges Description Section - Mobile Optimized */}
 					<div
 						style={{
 							background: "#1f2937",
 							border: "1px solid #374151",
 							borderRadius: "8px",
-							padding: "16px",
-							marginBottom: "24px",
+							padding: "8px",
+							marginBottom: "12px",
 						}}
 					>
 						<div
 							style={{
 								color: "#ffffff",
-								fontSize: "16px",
+								fontSize: "14px",
 								fontWeight: "600",
-								marginBottom: "16px",
-								paddingBottom: "8px",
+								marginBottom: "8px",
+								paddingBottom: "6px",
 								borderBottom: "1px solid #374151",
 							}}
 						>
@@ -212,138 +217,93 @@ const EmailNewBooking = ({ bookingData }) => {
 							style={{
 								background: "#111827",
 								border: "1px solid #374151",
-								borderRadius: "8px",
-								overflow: "hidden",
+								borderRadius: "6px",
+								overflow: "auto",
+								width: "100%",
 							}}
 						>
-							<table
+							{/* Header row */}
+							<div
 								style={{
-									width: "100%",
-									borderCollapse: "collapse",
-									margin: "0",
+									padding: "6px 8px",
+									borderBottom: "1px solid #374151",
+									fontSize: "10px",
+									display: "flex",
+									alignItems: "center",
+									gap: "8px",
+									background: "#1f2937",
+									fontWeight: "600",
+									color: "#ffffff",
 								}}
 							>
-								<thead>
-									<tr>
-										<th
-											style={{
-												padding: "12px 16px",
-												textAlign: "left",
-												borderBottom: "1px solid #374151",
-												background: "#1f2937",
-												color: "#ffffff",
-												fontWeight: "600",
-												fontSize: "14px",
-												textTransform: "uppercase",
-												letterSpacing: "0.025em",
-											}}
-										>
-											#
-										</th>
-										<th
-											style={{
-												padding: "12px 16px",
-												textAlign: "left",
-												borderBottom: "1px solid #374151",
-												background: "#1f2937",
-												color: "#ffffff",
-												fontWeight: "600",
-												fontSize: "14px",
-												textTransform: "uppercase",
-												letterSpacing: "0.025em",
-											}}
-										>
-											Amount
-										</th>
-										<th
-											style={{
-												padding: "12px 16px",
-												textAlign: "left",
-												borderBottom: "1px solid #374151",
-												background: "#1f2937",
-												color: "#ffffff",
-												fontWeight: "600",
-												fontSize: "14px",
-												textTransform: "uppercase",
-												letterSpacing: "0.025em",
-											}}
-										>
-											Description
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									{charge_data.map((charge, index) => {
-										const { amount: chargeAmount = "", description = "" } =
-											charge;
-										return (
-											<tr key={index}>
-												<td
-													style={{
-														padding: "12px 16px",
-														textAlign: "left",
-														borderBottom:
-															index === charge_data.length - 1
-																? "none"
-																: "1px solid #374151",
-														color: "#d1d5db",
-														fontSize: "14px",
-													}}
-												>
-													{index + 1}
-												</td>
-												<td
-													style={{
-														padding: "12px 16px",
-														textAlign: "left",
-														borderBottom:
-															index === charge_data.length - 1
-																? "none"
-																: "1px solid #374151",
-														color: "#d1d5db",
-														fontSize: "14px",
-													}}
-												>
-													{chargeAmount || "0.00"} {currency}
-												</td>
-												<td
-													style={{
-														padding: "12px 16px",
-														textAlign: "left",
-														borderBottom:
-															index === charge_data.length - 1
-																? "none"
-																: "1px solid #374151",
-														color: "#d1d5db",
-														fontSize: "14px",
-													}}
-												>
-													{description || "No description"}
-												</td>
-											</tr>
-										);
-									})}
-								</tbody>
-							</table>
+								<div style={{ 
+									minWidth: "80px",
+									fontSize: "10px",
+								}}>
+									Amount
+								</div>
+								<div style={{ 
+									flex: "1",
+									fontSize: "10px",
+								}}>
+									Description
+								</div>
+							</div>
+							{/* Data rows */}
+							{charge_data.map((charge, index) => {
+								const { amount: chargeAmount = "", description = "" } = charge;
+								return (
+									<div
+										key={index}
+										style={{
+											padding: "6px 8px",
+											borderBottom: index === charge_data.length - 1 ? "none" : "1px solid #374151",
+											fontSize: "11px",
+											display: "flex",
+											flexWrap: "wrap",
+											alignItems: "center",
+											gap: "8px",
+										}}
+									>
+										<div style={{ 
+											color: "#ffffff", 
+											fontWeight: "600",
+											minWidth: "80px",
+											fontSize: "11px",
+										}}>
+											{chargeAmount || "0.00"} {currency}
+										</div>
+										<div style={{ 
+											color: "#d1d5db",
+											flex: "1",
+											fontSize: "11px",
+											wordBreak: "break-word",
+										}}>
+											{description || "No description"}
+										</div>
+									</div>
+								);
+							})}
 						</div>
-					</div>{" "}
+					</div>
+
 					{/* Flight Details Section */}
 					<div
 						style={{
 							background: "#1f2937",
 							border: "1px solid #374151",
 							borderRadius: "8px",
-							padding: "16px",
-							marginBottom: "24px",
+							padding: "8px",
+							marginBottom: "12px",
 						}}
 					>
 						<div
 							style={{
 								color: "#ffffff",
-								fontSize: "16px",
+								fontSize: "14px",
 								fontWeight: "600",
-								marginBottom: "16px",
-								paddingBottom: "8px",
+								marginBottom: "8px",
+								paddingBottom: "6px",
 								borderBottom: "1px solid #374151",
 							}}
 						>
@@ -377,24 +337,25 @@ const EmailNewBooking = ({ bookingData }) => {
 								No itinerary image provided
 							</p>
 						)}
-					</div>{" "}
-					{/* Passenger Details Section */}
+					</div>
+
+					{/* Passenger Details Section - Mobile Optimized */}
 					<div
 						style={{
 							background: "#1f2937",
 							border: "1px solid #374151",
 							borderRadius: "8px",
-							padding: "16px",
-							marginBottom: "24px",
+							padding: "8px",
+							marginBottom: "12px",
 						}}
 					>
 						<div
 							style={{
 								color: "#ffffff",
-								fontSize: "16px",
+								fontSize: "14px",
 								fontWeight: "600",
-								marginBottom: "16px",
-								paddingBottom: "8px",
+								marginBottom: "8px",
+								paddingBottom: "6px",
 								borderBottom: "1px solid #374151",
 							}}
 						>
@@ -404,318 +365,169 @@ const EmailNewBooking = ({ bookingData }) => {
 							style={{
 								background: "#111827",
 								border: "1px solid #374151",
-								borderRadius: "8px",
-								overflow: "hidden",
+								borderRadius: "6px",
+								overflow: "auto",
+								width: "100%",
 							}}
 						>
-							<table
+							{/* Header row */}
+							<div
 								style={{
-									width: "100%",
-									borderCollapse: "collapse",
-									margin: "0",
+									padding: "6px 8px",
+									borderBottom: "1px solid #374151",
+									fontSize: "10px",
+									display: "flex",
+									alignItems: "center",
+									gap: "8px",
+									background: "#1f2937",
+									fontWeight: "600",
+									color: "#ffffff",
+									flexWrap: "wrap",
 								}}
 							>
-								<thead>
-									<tr>
-										<th
-											style={{
-												padding: "12px 16px",
-												textAlign: "left",
-												borderBottom: "1px solid #374151",
-												background: "#1f2937",
-												color: "#ffffff",
-												fontWeight: "600",
-												fontSize: "14px",
-												textTransform: "uppercase",
-												letterSpacing: "0.025em",
-											}}
-										>
-											#
-										</th>
-										<th
-											style={{
-												padding: "12px 16px",
-												textAlign: "left",
-												borderBottom: "1px solid #374151",
-												background: "#1f2937",
-												color: "#ffffff",
-												fontWeight: "600",
-												fontSize: "14px",
-												textTransform: "uppercase",
-												letterSpacing: "0.025em",
-											}}
-										>
-											Type
-										</th>
-										<th
-											style={{
-												padding: "12px 16px",
-												textAlign: "left",
-												borderBottom: "1px solid #374151",
-												background: "#1f2937",
-												color: "#ffffff",
-												fontWeight: "600",
-												fontSize: "14px",
-												textTransform: "uppercase",
-												letterSpacing: "0.025em",
-											}}
-										>
-											First Name
-										</th>
-										<th
-											style={{
-												padding: "12px 16px",
-												textAlign: "left",
-												borderBottom: "1px solid #374151",
-												background: "#1f2937",
-												color: "#ffffff",
-												fontWeight: "600",
-												fontSize: "14px",
-												textTransform: "uppercase",
-												letterSpacing: "0.025em",
-											}}
-										>
-											Middle Name
-										</th>
-										<th
-											style={{
-												padding: "12px 16px",
-												textAlign: "left",
-												borderBottom: "1px solid #374151",
-												background: "#1f2937",
-												color: "#ffffff",
-												fontWeight: "600",
-												fontSize: "14px",
-												textTransform: "uppercase",
-												letterSpacing: "0.025em",
-											}}
-										>
-											Last Name
-										</th>
-										<th
-											style={{
-												padding: "12px 16px",
-												textAlign: "left",
-												borderBottom: "1px solid #374151",
-												background: "#1f2937",
-												color: "#ffffff",
-												fontWeight: "600",
-												fontSize: "14px",
-												textTransform: "uppercase",
-												letterSpacing: "0.025em",
-											}}
-										>
-											Date of Birth
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									{passenger_data && passenger_data.length > 0 ? (
-										passenger_data.map((passenger, index) => {
-											const {
-												type = "ADT",
-												firstName = "",
-												middleName = "",
-												lastName = "",
-												dob = "",
-											} = passenger;
+								<div style={{ 
+									flex: "1",
+									minWidth: "120px",
+									fontSize: "10px",
+								}}>
+									Name
+								</div>
+								<div style={{ 
+									minWidth: "80px",
+									fontSize: "10px",
+								}}>
+									Date of Birth
+								</div>
+								<div style={{ 
+									minWidth: "50px",
+									fontSize: "10px",
+								}}>
+									Type
+								</div>
+							</div>
+							{/* Data rows */}
+							{passenger_data && passenger_data.length > 0 ? (
+								passenger_data.map((passenger, index) => {
+									const {
+										type = "ADT",
+										firstName = "",
+										middleName = "",
+										lastName = "",
+										dob = "",
+									} = passenger;
 
-											return (
-												<tr key={index}>
-													<td
-														style={{
-															padding: "12px 16px",
-															textAlign: "left",
-															borderBottom:
-																index === passenger_data.length - 1
-																	? "none"
-																	: "1px solid #374151",
-															color: "#d1d5db",
-															fontSize: "14px",
-														}}
-													>
-														{index + 1}
-													</td>
-													<td
-														style={{
-															padding: "12px 16px",
-															textAlign: "left",
-															borderBottom:
-																index === passenger_data.length - 1
-																	? "none"
-																	: "1px solid #374151",
-															color: "#d1d5db",
-															fontSize: "14px",
-														}}
-													>
-														<span
-															style={{
-																background: "#1e40af",
-																color: "#ffffff",
-																padding: "4px 8px",
-																borderRadius: "4px",
-																fontSize: "12px",
-																fontWeight: "600",
-															}}
-														>
-															{type}
-														</span>
-													</td>
-													<td
-														style={{
-															padding: "12px 16px",
-															textAlign: "left",
-															borderBottom:
-																index === passenger_data.length - 1
-																	? "none"
-																	: "1px solid #374151",
-															color: "#d1d5db",
-															fontSize: "14px",
-														}}
-													>
-														{firstName || "Not provided"}
-													</td>
-													<td
-														style={{
-															padding: "12px 16px",
-															textAlign: "left",
-															borderBottom:
-																index === passenger_data.length - 1
-																	? "none"
-																	: "1px solid #374151",
-															color: "#d1d5db",
-															fontSize: "14px",
-														}}
-													>
-														{middleName || "-"}
-													</td>
-													<td
-														style={{
-															padding: "12px 16px",
-															textAlign: "left",
-															borderBottom:
-																index === passenger_data.length - 1
-																	? "none"
-																	: "1px solid #374151",
-															color: "#d1d5db",
-															fontSize: "14px",
-														}}
-													>
-														{lastName || "Not provided"}
-													</td>
-													<td
-														style={{
-															padding: "12px 16px",
-															textAlign: "left",
-															borderBottom:
-																index === passenger_data.length - 1
-																	? "none"
-																	: "1px solid #374151",
-															color: "#d1d5db",
-															fontSize: "14px",
-														}}
-													>
-														{dob || "Not provided"}
-													</td>
-												</tr>
-											);
-										})
-									) : (
-										<tr>
-											<td
-												style={{
-													padding: "12px 16px",
-													textAlign: "left",
-													color: "#d1d5db",
-													fontSize: "14px",
-												}}
-											>
-												1
-											</td>
-											<td
-												style={{
-													padding: "12px 16px",
-													textAlign: "left",
-													color: "#d1d5db",
-													fontSize: "14px",
-												}}
-											>
+									return (
+										<div
+											key={index}
+											style={{
+												padding: "6px 8px",
+												borderBottom: index === passenger_data.length - 1 ? "none" : "1px solid #374151",
+												fontSize: "11px",
+												display: "flex",
+												alignItems: "center",
+												gap: "8px",
+												flexWrap: "wrap",
+											}}
+										>
+											<div style={{ 
+												color: "#ffffff", 
+												fontWeight: "600", 
+												fontSize: "11px",
+												wordBreak: "break-word",
+												flex: "1",
+												minWidth: "120px",
+											}}>
+												{firstName || "Not provided"} {middleName ? middleName + " " : ""}{lastName || "Not provided"}
+											</div>
+											<div style={{ 
+												color: "#d1d5db",
+												fontSize: "10px",
+												minWidth: "80px",
+											}}>
+												{dob || "Not provided"}
+											</div>
+											<div style={{ 
+												minWidth: "50px",
+											}}>
 												<span
 													style={{
 														background: "#1e40af",
 														color: "#ffffff",
-														padding: "4px 8px",
-														borderRadius: "4px",
-														fontSize: "12px",
+														padding: "2px 4px",
+														borderRadius: "3px",
+														fontSize: "9px",
 														fontWeight: "600",
 													}}
 												>
-													ADT
+													{type}
 												</span>
-											</td>
-											<td
-												style={{
-													padding: "12px 16px",
-													textAlign: "left",
-													color: "#d1d5db",
-													fontSize: "14px",
-												}}
-											>
-												Not provided
-											</td>
-											<td
-												style={{
-													padding: "12px 16px",
-													textAlign: "left",
-													color: "#d1d5db",
-													fontSize: "14px",
-												}}
-											>
-												-
-											</td>
-											<td
-												style={{
-													padding: "12px 16px",
-													textAlign: "left",
-													color: "#d1d5db",
-													fontSize: "14px",
-												}}
-											>
-												Not provided
-											</td>
-											<td
-												style={{
-													padding: "12px 16px",
-													textAlign: "left",
-													color: "#d1d5db",
-													fontSize: "14px",
-												}}
-											>
-												Not provided
-											</td>
-										</tr>
-									)}
-								</tbody>
-							</table>
+											</div>
+										</div>
+									);
+								})
+							) : (
+								<div style={{ 
+									padding: "6px 8px", 
+									fontSize: "11px",
+									display: "flex",
+									alignItems: "center",
+									gap: "8px",
+									flexWrap: "wrap",
+								}}>
+									<div style={{ 
+										color: "#ffffff", 
+										fontWeight: "600", 
+										fontSize: "11px",
+										flex: "1",
+										minWidth: "120px",
+									}}>
+										Not provided
+									</div>
+									<div style={{ 
+										color: "#d1d5db", 
+										fontSize: "10px",
+										minWidth: "80px",
+									}}>
+										Not provided
+									</div>
+									<div style={{ 
+										minWidth: "50px",
+									}}>
+										<span
+											style={{
+												background: "#1e40af",
+												color: "#ffffff",
+												padding: "2px 4px",
+												borderRadius: "3px",
+												fontSize: "9px",
+												fontWeight: "600",
+											}}
+										>
+											ADT
+										</span>
+									</div>
+								</div>
+							)}
 						</div>
-					</div>{" "}
+					</div>
+
 					{/* Purchase Summary Section */}
 					<div
 						style={{
 							background: "#1f2937",
 							border: "1px solid #374151",
 							borderRadius: "8px",
-							padding: "16px",
-							marginBottom: "24px",
+							padding: "8px",
+							marginBottom: "12px",
 						}}
 					>
 						<div
 							style={{
 								color: "#ffffff",
-								fontSize: "16px",
+								fontSize: "14px",
 								fontWeight: "600",
-								marginBottom: "16px",
-								paddingBottom: "8px",
+								marginBottom: "8px",
+								paddingBottom: "6px",
 								borderBottom: "1px solid #374151",
 							}}
 						>
@@ -723,218 +535,229 @@ const EmailNewBooking = ({ bookingData }) => {
 						</div>
 						<div
 							style={{
-								display: "grid",
-								gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-								gap: "12px",
 								background: "#111827",
 								border: "1px solid #374151",
-								borderRadius: "8px",
-								padding: "12px",
+								borderRadius: "4px",
+								padding: "6px",
 							}}
 						>
+							{/* Stack items vertically for better mobile compatibility */}
 							<div
 								style={{
 									display: "flex",
 									flexDirection: "column",
-									gap: "4px",
-									padding: "8px 10px",
-									background: "#1f2937",
-									border: "1px solid #374151",
-									borderRadius: "4px",
+									gap: "6px",
 								}}
 							>
-								<label
+								<div
 									style={{
-										color: "#9ca3af",
-										fontSize: "12px",
-										fontWeight: "500",
-										margin: "0",
+										display: "flex",
+										flexDirection: "column",
+										gap: "2px",
+										padding: "6px",
+										background: "#1f2937",
+										border: "1px solid #374151",
+										borderRadius: "4px",
 									}}
 								>
-									Name of Card Holder:
-								</label>
-								<span
+									<label
+										style={{
+											color: "#9ca3af",
+											fontSize: "10px",
+											fontWeight: "500",
+											margin: "0",
+										}}
+									>
+										Name of Card Holder:
+									</label>
+									<span
+										style={{
+											color: "#ffffff",
+											fontSize: "11px",
+											fontWeight: "500",
+											wordBreak: "break-word",
+										}}
+									>
+										{card_holder || customer_name || "Not provided"}
+									</span>
+								</div>
+								<div
 									style={{
-										color: "#ffffff",
-										fontSize: "13px",
-										fontWeight: "500",
+										display: "flex",
+										flexDirection: "column",
+										gap: "2px",
+										padding: "6px",
+										background: "#1f2937",
+										border: "1px solid #374151",
+										borderRadius: "4px",
 									}}
 								>
-									{card_holder || customer_name || "Not provided"}
-								</span>
-							</div>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									gap: "4px",
-									padding: "8px 10px",
-									background: "#1f2937",
-									border: "1px solid #374151",
-									borderRadius: "4px",
-								}}
-							>
-								<label
+									<label
+										style={{
+											color: "#9ca3af",
+											fontSize: "10px",
+											fontWeight: "500",
+											margin: "0",
+										}}
+									>
+										Email ID:
+									</label>
+									<span
+										style={{
+											color: "#ffffff",
+											fontSize: "11px",
+											fontWeight: "500",
+											wordBreak: "break-word",
+										}}
+									>
+										{email || "Not provided"}
+									</span>
+								</div>
+								<div
 									style={{
-										color: "#9ca3af",
-										fontSize: "12px",
-										fontWeight: "500",
-										margin: "0",
+										display: "flex",
+										flexDirection: "column",
+										gap: "2px",
+										padding: "6px",
+										background: "#1f2937",
+										border: "1px solid #374151",
+										borderRadius: "4px",
 									}}
 								>
-									Email ID:
-								</label>
-								<span
+									<label
+										style={{
+											color: "#9ca3af",
+											fontSize: "10px",
+											fontWeight: "500",
+											margin: "0",
+										}}
+									>
+										Billing Phone Number:
+									</label>
+									<span
+										style={{
+											color: "#ffffff",
+											fontSize: "11px",
+											fontWeight: "500",
+											wordBreak: "break-word",
+										}}
+									>
+										{phone || "Not provided"}
+									</span>
+								</div>
+								<div
 									style={{
-										color: "#ffffff",
-										fontSize: "13px",
-										fontWeight: "500",
+										display: "flex",
+										flexDirection: "column",
+										gap: "2px",
+										padding: "6px",
+										background: "#1f2937",
+										border: "1px solid #374151",
+										borderRadius: "4px",
 									}}
 								>
-									{email || "Not provided"}
-								</span>
-							</div>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									gap: "4px",
-									padding: "8px 10px",
-									background: "#1f2937",
-									border: "1px solid #374151",
-									borderRadius: "4px",
-								}}
-							>
-								<label
+									<label
+										style={{
+											color: "#9ca3af",
+											fontSize: "10px",
+											fontWeight: "500",
+											margin: "0",
+										}}
+									>
+										Billing Address:
+									</label>
+									<span
+										style={{
+											color: "#ffffff",
+											fontSize: "11px",
+											fontWeight: "500",
+											wordBreak: "break-word",
+										}}
+									>
+										{billing_address || "Not provided"}
+									</span>
+								</div>
+								<div
 									style={{
-										color: "#9ca3af",
-										fontSize: "12px",
-										fontWeight: "500",
-										margin: "0",
+										display: "flex",
+										flexDirection: "column",
+										gap: "2px",
+										padding: "6px",
+										background: "#1f2937",
+										border: "1px solid #374151",
+										borderRadius: "4px",
 									}}
 								>
-									Billing Phone Number:
-								</label>
-								<span
+									<label
+										style={{
+											color: "#9ca3af",
+											fontSize: "10px",
+											fontWeight: "500",
+											margin: "0",
+										}}
+									>
+										Method of Payment:
+									</label>
+									<span
+										style={{
+											color: "#ffffff",
+											fontSize: "11px",
+											fontWeight: "500",
+										}}
+									>
+										{payment_method || "VISA"}
+									</span>
+								</div>
+								<div
 									style={{
-										color: "#ffffff",
-										fontSize: "13px",
-										fontWeight: "500",
+										display: "flex",
+										flexDirection: "column",
+										gap: "2px",
+										padding: "6px",
+										background: "#1f2937",
+										border: "1px solid #374151",
+										borderRadius: "4px",
 									}}
 								>
-									{phone || "Not provided"}
-								</span>
-							</div>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									gap: "4px",
-									padding: "8px 10px",
-									background: "#1f2937",
-									border: "1px solid #374151",
-									borderRadius: "4px",
-								}}
-							>
-								<label
-									style={{
-										color: "#9ca3af",
-										fontSize: "12px",
-										fontWeight: "500",
-										margin: "0",
-									}}
-								>
-									Billing Address:
-								</label>
-								<span
-									style={{
-										color: "#ffffff",
-										fontSize: "13px",
-										fontWeight: "500",
-									}}
-								>
-									{billing_address || "Not provided"}
-								</span>
-							</div>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									gap: "4px",
-									padding: "8px 10px",
-									background: "#1f2937",
-									border: "1px solid #374151",
-									borderRadius: "4px",
-								}}
-							>
-								<label
-									style={{
-										color: "#9ca3af",
-										fontSize: "12px",
-										fontWeight: "500",
-										margin: "0",
-									}}
-								>
-									Method of Payment:
-								</label>
-								<span
-									style={{
-										color: "#ffffff",
-										fontSize: "13px",
-										fontWeight: "500",
-									}}
-								>
-									{payment_method || "VISA"}
-								</span>
-							</div>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									gap: "4px",
-									padding: "8px 10px",
-									background: "#1f2937",
-									border: "1px solid #374151",
-									borderRadius: "4px",
-								}}
-							>
-								<label
-									style={{
-										color: "#9ca3af",
-										fontSize: "12px",
-										fontWeight: "500",
-										margin: "0",
-									}}
-								>
-									Date of Purchase:
-								</label>
-								<span
-									style={{
-										color: "#ffffff",
-										fontSize: "13px",
-										fontWeight: "500",
-									}}
-								>
-									{purchase_date || new Date().toLocaleDateString()}
-								</span>
+									<label
+										style={{
+											color: "#9ca3af",
+											fontSize: "10px",
+											fontWeight: "500",
+											margin: "0",
+										}}
+									>
+										Date of Purchase:
+									</label>
+									<span
+										style={{
+											color: "#ffffff",
+											fontSize: "11px",
+											fontWeight: "500",
+										}}
+									>
+										{purchase_date || new Date().toLocaleDateString()}
+									</span>
+								</div>
 							</div>
 						</div>
-					</div>{" "}
+					</div>
+
 					{/* Review Information */}
 					<div
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
 						<div
 							style={{
 								color: "#d1d5db",
-								fontSize: "16px",
-								lineHeight: "1.6",
+								fontSize: "12px",
+								lineHeight: "1.5",
 							}}
 						>
 							Make sure that the displayed flight information is as you planned.
@@ -942,23 +765,25 @@ const EmailNewBooking = ({ bookingData }) => {
 							times properly.
 						</div>
 					</div>
+
 					{/* Authorization Section */}
 					<div
 						style={{
 							background: "#1f2937",
 							border: "1px solid #374151",
 							borderRadius: "8px",
-							padding: "24px",
-							margin: "24px 0",
-							lineHeight: "1.75",
+							padding: "12px",
+							margin: "12px 0",
+							lineHeight: "1.6",
 						}}
 					>
 						<p
 							style={{
 								color: "#d1d5db",
-								marginBottom: "16px",
-								textAlign: "justify",
-								margin: "0 0 16px 0",
+								marginBottom: "12px",
+								margin: "0 0 12px 0",
+								fontSize: "12px",
+								lineHeight: "1.5",
 							}}
 						>
 							I certify that I{" "}
@@ -967,8 +792,8 @@ const EmailNewBooking = ({ bookingData }) => {
 									color: "#10b981",
 									fontWeight: "600",
 									background: "rgba(16, 185, 129, 0.1)",
-									padding: "2px 6px",
-									borderRadius: "4px",
+									padding: "2px 4px",
+									borderRadius: "3px",
 									borderBottom: "1px solid #10b981",
 								}}
 							>
@@ -981,24 +806,25 @@ const EmailNewBooking = ({ bookingData }) => {
 						<p
 							style={{
 								color: "#d1d5db",
-								marginBottom: "16px",
-								textAlign: "justify",
-								margin: "0 0 16px 0",
+								marginBottom: "12px",
+								margin: "0 0 12px 0",
+								fontSize: "12px",
+								lineHeight: "1.5",
 							}}
 						>
 							Awaiting your acceptance to the declaration "I Agree / I
 							Authorize".
-						</p>{" "}
-						<div style={{ textAlign: "center", marginTop: "24px" }}>
+						</p>
+						<div style={{ textAlign: "center", marginTop: "16px" }}>
 							<a
 								href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bookingId}`}
 								style={{
 									background: "linear-gradient(135deg, #10b981, #059669)",
 									color: "#ffffff",
 									border: "none",
-									padding: "12px 32px",
-									borderRadius: "8px",
-									fontSize: "16px",
+									padding: "8px 16px",
+									borderRadius: "6px",
+									fontSize: "12px",
 									fontWeight: "600",
 									cursor: "pointer",
 									boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
@@ -1011,23 +837,24 @@ const EmailNewBooking = ({ bookingData }) => {
 								✓ I Agree / I Authorize
 							</a>
 						</div>
-					</div>{" "}
+					</div>
+
 					{/* Important Notes Section */}
 					<div
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
 						<div
 							style={{
 								color: "#d1d5db",
-								fontSize: "16px",
-								lineHeight: "1.6",
-								marginBottom: "16px",
+								fontSize: "11px",
+								lineHeight: "1.5",
+								marginBottom: "8px",
 							}}
 						>
 							Baggage fee may apply. Check with the airline for the most updated
@@ -1036,9 +863,9 @@ const EmailNewBooking = ({ bookingData }) => {
 						<div
 							style={{
 								color: "#d1d5db",
-								fontSize: "16px",
-								lineHeight: "1.6",
-								marginBottom: "16px",
+								fontSize: "11px",
+								lineHeight: "1.5",
+								marginBottom: "8px",
 							}}
 						>
 							<strong style={{ color: "#fbbf24" }}>Important:</strong> Your
@@ -1054,8 +881,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						<div
 							style={{
 								color: "#d1d5db",
-								fontSize: "16px",
-								lineHeight: "1.6",
+								fontSize: "11px",
+								lineHeight: "1.5",
 							}}
 						>
 							<strong style={{ color: "#fbbf24" }}>Note:</strong> As agreed,
@@ -1069,8 +896,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
@@ -1079,7 +906,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#fbbf24",
 								fontSize: "18px",
 								fontWeight: "600",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							Disclaimer
@@ -1089,7 +916,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#d1d5db",
 								fontSize: "16px",
 								lineHeight: "1.6",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							SkylineTravels LLC is an independent travel Agency with no
@@ -1119,8 +946,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
@@ -1129,7 +956,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#fbbf24",
 								fontSize: "18px",
 								fontWeight: "600",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							Important Information
@@ -1139,7 +966,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#d1d5db",
 								fontSize: "16px",
 								lineHeight: "1.6",
-								marginBottom: "12px",
+								marginBottom: "8px",
 							}}
 						>
 							Please review your itinerary carefully to ensure that the
@@ -1150,7 +977,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#d1d5db",
 								fontSize: "16px",
 								lineHeight: "1.6",
-								marginBottom: "12px",
+								marginBottom: "8px",
 							}}
 						>
 							• Passenger names must be the same as on the passport
@@ -1162,7 +989,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#d1d5db",
 								fontSize: "16px",
 								lineHeight: "1.6",
-								marginBottom: "12px",
+								marginBottom: "8px",
 							}}
 						>
 							• We advise all passengers to ensure that all travel documents
@@ -1174,7 +1001,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#d1d5db",
 								fontSize: "16px",
 								lineHeight: "1.6",
-								marginBottom: "12px",
+								marginBottom: "8px",
 							}}
 						>
 							• All passengers are recommended to be present at the airport 3
@@ -1186,7 +1013,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#d1d5db",
 								fontSize: "16px",
 								lineHeight: "1.6",
-								marginBottom: "12px",
+								marginBottom: "8px",
 							}}
 						>
 							• All International flights must be confirmed 72 hours before
@@ -1197,7 +1024,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#d1d5db",
 								fontSize: "16px",
 								lineHeight: "1.6",
-								marginBottom: "12px",
+								marginBottom: "8px",
 							}}
 						>
 							• Review departure/arrival dates, times, origin/destination
@@ -1221,8 +1048,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
@@ -1231,7 +1058,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#fbbf24",
 								fontSize: "18px",
 								fontWeight: "600",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							For Changes Query
@@ -1253,8 +1080,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
@@ -1263,7 +1090,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#fbbf24",
 								fontSize: "18px",
 								fontWeight: "600",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							For Cancellations
@@ -1286,8 +1113,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
@@ -1296,7 +1123,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#fbbf24",
 								fontSize: "18px",
 								fontWeight: "600",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							Seat Assignments
@@ -1320,8 +1147,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
@@ -1330,7 +1157,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#fbbf24",
 								fontSize: "18px",
 								fontWeight: "600",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							Baggage Policy
@@ -1354,8 +1181,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
@@ -1364,7 +1191,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#fbbf24",
 								fontSize: "18px",
 								fontWeight: "600",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							Visa/Travel Documents
@@ -1391,8 +1218,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
@@ -1401,7 +1228,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#fbbf24",
 								fontSize: "18px",
 								fontWeight: "600",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							Check-In
@@ -1424,8 +1251,8 @@ const EmailNewBooking = ({ bookingData }) => {
 						style={{
 							background: "#1f2937",
 							borderRadius: "8px",
-							padding: "24px",
-							marginBottom: "24px",
+							padding: "12px",
+							marginBottom: "12px",
 							border: "1px solid #374151",
 						}}
 					>
@@ -1434,7 +1261,7 @@ const EmailNewBooking = ({ bookingData }) => {
 								color: "#d1d5db",
 								fontSize: "16px",
 								lineHeight: "1.6",
-								marginBottom: "16px",
+								marginBottom: "8px",
 							}}
 						>
 							Still, have questions? Call us at +1-877-413-0030. Our agents are
@@ -1452,19 +1279,20 @@ const EmailNewBooking = ({ bookingData }) => {
 							needs in the near future.
 						</div>
 					</div>
-				</div>{" "}
+				</div>
+
 				{/* Footer Section */}
 				<div
 					style={{
 						textAlign: "center",
-						padding: "24px",
+						padding: "8px",
 						borderTop: "1px solid #374151",
 						background: "rgba(17, 24, 39, 0.5)",
 						color: "#6b7280",
-						fontSize: "14px",
+						fontSize: "10px",
 					}}
 				>
-					<p style={{ margin: "0 0 8px 0" }}>
+					<p style={{ margin: "0 0 4px 0" }}>
 						This booking confirmation was generated on{" "}
 						{new Date().toLocaleDateString()}
 					</p>

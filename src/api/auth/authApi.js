@@ -35,7 +35,7 @@ export const loginApi = async (email, password) => {
 		if (!user) {
 			throw new Error("Invalid response from server");
 		}
-		return { user };
+		return { user, token };
 	} catch (err) {
 		if (err.response) {
 			throw new Error(err.response.data.message || "Login failed");
@@ -87,6 +87,37 @@ export const changePasswordApi = async ({
 			throw new Error("No response from server");
 		} else {
 			throw new Error("Change password error: " + err.message);
+		}
+	}
+};
+
+export const forgetPasswordApi = async (email) => {
+	try {
+		// Email format validation
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(email)) {
+			throw new Error("Invalid email format");
+		}
+
+		const res = await API.post("/forgetPassword", { email });
+
+		const { status, msg, message } = res.data;
+		if (status !== 200) {
+			throw new Error(msg || message || "Password reset request failed");
+		}
+
+		return msg || message || "Password reset link sent to your email";
+	} catch (err) {
+		if (err.response) {
+			throw new Error(
+				err.response.data.msg ||
+					err.response.data.message ||
+					"Password reset request failed"
+			);
+		} else if (err.request) {
+			throw new Error("No response from server");
+		} else {
+			throw new Error("Forget password error: " + err.message);
 		}
 	}
 };

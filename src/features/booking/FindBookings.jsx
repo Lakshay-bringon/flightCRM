@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { RecordsList } from "../data";
 import BookingCard from "./BookingCard";
-import { findBookingApi } from "../../api/booking/bookingApi";
+import {
+	findBookingApi,
+	getRecentBookingsApi,
+} from "../../api/booking/bookingApi";
 import { showPromiseToast } from "../../utils/showPromiseToast";
 
 export default function FindBookings() {
@@ -12,8 +15,7 @@ export default function FindBookings() {
 	const [bookings, setBookings] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasSearched, setHasSearched] = useState(false);
-	const [searchError, setSearchError] = useState(null);
-
+	const [error, setError] = useState(null);
 	// Map search options to API type values
 	const searchTypeMap = {
 		BID: "bid",
@@ -21,6 +23,28 @@ export default function FindBookings() {
 		email: "email",
 		billingPhone: "billingPhone",
 	};
+
+	// Fetch recent bookings function
+	const fetchRecentBookings = async () => {
+		try {
+			const results = await showPromiseToast(getRecentBookingsApi(), {
+				loading: "Loading recent bookings...",
+				success: (data) => `Loaded ${data?.length || 0} recent booking(s)`,
+				error: "Failed to load recent bookings",
+			});
+			setBookings(results || []);
+		} catch (error) {
+			setBookings([]);
+			setError(
+				error.message || "An error occurred while loading recent bookings"
+			);
+		}
+	};
+
+	// Fetch recent bookings on component mount
+	useEffect(() => {
+		fetchRecentBookings();
+	}, []);
 
 	// Handle search form submission
 	const handleSearch = async (e) => {
@@ -31,7 +55,7 @@ export default function FindBookings() {
 		}
 		setIsLoading(true);
 		setHasSearched(true);
-		setSearchError(null);
+		setError(null);
 
 		try {
 			const searchData = {
@@ -49,7 +73,7 @@ export default function FindBookings() {
 			setBookingPage(1); // Reset to first page on new search
 		} catch (error) {
 			setBookings([]);
-			setSearchError(error.message || "An error occurred while searching");
+			setError(error.message || "An error occurred while searching");
 			console.error("Search error:", error);
 		} finally {
 			setIsLoading(false);
@@ -60,8 +84,9 @@ export default function FindBookings() {
 		setSearch("");
 		setBookings([]);
 		setHasSearched(false);
-		setSearchError(null);
+		setError(null);
 		setBookingPage(1);
+		fetchRecentBookings();
 	};
 
 	// Records to show - only search results if search has been performed
@@ -118,10 +143,10 @@ export default function FindBookings() {
 			{/* Results Section */}
 			{hasSearched ? (
 				<div className="w-full">
-					{searchError ? (
+					{error ? (
 						<div className="text-center py-12">
 							<div className="text-red-400 text-lg mb-2">Search Error</div>
-							<div className="text-red-300 text-sm mb-4">{searchError}</div>
+							<div className="text-red-300 text-sm mb-4">{error}</div>
 							<button
 								onClick={clearSearch}
 								className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all text-sm font-semibold"
@@ -154,12 +179,44 @@ export default function FindBookings() {
 					) : null}
 				</div>
 			) : (
-				<div className="text-center py-12">
-					<div className="text-gray-400 text-lg mb-2">Search for Bookings</div>
-					<div className="text-gray-500 text-sm">
-						Enter a search term above to find bookings by ID, cardholder name,
-						email, or billing phone
-					</div>
+				<div className="w-full">
+					{error ? (
+						<div className="text-center py-12">
+							<div className="text-red-400 text-lg mb-2">
+								Error Loading Recent Bookings
+							</div>
+							<div className="text-red-300 text-sm mb-4">{error}</div>
+							<button
+								onClick={() => window.location.reload()}
+								className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all text-sm font-semibold"
+							>
+								Retry
+							</button>
+						</div>
+					) : bookings.length > 0 ? (
+						<RecordsList
+							title={`Recent Bookings`}
+							list={bookings}
+							CardComponent={({ record }) => (
+								<BookingCard bookingDetails={record} />
+							)}
+							currentPage={bookingPage}
+							onPageChange={setBookingPage}
+							itemsPerPage={bookingPerPage}
+							onItemsPerPageChange={setBookingPerPage}
+							className="w-full"
+						/>
+					) : (
+						<div className="text-center py-12">
+							<div className="text-gray-400 text-lg mb-2">
+								No Recent Bookings
+							</div>
+							<div className="text-gray-500 text-sm">
+								No recent bookings found. Use the search above to find specific
+								bookings.
+							</div>
+						</div>
+					)}
 				</div>
 			)}
 		</div>

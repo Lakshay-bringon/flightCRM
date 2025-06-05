@@ -23,5 +23,5 @@ export const generateEmailHTML = (transactionType, formData, emailType) => {
 	);
 
 	// Ensure the HTML string is properly escaped for rendering
-	return `<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>${htmlString}</body></html>`;
+	return `<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name="viewport" content="width=1024"></head><body>${htmlString}</body></html>`;
 };

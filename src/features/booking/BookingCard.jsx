@@ -75,9 +75,6 @@ export default function BookingCard({ bookingDetails }) {
 						<span className="px-2 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400">
 							{getTransactionTypeLabel(bookingDetails.transactionType)}
 						</span>
-						<span className="px-2 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400">
-							{bookingDetails.provider}
-						</span>
 					</div>{" "}
 					<div className="flex items-center gap-3 text-xs text-gray-400">
 						<span className="flex items-center">

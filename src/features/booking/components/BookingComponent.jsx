@@ -65,15 +65,15 @@ function BookingComponent({
 			email: "",
 			phone: "",
 			card_holder: "",
-			payment_method: "VISA",
+			payment_method: "",
 			billing_address: "",
 			city: "",
 			state: "",
 			zip: "",
-			country: "US",
+			country: "",
 			passenger_data: [
 				{
-					type: "ADT",
+					type: "",
 					firstName: "",
 					middleName: "",
 					lastName: "",
@@ -191,12 +191,6 @@ function BookingComponent({
 
 		setIsSubmitting(true);
 		try {
-			// Prepare images for API: only send base64 for new uploads, otherwise send filename (for unchanged images)
-			const imageDataForProcessing = {
-				itinerary_details: itineraryImage,
-				attachments: attachments || [],
-			};
-
 			// For itinerary: if base64, send as is; if filename, send as is (server expects base64 for new, filename for unchanged)
 			const processedItinerary =
 				typeof itineraryImage === "string" &&
@@ -230,13 +224,20 @@ function BookingComponent({
 					success: successMessage,
 					error: (err) => {
 						console.error("Update booking error:", err);
+						setIsSubmitting(false);
 						return err.message || errorMessage;
 					},
-				}).then((response) => {
-					if (response) {
-						navigate(`/find-bookings/${response?.bidId}`);
-					}
-				});
+				})
+					.then((response) => {
+						setIsSubmitting(false);
+						if (response) {
+							navigate(`/find-bookings/${response?.bidId}`);
+						}
+					})
+					.catch((error) => {
+						console.error("Promise toast error:", error);
+						setIsSubmitting(false);
+					});
 			} else {
 				const {
 					attachments: _,
@@ -260,13 +261,19 @@ function BookingComponent({
 					success: successMessage,
 					error: (err) => {
 						console.error("Create booking error:", err);
+						setIsSubmitting(false);
 						return err.message || errorMessage;
 					},
-				}).then((response) => {
-					if (response) {
-						navigate(`/find-bookings/${response?.bidId}`);
-					}
-				});
+				})
+					.then((response) => {
+						if (response) {
+							navigate(`/find-bookings/${response?.bidId}`);
+						}
+					})
+					.catch((error) => {
+						console.error("Promise toast error:", error);
+						setIsSubmitting(false);
+					});
 			}
 		} catch (error) {
 			console.error(

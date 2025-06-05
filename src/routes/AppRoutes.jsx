@@ -60,7 +60,7 @@ export default function AppRoutes() {
 									onToggleCollapse={handleToggleSidebar}
 								/>
 								<div className="flex-1 overflow-y-auto">
-									<div className="p-4">
+									<div className="p-4 h-full">
 										<Routes>
 											<Route index element={<Dashboard />} />
 											<Route

@@ -724,11 +724,6 @@ export const getCommentsByBidApi = async (bid) => {
 	}
 };
 
-/**
- * Get activity for a booking by BID.
- * @param {string} bid - Booking ID
- * @returns {Promise<Object[]>} List of activities
- */
 export const getActivityByBidApi = async (bid) => {
 	try {
 		const res = await API.get(`/getActivityByBid`, {
@@ -751,5 +746,54 @@ export const getActivityByBidApi = async (bid) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 		throw new Error("Get activity error: " + err.message);
+	}
+};
+
+export const getRecentBookingsApi = async () => {
+	try {
+		// const { limit = 10, offset = 0, userId } = params;
+
+		// const queryParams = { limit, offset };wq
+		// if (userId) {
+		// 	queryParams.userId = userId;
+		// }
+
+		const res = await API.get("/recentBooking", {
+			// params: queryParams,
+			headers: {
+				Accept: "application/json",
+			},
+		});
+
+		const { status, msg, data } = res.data;
+		if (status !== 200 && status !== 201) {
+			throw new Error(msg || "Failed to fetch recent bookings");
+		}
+
+		// Map the data to BookingCard expected format if data exists
+		if (Array.isArray(data)) {
+			const mappedData = data.map(mapBookingData).filter(Boolean);
+			return mappedData;
+		}
+
+		return data || [];
+	} catch (err) {
+		if (err.response) {
+			const errorMsg =
+				err.response.data?.msg || "Failed to fetch recent bookings";
+
+			// Log the error for debugging
+			console.error("Get recent bookings API error:", {
+				status: err.response.status,
+				data: err.response.data,
+				params,
+			});
+
+			throw new Error(errorMsg);
+		}
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+		throw new Error("Get recent bookings error: " + err.message);
 	}
 };
