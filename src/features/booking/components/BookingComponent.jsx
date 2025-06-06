@@ -117,14 +117,14 @@ function BookingComponent({
 				email: "",
 				phone: "",
 				card_holder: "",
-				payment_method: "VISA",
+				payment_method: "",
 				billing_address: "",
 				city: "",
 				state: "",
 				zip: "",
-				country: "US",
+				country: "",
 				passenger_data: [
-					{ type: "ADT", firstName: "", middleName: "", lastName: "", dob: "" },
+					{ type: "", firstName: "", middleName: "", lastName: "", dob: "" },
 				],
 				charge_data: [
 					{ amount: "", description: "" },
@@ -145,7 +145,7 @@ function BookingComponent({
 		setValue("passenger_data", [
 			...currentPassengers,
 			{
-				type: "ADT",
+				type: "",
 				firstName: "",
 				middleName: "",
 				lastName: "",
