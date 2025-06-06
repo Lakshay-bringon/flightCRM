@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { loginApi, forgetPasswordApi } from "../api";
+import { loginApi, forgetPasswordApi, verifyOTPApi } from "../api";
 
 const AuthContext = createContext();
 
@@ -7,16 +7,19 @@ export const AuthProvider = ({ children }) => {
 	const [token, setToken] = useState(() => sessionStorage.getItem("jwt_token"));
 	const [user, setUser] = useState(() => {
 		const stored = sessionStorage.getItem("user");
-		return stored ? JSON.parse(stored) : null;
+		return stored && stored !== "undefined" ? JSON.parse(stored) : null;
 	});
 	const login = async (email, password) => {
-		const { user } = await loginApi(email, password);
+		return await loginApi(email, password);
+	};
+
+	const verifyOtp = async (email, otp) => {
+		const { user, token } = await verifyOTPApi(email, otp);
 		sessionStorage.setItem("jwt_token", token);
 		sessionStorage.setItem("user", JSON.stringify(user));
 		setToken(token);
 		setUser(user);
 	};
-
 	const forgetPassword = async (email) => {
 		return await forgetPasswordApi(email);
 	};
@@ -44,6 +47,7 @@ export const AuthProvider = ({ children }) => {
 				login,
 				logout,
 				forgetPassword,
+				verifyOtp,
 				isAuthenticated: !!user,
 				role,
 				role_id: parsedRoleId,

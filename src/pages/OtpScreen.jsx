@@ -5,28 +5,30 @@ import { useAuth } from "../auth/hooks/useAuth";
 function OtpScreen() {
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { user, login } = useAuth();
-	// For demo, let's use a hardcoded OTP. In real app, fetch from backend or location.state
-	const expectedOtp = "123456";
+	const { verifyOtp } = useAuth();
 	const email = location.state?.email;
-	const backendUser = location.state?.user;
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
-		if (otp === expectedOtp) {
-			// If user is not set in context, set it by logging in again (if needed)
-			if (!user && backendUser && email) {
-				// Optionally, you could call login(email, ...) here if needed
-			}
+		setIsLoading(true);
+
+		if (!email) {
+			setError("Email is missing. Please go back to login.");
+			setIsLoading(false);
+			return;
+		}
+
+		try {
+			await verifyOtp(email, otp);
 			navigate("/");
-		} else {
-			setError("Invalid OTP. Redirecting to login...");
-			setTimeout(() => {
-				navigate("/login");
-			}, 1500);
+		} catch (err) {
+			setError(err.message || "OTP verification failed");
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -58,12 +60,13 @@ function OtpScreen() {
 					</div>
 					{error && (
 						<div className="text-red-500 text-sm mt-2 text-center">{error}</div>
-					)}
+					)}{" "}
 					<button
 						type="submit"
-						className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
+						disabled={isLoading}
+						className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						Verify OTP
+						{isLoading ? "Verifying..." : "Verify OTP"}
 					</button>
 				</form>
 			</div>

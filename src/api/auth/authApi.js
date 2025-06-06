@@ -4,41 +4,17 @@ export const loginApi = async (email, password) => {
 	try {
 		const res = await API.post("/login", { email, password });
 
-		const { status, msg, data } = res.data;
-		if (status !== 200 || !data) {
-			throw new Error(msg || "Login failed");
+		const { status, msg, message } = res.data;
+		if (status !== 200) {
+			throw new Error(msg || message || "Login failed");
 		}
-		// Destructure & alias `email` to `userEmail`, and `api_token` to `token`
-		const {
-			api_token: token,
-			name,
-			alies_name: alias,
-			created_at,
-			email: userEmail,
-			id,
-			leader_id,
-			phone,
-			role_id,
-			status: userStatus,
-		} = data;
-		const user = {
-			name,
-			alias,
-			created_at,
-			email: userEmail,
-			id,
-			leader_id,
-			phone,
-			role_id,
-			status: userStatus,
-		};
-		if (!user) {
-			throw new Error("Invalid response from server");
-		}
-		return { user, token };
+
+		return msg || message || "Login successful";
 	} catch (err) {
 		if (err.response) {
-			throw new Error(err.response.data.message || "Login failed");
+			throw new Error(
+				err.response.data.msg || err.response.data.message || "Login failed"
+			);
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {
@@ -118,6 +94,66 @@ export const forgetPasswordApi = async (email) => {
 			throw new Error("No response from server");
 		} else {
 			throw new Error("Forget password error: " + err.message);
+		}
+	}
+};
+
+export const verifyOTPApi = async (email, otp) => {
+	try {
+		// OTP format validation
+		const otpRegex = /^\d{6}$/; // Assuming OTP is a 6-digit number
+		if (!otpRegex.test(otp)) {
+			throw new Error("Invalid OTP format");
+		}
+		const res = await API.post("/verifyOtp", { email, otp });
+
+		const { status, msg, message, data } = res.data;
+		if (status !== 200) {
+			throw new Error(msg || message || "OTP verification failed");
+		}
+
+		// After successful OTP verification, extract user and token from response
+		if (data) {
+			const {
+				api_token: token,
+				name,
+				alies_name: alias,
+				created_at,
+				email: userEmail,
+				id,
+				leader_id,
+				phone,
+				role_id,
+				status: userStatus,
+			} = data;
+
+			const user = {
+				name,
+				alias,
+				created_at,
+				email: userEmail,
+				id,
+				leader_id,
+				phone,
+				role_id,
+				status: userStatus,
+			};
+
+			return { user, token };
+		}
+
+		return msg || message || "OTP verified successfully";
+	} catch (err) {
+		if (err.response) {
+			throw new Error(
+				err.response.data.msg ||
+					err.response.data.message ||
+					"OTP verification failed"
+			);
+		} else if (err.request) {
+			throw new Error("No response from server");
+		} else {
+			throw new Error("Verify OTP error: " + err.message);
 		}
 	}
 };

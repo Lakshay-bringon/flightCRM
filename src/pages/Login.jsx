@@ -4,6 +4,7 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logoFull from "../assets/SkylineTravelLLC.png";
 import { LoadingSpinner } from "../components/ui";
 import { useAuth } from "../auth/hooks/useAuth";
+import { loginApi } from "../api/auth/authApi";
 
 function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +21,6 @@ function Login() {
 		e.preventDefault();
 		setError("");
 		setSuccessMessage("");
-
 		if (!isResetMode) {
 			try {
 				setIsLoading(true);
