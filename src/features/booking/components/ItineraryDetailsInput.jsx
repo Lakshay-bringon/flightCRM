@@ -68,15 +68,20 @@ export default function ItineraryDetailsInput({
 	};
 
 	const handleDragOver = (e) => e.preventDefault();
-
 	// Handle paste from clipboard
 	const handlePaste = (e) => {
-		e.stopPropagation();
-		e.preventDefault();
 		const items = e.clipboardData?.items;
 		if (!items) return;
+
+		// Check if clipboard contains an image
+		let hasImage = false;
 		for (const item of items) {
 			if (item.type.startsWith("image/")) {
+				hasImage = true;
+				// Only prevent default and stop propagation if we're handling an image
+				e.stopPropagation();
+				e.preventDefault();
+
 				const file = item.getAsFile();
 				const reader = new FileReader();
 				reader.onloadend = () => {
@@ -92,13 +97,16 @@ export default function ItineraryDetailsInput({
 				break;
 			}
 		}
+
+		// If no image found, let the event continue normally for text inputs
+		// This allows text to be pasted into focused input fields
 	};
 
 	// Attach global paste listener so paste works even if container isn't focused
 	useEffect(() => {
 		const onGlobalPaste = (e) => handlePaste(e);
-		window.addEventListener('paste', onGlobalPaste);
-		return () => window.removeEventListener('paste', onGlobalPaste);
+		window.addEventListener("paste", onGlobalPaste);
+		return () => window.removeEventListener("paste", onGlobalPaste);
 	}, [handlePaste]);
 
 	return (

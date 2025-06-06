@@ -157,3 +157,34 @@ export const verifyOTPApi = async (email, otp) => {
 		}
 	}
 };
+
+export const resendOTPApi = async (email) => {
+	try {
+		// Email format validation
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(email)) {
+			throw new Error("Invalid email format");
+		}
+
+		const res = await API.post("/resendOtp", { email });
+
+		const { status, msg, message } = res.data;
+		if (status !== 200) {
+			throw new Error(msg || message || "OTP resend failed");
+		}
+
+		return msg || message || "OTP resent successfully";
+	} catch (err) {
+		if (err.response) {
+			throw new Error(
+				err.response.data.msg ||
+					err.response.data.message ||
+					"OTP resend failed"
+			);
+		} else if (err.request) {
+			throw new Error("No response from server");
+		} else {
+			throw new Error("Resend OTP error: " + err.message);
+		}
+	}
+};

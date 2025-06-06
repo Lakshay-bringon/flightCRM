@@ -1,5 +1,10 @@
 import { createContext, useContext, useState } from "react";
-import { loginApi, forgetPasswordApi, verifyOTPApi } from "../api";
+import {
+	loginApi,
+	forgetPasswordApi,
+	verifyOTPApi,
+	resendOTPApi,
+} from "../api";
 
 const AuthContext = createContext();
 
@@ -12,6 +17,9 @@ export const AuthProvider = ({ children }) => {
 	const login = async (email, password) => {
 		return await loginApi(email, password);
 	};
+	const resendOtp = async (email) => {
+		return await resendOTPApi(email);
+	};
 
 	const verifyOtp = async (email, otp) => {
 		const { user, token } = await verifyOTPApi(email, otp);
@@ -20,6 +28,7 @@ export const AuthProvider = ({ children }) => {
 		setToken(token);
 		setUser(user);
 	};
+
 	const forgetPassword = async (email) => {
 		return await forgetPasswordApi(email);
 	};
@@ -48,6 +57,7 @@ export const AuthProvider = ({ children }) => {
 				logout,
 				forgetPassword,
 				verifyOtp,
+				resendOtp,
 				isAuthenticated: !!user,
 				role,
 				role_id: parsedRoleId,

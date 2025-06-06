@@ -6,6 +6,7 @@ import PurchaseSummary from "./PurchaseSummary.jsx";
 import AttachmentsSection from "./AttachmentsSection.jsx";
 import AuthorizeSection from "./AuthorizeSection.jsx";
 import seatAssignmentSchema from "../schemas/seatAssignmentSchema.js";
+import ChargesDescription from "./ChargesDescription.jsx";
 
 function SeatAssignment({ bookingData, onBack }) {
 	// The actual form content for SeatAssignment
@@ -148,6 +149,14 @@ function SeatAssignment({ bookingData, onBack }) {
 								(Including all taxes and fees) as per the below description.
 							</div>{" "}
 						</div>{" "}
+						{/* Charges Description Section */}
+						<ChargesDescription
+							charges={charges}
+							register={register}
+							currency={currency}
+							addCharge={addCharge}
+							removeCharge={removeCharge}
+						/>{" "}
 						{/* Itinerary Details Section */}
 						<ItineraryDetailsInput
 							image={itineraryImage}
