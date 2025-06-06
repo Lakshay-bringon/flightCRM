@@ -5,6 +5,7 @@ import { ManageBookings } from "../features/booking";
 import { Revenue } from "../features/revenue";
 import { IPSetting } from "../features/ip";
 import EmailPreviewPage from "../pages/EmailPreviewPage";
+import EmailComposer from "../components/email/EmailComposer";
 import FindBookings from "../features/booking/FindBookings";
 import ManageUsers from "../features/user/ManageUsers";
 import ManageData from "../features/data/ManageData";
@@ -23,6 +24,7 @@ import OtpScreen from "../pages/OtpScreen";
 import RoleProtectedRoute from "../auth/RoleProtectedRoute";
 import AccessDenied from "../pages/AccessDenied";
 import ProtectedRoute from "../auth/ProtectedRoute";
+import EmailTest from "../pages/EmailTest";
 
 export default function AppRoutes() {
 	const navigate = useNavigate();
@@ -44,11 +46,11 @@ export default function AppRoutes() {
 	const handleToggleSidebar = () => {
 		setSidebarCollapsed(!sidebarCollapsed);
 	};
-
 	return (
 		<Routes>
 			<Route path="/login" element={<Login />} />
 			<Route path="/otp" element={<OtpScreen />} />
+			<Route path="/email-test" element={<EmailTest />} />
 			<Route
 				path="/*"
 				element={
@@ -137,7 +139,7 @@ export default function AppRoutes() {
 													</RoleProtectedRoute>
 												}
 											/>{" "}
-											<Route path="access-denied" element={<AccessDenied />} />
+											<Route path="access-denied" element={<AccessDenied />} />{" "}
 											<Route
 												path="email-preview/:emailType"
 												element={<EmailPreviewPage />}
@@ -145,6 +147,10 @@ export default function AppRoutes() {
 											<Route
 												path="email-preview"
 												element={<EmailPreviewPage />}
+											/>
+											<Route
+												path="email-composer"
+												element={<EmailComposer />}
 											/>
 											<Route path="profile" element={<ProfilePage />} />
 											<Route path="*" element={<Navigate to="/" />} />

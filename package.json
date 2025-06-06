@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^44.3.0",
+    "@ckeditor/ckeditor5-react": "^9.5.0",
     "@headlessui/react": "^2.2.2",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.0.1",
@@ -27,6 +29,7 @@
     "lucide-react": "^0.507.0",
     "nodemailer": "^7.0.3",
     "prop-types": "^15.8.1",
+    "quill": "^2.0.3",
     "react": "^19.1.0",
     "react-datepicker": "^8.3.0",
     "react-day-picker": "^9.6.7",
@@ -34,6 +37,7 @@
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.56.2",
     "react-hot-toast": "^2.5.2",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^7.6.0",
     "recharts": "^2.15.3",
     "tailwind-merge": "^3.2.0",

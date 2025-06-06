@@ -1,0 +1,280 @@
+/* EmailComposer CKEditor Styles */
+
+/* CKEditor container styling */
+.ck-editor__main {
+  min-height: 400px;
+}
+
+.ck-content {
+  min-height: 350px;
+  max-height: 500px;
+  overflow-y: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+/* CKEditor toolbar styling */
+.ck-toolbar {
+  border-radius: 4px 4px 0 0;
+  border-color: #d1d5db;
+}
+
+/* Email composer page layout */
+.email-composer-page .ck-editor {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.email-composer-page .ck-toolbar {
+  background: #f9fafb;
+  border-bottom: 1px solid #d1d5db;
+}
+
+/* Force text visibility in CKEditor */
+.ck-content,
+.ck-content *,
+.ck-content p,
+.ck-content div,
+.ck-content span,
+.ck-content strong,
+.ck-content em,
+.ck-content b,
+.ck-content i,
+.ck-content td,
+.ck-content th,
+.ck-content table {
+  color: #000000 !important;
+}
+
+/* Table styling in CKEditor */
+.ck-content table {
+  border-collapse: collapse !important;
+  width: 100% !important;
+  margin: 10px 0 !important;
+  border: 1px solid #ccc !important;
+}
+
+.ck-content table td,
+.ck-content table th {
+  border: 1px solid #ccc !important;
+  padding: 8px 12px !important;
+  text-align: left !important;
+  color: #000000 !important;
+  background-color: transparent !important;
+}
+
+.ck-content table th {
+  font-weight: bold !important;
+  background-color: #f5f5f5 !important;
+}
+
+.ck-content table tr:nth-child(even) {
+  background-color: #f9f9f9 !important;
+}
+
+.ck-content table tr:hover {
+  background-color: #f0f0f0 !important;
+}
+
+/* Ensure placeholder text is visible */
+.ck-content .ck-placeholder::before {
+  color: #999999 !important;
+}
+
+/* Table styling within CKEditor */
+.ck-content .table table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px double #b3b3b3;
+  color: #000000 !important;
+}
+
+.ck-content .table table td,
+.ck-content .table table th {
+  min-width: 2em;
+  padding: 0.4em;
+  border: 1px solid #bfbfbf;
+  color: #000000 !important;
+}
+
+.ck-content .table table th {
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.05);
+  color: #000000 !important;
+}
+
+/* Image styling within CKEditor */
+.ck-content .image {
+  display: table;
+  clear: both;
+  text-align: center;
+  margin: 1em auto;
+}
+
+.ck-content .image img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  min-width: 50px;
+}
+
+/* Link styling */
+.ck-content a {
+  color: #0969da;
+  text-decoration: underline;
+}
+
+.ck-content a:hover {
+  text-decoration: none;
+}
+
+/* Blockquote styling */
+.ck-content blockquote {
+  overflow: hidden;
+  padding-right: 1.5em;
+  padding-left: 1.5em;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  border-left: solid 5px #ccc;
+  background: #f9f9f9;
+}
+
+/* Code block styling */
+.ck-content pre {
+  padding: 1em;
+  color: #353637;
+  background: hsla(0, 0%, 78%, 0.3);
+  border: 1px solid #c4c4c4;
+  border-radius: 2px;
+  text-align: left;
+  direction: ltr;
+  tab-size: 4;
+  white-space: pre-wrap;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9em;
+  overflow-x: auto;
+}
+
+/* Inline code styling */
+.ck-content code {
+  background-color: #f4f4f4;
+  border-radius: 3px;
+  color: #333;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9em;
+  padding: 2px 4px;
+}
+
+/* Horizontal line styling */
+.ck-content hr {
+  margin: 15px 0;
+  height: 4px;
+  background: #dedede;
+  border: 0;
+}
+
+/* List styling */
+.ck-content ul,
+.ck-content ol {
+  padding-left: 1.5em;
+  margin: 1em 0;
+  color: #000000 !important;
+}
+
+.ck-content li {
+  margin-bottom: 0.5em;
+  color: #000000 !important;
+}
+
+/* Heading styling */
+.ck-content h1 { font-size: 2em; margin: 0.67em 0; color: #000000 !important; }
+.ck-content h2 { font-size: 1.5em; margin: 0.75em 0; color: #000000 !important; }
+.ck-content h3 { font-size: 1.3em; margin: 0.83em 0; color: #000000 !important; }
+.ck-content h4 { font-size: 1.1em; margin: 1em 0; color: #000000 !important; }
+.ck-content h5 { font-size: 0.9em; margin: 1.17em 0; color: #000000 !important; }
+.ck-content h6 { font-size: 0.8em; margin: 1.33em 0; color: #000000 !important; }
+
+/* Ensure proper scrolling for the editor */
+.ck-editor__main > .ck-editor__editable {
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+/* Media embed styling */
+.ck-content .media {
+  clear: both;
+  margin: 1em 0;
+  display: block;
+  min-width: 15em;
+}
+
+/* Font size classes */
+.ck-content .text-tiny {
+  font-size: 0.7em;
+}
+
+.ck-content .text-small {
+  font-size: 0.85em;
+}
+
+.ck-content .text-big {
+  font-size: 1.4em;
+}
+
+.ck-content .text-huge {
+  font-size: 1.8em;
+}
+
+/* Focus styling */
+.email-composer-page .ck-editor.ck-focused {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ck-content {
+    min-height: 250px;
+    max-height: 350px;
+    font-size: 16px; /* Better for mobile */
+  }
+  
+  .ck-toolbar {
+    font-size: 14px;
+  }
+  
+  .email-composer-page .ck-editor {
+    margin: 0;
+  }
+}
+
+/* Loading spinner for uploads */
+.ck-content .ck-uploading {
+  position: relative;
+}
+
+.ck-content .ck-uploading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

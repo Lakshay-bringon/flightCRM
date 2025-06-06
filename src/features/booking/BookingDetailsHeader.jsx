@@ -23,6 +23,7 @@ import { TRANSACTION_TYPES } from "../../constants";
 import { addCommentApi } from "../../api/booking/bookingApi";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { showPromiseToast } from "../../utils/showPromiseToast";
+import { EmailButton } from "../../components/email";
 
 export default function BookingDetailsHeader({
 	isEditing = false,
@@ -122,7 +123,13 @@ export default function BookingDetailsHeader({
 					onClick={() => setShowActivity(true)}
 				>
 					<ActivityIcon size={18} /> Activity
-				</Button>
+				</Button>{" "}
+				<EmailButton
+					bookingData={formData}
+					transactionType={formData?.transaction_type || "NEW_BOOKING"}
+					buttonText="Send Email"
+					onEmailSent={(result) => console.log("Email sent:", result)}
+				/>
 				<Popover>
 					<PopoverTrigger asChild>
 						<Button
