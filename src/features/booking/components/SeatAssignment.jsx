@@ -44,6 +44,7 @@ function SeatAssignment({ bookingData, onBack }) {
 		const pnr = watch("pnr");
 		const airline = watch("airline_name");
 		const passengers = watch("passenger_data");
+		const charges = watch("charge_data");
 
 		return (
 			<>
