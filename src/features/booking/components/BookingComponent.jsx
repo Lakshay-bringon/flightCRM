@@ -16,6 +16,7 @@ import { useAuth } from "../../../auth/hooks/useAuth.jsx";
 function BookingComponent({
 	children,
 	defaultValues,
+	onRefresh,
 	onBack,
 	type = "NEW BOOKING",
 	loadingMessage = "Processing...",
@@ -231,7 +232,7 @@ function BookingComponent({
 					.then((response) => {
 						setIsSubmitting(false);
 						if (response) {
-							navigate(`/find-bookings/${response?.bidId}`);
+							onRefresh?.();
 						}
 					})
 					.catch((error) => {

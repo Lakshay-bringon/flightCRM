@@ -39,6 +39,20 @@ export const compactNumberFormatter = new Intl.NumberFormat("en-US", {
 	compactDisplay: "short",
 });
 
+// Safe date formatter that handles invalid dates
+export function formatSafeDate(dateValue, fallback = "N/A") {
+	if (!dateValue) return fallback;
+
+	const date = new Date(dateValue);
+
+	// Check if date is invalid
+	if (isNaN(date.getTime())) {
+		return fallback;
+	}
+
+	return date.toLocaleDateString();
+}
+
 // Local date string formatter (YYYY-MM-DD) without timezone shift
 export function formatLocalDateString(dateValue) {
 	if (!dateValue) return "";

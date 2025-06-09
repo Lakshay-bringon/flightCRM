@@ -7,7 +7,7 @@ import AttachmentsSection from "./AttachmentsSection.jsx";
 import AuthorizeSection from "./AuthorizeSection.jsx";
 import exchangeSchema from "../schemas/exchangeSchema.js";
 
-function Exchange({ bookingData, onBack }) {
+function Exchange({ bookingData, onBack, onRefresh }) {
 	// The actual form content - now with aligned field names
 	const ExchangeForm = ({
 		register,
@@ -206,6 +206,7 @@ function Exchange({ bookingData, onBack }) {
 		<BookingComponent
 			defaultValues={bookingData}
 			onBack={onBack}
+			onRefresh={onRefresh}
 			type="EXCHANGE"
 			schema={exchangeSchema} // Use the exchange-specific schema
 			loadingMessage={

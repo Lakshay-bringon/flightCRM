@@ -8,7 +8,7 @@ import AuthorizeSection from "./AuthorizeSection.jsx";
 import PassengerDetails from "./PassengerDetails.jsx";
 import upgradeSchema from "../schemas/upgradeSchema.js";
 
-function Upgrade({ bookingData, onBack }) {
+function Upgrade({ bookingData, onBack, onRefresh }) {
 	// The actual form content for Upgrade
 	const UpgradeForm = ({
 		register,
@@ -248,6 +248,7 @@ function Upgrade({ bookingData, onBack }) {
 		<BookingComponent
 			defaultValues={bookingData}
 			onBack={onBack}
+			onRefresh={onRefresh}
 			type="UPGRADE"
 			schema={upgradeSchema} // Use the upgrade-specific schema
 			loadingMessage={

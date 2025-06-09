@@ -8,7 +8,7 @@ import AuthorizeSection from "./AuthorizeSection.jsx";
 import seatAssignmentSchema from "../schemas/seatAssignmentSchema.js";
 import ChargesDescription from "./ChargesDescription.jsx";
 
-function SeatAssignment({ bookingData, onBack }) {
+function SeatAssignment({ bookingData, onBack, onRefresh }) {
 	// The actual form content for SeatAssignment
 	const SeatAssignmentForm = ({
 		register,
@@ -225,6 +225,7 @@ function SeatAssignment({ bookingData, onBack }) {
 		<BookingComponent
 			defaultValues={bookingData}
 			onBack={onBack}
+			onRefresh={onRefresh}
 			type="SEAT_ASSIGNMENT"
 			schema={seatAssignmentSchema} // Use the seat assignment-specific schema
 			loadingMessage={

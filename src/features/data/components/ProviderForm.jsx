@@ -3,20 +3,28 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const providerSchema = z.object({
-	name: z.string().min(1, "Provider name is required"),
-	logo_base64: z.string().min(1, "Logo is required"), // now required
-	// status removed
-	datetime: z.string(),
-	support_email: z.string().email("Support email is required"),
-	smtp_host: z.string().min(1, "SMTP Host is required"),
-	smtp_email: z.string().email("SMTP Email is required"),
-	smtp_password: z.string({ required_error: "SMTP Password is required" }), // no min length
-	domain: z.string().min(1, "Domain is required"),
-});
+// Create dynamic schema based on edit mode
+const createProviderSchema = (isEditMode) => {
+	return z.object({
+		name: z.string().min(1, "Provider name is required"),
+		logo_base64: isEditMode
+			? z.string().optional() // Optional in edit mode
+			: z.string().min(1, "Logo is required"), // Required in create mode
+		// status removed
+		datetime: z.string(),
+		support_email: z.string().email("Support email is required"),
+		smtp_host: z.string().min(1, "SMTP Host is required"),
+		smtp_email: z.string().email("SMTP Email is required"),
+		smtp_password: z.string({ required_error: "SMTP Password is required" }), // no min length
+		domain: z.string().min(1, "Domain is required"),
+	});
+};
 
 export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 	const nameRef = useRef(null);
+	// Determine if we're in edit mode (has existing data with an id)
+	const isEditMode = Boolean(initialData && initialData.id);
+
 	const [logoPreview, setLogoPreview] = useState(
 		initialData.logo_base64
 			? `data:image/png;base64,${initialData.logo_base64}`
@@ -27,8 +35,7 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 
 	const defaultValues = {
 		name: initialData.name || "",
-		logo_base64: initialData.logo_base64 || "",
-		// status removed
+
 		datetime:
 			initialData.datetime ||
 			new Date().toISOString().slice(0, 19).replace("T", " "),
@@ -38,7 +45,6 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 		smtp_password: initialData.smtp_password || "",
 		domain: initialData.domain || "",
 	};
-
 	const {
 		register,
 		handleSubmit,
@@ -46,7 +52,7 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 		setFocus,
 		setValue,
 	} = useForm({
-		resolver: zodResolver(providerSchema),
+		resolver: zodResolver(createProviderSchema(isEditMode)),
 		defaultValues,
 		mode: "onBlur",
 	});
@@ -69,7 +75,6 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 			reader.readAsDataURL(file);
 		}
 	};
-
 	const onFormSubmit = (data) => {
 		onSubmit({ ...data, logo_base64: logoBase64 });
 	};
@@ -91,9 +96,12 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 					{errors.name && (
 						<p className="text-xs text-red-400 mt-1">{errors.name.message}</p>
 					)}
-				</div>
+				</div>{" "}
 				<div>
-					<label className="block text-sm text-gray-300">Provider Logo</label>
+					<label className="block text-sm text-gray-300">
+						Provider Logo{" "}
+						{isEditMode && <span className="text-gray-400">(optional)</span>}
+					</label>
 					<input
 						type="file"
 						accept="image/*"

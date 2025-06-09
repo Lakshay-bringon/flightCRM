@@ -1,13 +1,13 @@
-import React from 'react';
-import BookingComponent from './BookingComponent.jsx';
-import ChargesDescription from './ChargesDescription.jsx';
-import ItineraryDetailsInput from './ItineraryDetailsInput.jsx';
-import PurchaseSummary from './PurchaseSummary.jsx';
-import AttachmentsSection from './AttachmentsSection.jsx';
-import AuthorizeSection from './AuthorizeSection.jsx';
-import cancelForRefundSchema from '../schemas/cancelForRefundSchema.js';
+import React from "react";
+import BookingComponent from "./BookingComponent.jsx";
+import ChargesDescription from "./ChargesDescription.jsx";
+import ItineraryDetailsInput from "./ItineraryDetailsInput.jsx";
+import PurchaseSummary from "./PurchaseSummary.jsx";
+import AttachmentsSection from "./AttachmentsSection.jsx";
+import AuthorizeSection from "./AuthorizeSection.jsx";
+import cancelForRefundSchema from "../schemas/cancelForRefundSchema.js";
 
-function CancelForRefund({ bookingData, onBack }) {
+function CancelForRefund({ bookingData, onBack, onRefresh }) {
 	const RefundForm = ({
 		register,
 		handleSubmit,
@@ -37,32 +37,32 @@ function CancelForRefund({ bookingData, onBack }) {
 		type,
 	}) => {
 		// Watch values for dynamic updates - using the correct field names
-		const pnr = watch('pnr');
-		const airline = watch('airline_name');
-		const cardNumber = watch('card_number');
+		const pnr = watch("pnr");
+		const airline = watch("airline_name");
+		const cardNumber = watch("card_number");
 
 		return (
 			<>
 				<div className="flex justify-between items-center mb-4">
 					<h2
 						className={`text-xl font-bold text-white flex items-center gap-2 ${
-							isEditMode ? 'justify-center w-full' : ''
+							isEditMode ? "justify-center w-full" : ""
 						}`}
 					>
 						<input
-							{...register('airline_name')}
+							{...register("airline_name")}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-40 font-bold text-white mr-2"
-							style={{ textTransform: 'uppercase' }}
+							style={{ textTransform: "uppercase" }}
 							placeholder="Airline Name"
 							value={airline}
-							onChange={(e) => setValue('airline_name', e.target.value)}
+							onChange={(e) => setValue("airline_name", e.target.value)}
 						/>
 						REFUND CONFIRMATION –
 						<input
-							{...register('pnr')}
+							{...register("pnr")}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-32 font-bold text-white ml-2"
 							value={pnr}
-							onChange={(e) => setValue('pnr', e.target.value)}
+							onChange={(e) => setValue("pnr", e.target.value)}
 							placeholder="PNR"
 						/>
 					</h2>
@@ -86,7 +86,7 @@ function CancelForRefund({ bookingData, onBack }) {
 							<div className="leading-loose">
 								Dear
 								<input
-									{...register('customer_name')}
+									{...register("customer_name")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 60 }}
 									placeholder="Customer Name"
@@ -102,22 +102,22 @@ function CancelForRefund({ bookingData, onBack }) {
 								As per our conversation and as agreed, We have cancelled your
 								reservation under Confirmation number
 								<input
-									{...register('pnr')}
+									{...register("pnr")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 60 }}
 									value={pnr}
-									onChange={(e) => setValue('pnr', e.target.value)}
+									onChange={(e) => setValue("pnr", e.target.value)}
 									placeholder="PNR"
 								/>
-								on{' '}
+								on{" "}
 								<input
-									{...register('airline_name')}
+									{...register("airline_name")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 60, textTransform: 'uppercase' }}
+									style={{ minWidth: 60, textTransform: "uppercase" }}
 									placeholder="Airline Name"
 									value={airline}
-									onChange={(e) => setValue('airline_name', e.target.value)}
-								/>{' '}
+									onChange={(e) => setValue("airline_name", e.target.value)}
+								/>{" "}
 								and will now submit the request to the airlines/consolidator to
 								refund your ticket.
 							</div>
@@ -126,11 +126,11 @@ function CancelForRefund({ bookingData, onBack }) {
 								non-refundable amounts (base fare, penalties, taxes, and fees)
 								as per fare rules, you will receive a total refund of
 								<input
-									{...register('amount')}
+									{...register("amount")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 40 }}
 									placeholder="Amount"
-								/>{' '}
+								/>{" "}
 								<select
 									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
 									value={currency}
@@ -145,12 +145,12 @@ function CancelForRefund({ bookingData, onBack }) {
 									) : (
 										<option value="">Select Currency</option>
 									)}
-								</select>{' '}
+								</select>{" "}
 								(Including all taxes and fees) as per the below description.
 							</div>
 						</div>
 						<ChargesDescription
-							charges={watch('charge_data')}
+							charges={watch("charge_data")}
 							register={register}
 							currency={currency}
 							addCharge={addCharge}
@@ -186,13 +186,13 @@ function CancelForRefund({ bookingData, onBack }) {
 								planned. Please review the Names, Dates, Cities, and Departure –
 								Arrival times properly
 							</div>
-						</div>{' '}
+						</div>{" "}
 						<AuthorizeSection
-							cardholderName={watch('card_holder')}
-							cardType={watch('payment_method')}
-							cardNumber={watch('card_number')}
+							cardholderName={watch("card_holder")}
+							cardType={watch("payment_method")}
+							cardNumber={watch("card_number")}
 						/>
-					</div>{' '}
+					</div>{" "}
 					<button
 						type="submit"
 						disabled={isSubmitting}
@@ -200,11 +200,11 @@ function CancelForRefund({ bookingData, onBack }) {
 					>
 						{isSubmitting
 							? isEditMode
-								? 'Updating Refund...'
-								: 'Processing Refund...'
+								? "Updating Refund..."
+								: "Processing Refund..."
 							: isEditMode
-							? 'Update'
-							: 'Confirm Refund Request'}
+							? "Update"
+							: "Confirm Refund Request"}
 					</button>
 				</form>
 			</>
@@ -214,22 +214,23 @@ function CancelForRefund({ bookingData, onBack }) {
 		<BookingComponent
 			defaultValues={bookingData}
 			onBack={onBack}
+			onRefresh={onRefresh}
 			type="CANCEL_FOR_REFUND"
 			schema={cancelForRefundSchema}
 			loadingMessage={
 				bookingData
-					? 'Updating refund request...'
-					: 'Processing refund request...'
+					? "Updating refund request..."
+					: "Processing refund request..."
 			}
 			successMessage={
 				bookingData
-					? 'Refund request updated successfully!'
-					: 'Refund request submitted successfully!'
+					? "Refund request updated successfully!"
+					: "Refund request submitted successfully!"
 			}
 			errorMessage={
 				bookingData
-					? 'Failed to update refund request'
-					: 'Failed to submit refund request'
+					? "Failed to update refund request"
+					: "Failed to submit refund request"
 			}
 			isEditMode={!!bookingData}
 		>

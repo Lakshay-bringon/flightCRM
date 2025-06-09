@@ -37,6 +37,7 @@ function PurchaseSummary({ register }) {
 					<label className="inline-block w-32">Phone:</label>
 					<input
 						{...register("phone")}
+						type="tel"
 						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
 					/>
 				</div>
@@ -46,7 +47,7 @@ function PurchaseSummary({ register }) {
 						{...register("payment_method")}
 						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
 					>
-						{cards.map((card) => (
+						{cards?.map((card) => (
 							<option key={card.id || card.name} value={card.name}>
 								{card.name}
 							</option>
