@@ -13,11 +13,15 @@ export default function CardForm({ initialData = {}, onSubmit, onCancel }) {
 	}, []);
 
 	const handleChange = (e) => {
-		setForm((f) => ({ ...f, [e.target.name]: e.target.value.trim() }));
+		setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 	};
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		onSubmit(form);
+		const { card, shortName } = form;
+		onSubmit({
+			card: card.trim(),
+			shortName: shortName.trim(),
+		});
 	};
 
 	return (

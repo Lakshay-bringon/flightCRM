@@ -26,12 +26,12 @@ export default function CallQueueForm({
 	}, [initialData]);
 
 	const handleChange = (e) => {
-		setForm((f) => ({ ...f, [e.target.name]: e.target.value.trim() }));
+		setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 	};
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		onSubmit({ name: form.name, phone: form.telephone });
+		onSubmit({ name: form.name.trim(), phone: form.telephone.trim() });
 	};
 
 	return (

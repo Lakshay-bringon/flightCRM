@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +21,6 @@ const createProviderSchema = (isEditMode) => {
 };
 
 export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
-	const nameRef = useRef(null);
 	// Determine if we're in edit mode (has existing data with an id)
 	const isEditMode = Boolean(initialData && initialData.id);
 
