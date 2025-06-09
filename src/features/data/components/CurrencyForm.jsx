@@ -12,8 +12,7 @@ export default function CurrencyForm({ initialData = {}, onSubmit, onCancel }) {
 	}, []);
 
 	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setForm((f) => ({ ...f, [name]: value }));
+		setForm((f) => ({ ...f, [e.target.name]: e.target.value.trim() }));
 	};
 
 	const handleSubmit = (e) => {

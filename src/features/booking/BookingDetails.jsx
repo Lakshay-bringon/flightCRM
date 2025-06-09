@@ -86,10 +86,8 @@ export default function BookingDetails() {
 		try {
 			const updateData = {
 				bid: providerDetails.bid,
-				authStatus: providerDetails.authStatus,
 				bidStatus: providerDetails.bidStatus,
-				provider: providerDetails.provider,
-				agent: providerDetails.agent,
+				userId: user?.id, // Include userId
 			};
 
 			await showPromiseToast(updateBookingProviderDetails(updateData), {

@@ -34,7 +34,7 @@ function PassengerDetails({
 						</tr>
 					</thead>
 					<tbody>
-						{passengers.map((_, index) => (
+						{passengers?.map((_, index) => (
 							<tr
 								key={index}
 								className="border-b border-gray-700/50 bg-gray-900 rounded-lg shadow-sm"

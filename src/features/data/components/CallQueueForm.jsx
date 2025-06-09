@@ -26,8 +26,7 @@ export default function CallQueueForm({
 	}, [initialData]);
 
 	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setForm((f) => ({ ...f, [name]: value }));
+		setForm((f) => ({ ...f, [e.target.name]: e.target.value.trim() }));
 	};
 
 	const handleSubmit = (e) => {
@@ -52,6 +51,7 @@ export default function CallQueueForm({
 				<label className="block text-sm text-gray-300">Phone</label>
 				<input
 					name="telephone"
+					type="tel"
 					value={form.telephone}
 					onChange={handleChange}
 					className="w-full px-3 py-2 rounded bg-gray-700 text-white"
