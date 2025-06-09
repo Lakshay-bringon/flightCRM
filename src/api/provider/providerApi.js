@@ -16,14 +16,30 @@ export const activeProvidersApi = async () => {
 	try {
 		const res = await API.get("/activeProviders");
 		const { status, msg, data } = res.data;
-		if (status !== 200)
-			throw new Error(msg || "Failed to fetch active providers");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch active providers");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(
-				err.response.data.msg || "Failed to fetch active providers"
-			);
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch active providers";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
 		throw new Error("Get active providers error: " + err.message);
 	}
 };
@@ -42,14 +58,36 @@ export const addProviderApi = async (providerData) => {
 		}
 		return data;
 	} catch (err) {
-		if (err.response?.data?.msg) {
-			let errorMsg = err.response.data.msg;
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
 			if (typeof errorMsg === "object") {
 				errorMsg = flattenErrorMessages(errorMsg).join(" ");
 			}
-			throw new Error(errorMsg || "Failed to add provider");
+			errorMsg = errorMsg || "Failed to add provider";
+
+			const errorDetails = err.response.data?.errors;
+			if (errorDetails && typeof errorDetails === "object") {
+				// Handle validation errors from server
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(", ") : messages
+							}`
+					)
+					.join("; ");
+				throw new Error(`Validation errors: ${validationErrors}`);
+			}
+			throw new Error(errorMsg);
 		}
-		throw new Error(err.message || "Add provider error");
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
+		throw new Error("Add provider error: " + err.message);
 	}
 };
 
@@ -58,11 +96,30 @@ export const updateProviderApi = async (providerData) => {
 	try {
 		const res = await API.post("/updateProvider", providerData);
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to update provider");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to update provider");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to update provider");
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to update provider";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
 		throw new Error("Update provider error: " + err.message);
 	}
 };
@@ -72,11 +129,30 @@ export const deleteProviderApi = async (providerId) => {
 	try {
 		const res = await API.get("/deleteProvider", { params: { providerId } });
 		const { status, msg } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to delete provider");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to delete provider");
+		}
 		return true;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to delete provider");
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to delete provider";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
 		throw new Error("Delete provider error: " + err.message);
 	}
 };
@@ -86,11 +162,30 @@ export const getProvidersApi = async () => {
 	try {
 		const res = await API.get("/getproviders");
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to fetch providers");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch providers");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to fetch providers");
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch providers";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
 		throw new Error("Get providers error: " + err.message);
 	}
 };
@@ -102,14 +197,30 @@ export const toggleProviderStatusApi = async (providerId) => {
 			params: { providerId },
 		});
 		const { status, msg, data } = res.data;
-		if (status !== 200)
-			throw new Error(msg || "Failed to toggle provider status");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to toggle provider status");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(
-				err.response.data.msg || "Failed to toggle provider status"
-			);
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to toggle provider status";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
 		throw new Error("Toggle provider status error: " + err.message);
 	}
 };
@@ -119,11 +230,30 @@ export const getProviderByIdApi = async (id) => {
 	try {
 		const res = await API.get("/getProviderById", { params: { id } });
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to fetch provider");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch provider");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to fetch provider");
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch provider";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
 		throw new Error("Get provider by id error: " + err.message);
 	}
 };

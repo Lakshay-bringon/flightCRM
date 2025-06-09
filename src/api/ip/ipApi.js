@@ -46,17 +46,45 @@ export const updateIpApi = async ({ id, ip, allowed_status, description }) => {
 			description,
 		});
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to update IP");
-		return data;
-	} catch (err) {
-		if (err.response?.data?.msg) {
-			let errorMsg = err.response.data.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
 			}
 			throw new Error(errorMsg || "Failed to update IP");
 		}
-		throw new Error(err.message || "Update IP error");
+		return data;
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to update IP";
+
+			const errorDetails = err.response.data?.errors;
+			if (errorDetails && typeof errorDetails === "object") {
+				// Handle validation errors from server
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(", ") : messages
+							}`
+					)
+					.join("; ");
+				throw new Error(`Validation errors: ${validationErrors}`);
+			}
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
+		throw new Error("Update IP error: " + err.message);
 	}
 };
 
@@ -65,11 +93,30 @@ export const getIpListApi = async () => {
 	try {
 		const res = await API.get("/ipList");
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to fetch IP list");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch IP list");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to fetch IP list");
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch IP list";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
 		throw new Error("Get IP list error: " + err.message);
 	}
 };
@@ -79,11 +126,30 @@ export const toggleIpStatusApi = async (id) => {
 	try {
 		const res = await API.get("/toggleIpStatus", { params: { id } });
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to toggle IP status");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to toggle IP status");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to toggle IP status");
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to toggle IP status";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
 		throw new Error("Toggle IP status error: " + err.message);
 	}
 };
@@ -93,11 +159,30 @@ export const getIpInfoApi = async () => {
 	try {
 		const res = await API.get("/getIpInfo");
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to fetch IP info");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch IP info");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to fetch IP info");
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch IP info";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
 		throw new Error("Get IP info error: " + err.message);
 	}
 };

@@ -1,5 +1,16 @@
 import API from "../axios";
 
+// Helper to flatten error messages
+function flattenErrorMessages(error) {
+	if (!error) return [];
+	if (typeof error === "string") return [error];
+	if (Array.isArray(error)) return error.flatMap(flattenErrorMessages);
+	if (typeof error === "object") {
+		return Object.values(error).flatMap(flattenErrorMessages);
+	}
+	return [String(error)];
+}
+
 /**
  * Maps API response data to BookingCard expected format
  * @param {Object} apiData - Raw data from API
@@ -143,15 +154,23 @@ export const updateBookingApi = async (updateData) => {
 		});
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to update booking");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to update booking");
 		}
 		return data;
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
-			const errorMsg = err.response.data?.msg || "Failed to update booking";
-			const errorDetails = err.response.data?.errors;
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to update booking";
 
+			const errorDetails = err.response.data?.errors;
 			if (errorDetails && typeof errorDetails === "object") {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
@@ -186,7 +205,11 @@ export const createReservationApi = async (reservationData) => {
 		});
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to create reservation");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to create reservation");
 		}
 		return data;
 	} catch (err) {
@@ -231,24 +254,24 @@ export const updateBookingProviderDetails = async (providerData) => {
 		const { status, msg, data } = res.data;
 
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to update provider details");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to update provider details");
 		}
 
 		return data;
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
-			const errorMsg =
-				err.response.data?.msg || "Failed to update provider details";
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to update provider details";
+
 			const errorDetails = err.response.data?.errors;
-
-			// Log the error for debugging
-			console.error("Update provider details API error:", {
-				status: err.response.status,
-				data: err.response.data,
-				providerData,
-			});
-
 			if (errorDetails && typeof errorDetails === "object") {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
@@ -261,7 +284,6 @@ export const updateBookingProviderDetails = async (providerData) => {
 					.join("; ");
 				throw new Error(`Validation errors: ${validationErrors}`);
 			}
-
 			throw new Error(errorMsg);
 		}
 
@@ -295,24 +317,24 @@ export const updateRefundDetails = async (refundData) => {
 		const { status, msg, data } = res.data;
 
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to update refund details");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to update refund details");
 		}
 
 		return data;
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
-			const errorMsg =
-				err.response.data?.msg || "Failed to update refund details";
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to update refund details";
+
 			const errorDetails = err.response.data?.errors;
-
-			// Log the error for debugging
-			console.error("Update refund details API error:", {
-				status: err.response.status,
-				data: err.response.data,
-				refundData,
-			});
-
 			if (errorDetails && typeof errorDetails === "object") {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
@@ -325,7 +347,6 @@ export const updateRefundDetails = async (refundData) => {
 					.join("; ");
 				throw new Error(`Validation errors: ${validationErrors}`);
 			}
-
 			throw new Error(errorMsg);
 		}
 
@@ -359,24 +380,24 @@ export const updateChargebackDetails = async (chargebackData) => {
 		const { status, msg, data } = res.data;
 
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to update chargeback details");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to update chargeback details");
 		}
 
 		return data;
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
-			const errorMsg =
-				err.response.data?.msg || "Failed to update chargeback details";
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to update chargeback details";
+
 			const errorDetails = err.response.data?.errors;
-
-			// Log the error for debugging
-			console.error("Update chargeback details API error:", {
-				status: err.response.status,
-				data: err.response.data,
-				chargebackData,
-			});
-
 			if (errorDetails && typeof errorDetails === "object") {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
@@ -389,7 +410,6 @@ export const updateChargebackDetails = async (chargebackData) => {
 					.join("; ");
 				throw new Error(`Validation errors: ${validationErrors}`);
 			}
-
 			throw new Error(errorMsg);
 		}
 
@@ -428,24 +448,24 @@ export const updateBookingChargingDetails = async (chargingData) => {
 		const { status, msg, data } = res.data;
 
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to update charging details");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to update charging details");
 		}
 
 		return data;
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
-			const errorMsg =
-				err.response.data?.msg || "Failed to update charging details";
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to update charging details";
+
 			const errorDetails = err.response.data?.errors;
-
-			// Log the error for debugging
-			console.error("Update charging details API error:", {
-				status: err.response.status,
-				data: err.response.data,
-				chargingData,
-			});
-
 			if (errorDetails && typeof errorDetails === "object") {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
@@ -458,7 +478,6 @@ export const updateBookingChargingDetails = async (chargingData) => {
 					.join("; ");
 				throw new Error(`Validation errors: ${validationErrors}`);
 			}
-
 			throw new Error(errorMsg);
 		}
 
@@ -490,7 +509,11 @@ export const findBookingApi = async (searchData) => {
 		if (res.data) {
 			const { status, msg, data } = res.data;
 			if (status !== 200 && status !== 201) {
-				throw new Error(msg || "Failed to find bookings");
+				let errorMsg = msg;
+				if (msg && typeof msg === "object") {
+					errorMsg = flattenErrorMessages(msg).join(" ");
+				}
+				throw new Error(errorMsg || "Failed to find bookings");
 			}
 
 			// Map the data to BookingCard expected format
@@ -510,19 +533,13 @@ export const findBookingApi = async (searchData) => {
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
-			const errorMsg =
-				err.response.data?.msg ||
-				err.response.data?.message ||
-				"Failed to find bookings";
+			let errorMsg = err.response.data?.msg || err.response.data?.message;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to find bookings";
+
 			const errorDetails = err.response.data?.errors;
-
-			// Log the error for debugging
-			console.error("Find booking API error:", {
-				status: err.response.status,
-				data: err.response.data,
-				searchData,
-			});
-
 			if (errorDetails && typeof errorDetails === "object") {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
@@ -535,7 +552,6 @@ export const findBookingApi = async (searchData) => {
 					.join("; ");
 				throw new Error(`Validation errors: ${validationErrors}`);
 			}
-
 			throw new Error(errorMsg);
 		}
 
@@ -568,7 +584,11 @@ export const getBookingByBid = async (bid) => {
 		const { status, msg, data } = res.data;
 
 		if (status !== 200) {
-			throw new Error(msg || "Failed to fetch booking details");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch booking details");
 		}
 
 		// Return the mapped booking data
@@ -576,18 +596,11 @@ export const getBookingByBid = async (bid) => {
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
-			const errorMsg =
-				err.response.data?.msg ||
-				err.response.data?.message ||
-				"Failed to fetch booking details";
-
-			// Log the error for debugging
-			console.error("Get booking by BID API error:", {
-				status: err.response.status,
-				data: err.response.data,
-				bid,
-			});
-
+			let errorMsg = err.response.data?.msg || err.response.data?.message;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch booking details";
 			throw new Error(errorMsg);
 		}
 
@@ -612,16 +625,24 @@ export const dispatchEmailApi = async (emailData) => {
 		const { status, msg, data } = res.data;
 
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to dispatch email");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to dispatch email");
 		}
 
 		return data;
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
-			const errorMsg = err.response.data?.msg || "Failed to dispatch email";
-			const errorDetails = err.response.data?.errors;
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to dispatch email";
 
+			const errorDetails = err.response.data?.errors;
 			if (errorDetails && typeof errorDetails === "object") {
 				const validationErrors = Object.entries(errorDetails)
 					.map(
@@ -633,7 +654,6 @@ export const dispatchEmailApi = async (emailData) => {
 					.join("; ");
 				throw new Error(`Validation errors: ${validationErrors}`);
 			}
-
 			throw new Error(errorMsg);
 		}
 
@@ -662,15 +682,23 @@ export const addCommentApi = async (payload) => {
 		const { status, msg, data } = res.data;
 
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to add comment");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to add comment");
 		}
 
 		return data;
 	} catch (err) {
 		if (err.response) {
-			const errorMsg = err.response.data?.msg || "Failed to add comment";
-			const errorDetails = err.response.data?.errors;
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to add comment";
 
+			const errorDetails = err.response.data?.errors;
 			if (errorDetails && typeof errorDetails === "object") {
 				const validationErrors = Object.entries(errorDetails)
 					.map(
@@ -682,7 +710,6 @@ export const addCommentApi = async (payload) => {
 					.join("; ");
 				throw new Error(`Validation errors: ${validationErrors}`);
 			}
-
 			throw new Error(errorMsg);
 		}
 
@@ -709,12 +736,20 @@ export const getCommentsByBidApi = async (bid) => {
 		});
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to fetch comments");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch comments");
 		}
 		return data;
 	} catch (err) {
 		if (err.response) {
-			const errorMsg = err.response.data?.msg || "Failed to fetch comments";
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch comments";
 			throw new Error(errorMsg);
 		}
 		if (err.request) {
@@ -734,12 +769,20 @@ export const getActivityByBidApi = async (bid) => {
 		});
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to fetch activity");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch activity");
 		}
 		return data;
 	} catch (err) {
 		if (err.response) {
-			const errorMsg = err.response.data?.msg || "Failed to fetch activity";
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch activity";
 			throw new Error(errorMsg);
 		}
 		if (err.request) {
@@ -751,15 +794,7 @@ export const getActivityByBidApi = async (bid) => {
 
 export const getRecentBookingsApi = async () => {
 	try {
-		// const { limit = 10, offset = 0, userId } = params;
-
-		// const queryParams = { limit, offset };wq
-		// if (userId) {
-		// 	queryParams.userId = userId;
-		// }
-
 		const res = await API.get("/recentBooking", {
-			// params: queryParams,
 			headers: {
 				Accept: "application/json",
 			},
@@ -767,7 +802,11 @@ export const getRecentBookingsApi = async () => {
 
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
-			throw new Error(msg || "Failed to fetch recent bookings");
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch recent bookings");
 		}
 
 		// Map the data to BookingCard expected format if data exists
@@ -779,16 +818,11 @@ export const getRecentBookingsApi = async () => {
 		return data || [];
 	} catch (err) {
 		if (err.response) {
-			const errorMsg =
-				err.response.data?.msg || "Failed to fetch recent bookings";
-
-			// Log the error for debugging
-			console.error("Get recent bookings API error:", {
-				status: err.response.status,
-				data: err.response.data,
-				params,
-			});
-
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch recent bookings";
 			throw new Error(errorMsg);
 		}
 		if (err.request) {

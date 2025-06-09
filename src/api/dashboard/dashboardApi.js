@@ -1,5 +1,16 @@
 import API from "../axios";
 
+// Helper to flatten error messages
+function flattenErrorMessages(error) {
+	if (!error) return [];
+	if (typeof error === "string") return [error];
+	if (Array.isArray(error)) return error.flatMap(flattenErrorMessages);
+	if (typeof error === "object") {
+		return Object.values(error).flatMap(flattenErrorMessages);
+	}
+	return [String(error)];
+}
+
 /**
  * Fetch dashboard summary data
  * @param {Object} payload - { dateFilter, startDate, endDate }
@@ -18,14 +29,21 @@ export const dashboardSummaryApi = async (payload) => {
 		}
 		const res = await API.post("/dashboardSummary", payload);
 		if (res.data?.status !== 200) {
-			throw new Error(res.data?.msg || "Failed to fetch dashboard summary");
+			let errorMsg = res.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch dashboard summary");
 		}
 		return res.data.data;
 	} catch (err) {
 		if (err.response) {
-			throw new Error(
-				err.response.data?.message || "Failed to fetch dashboard summary"
-			);
+			let errorMsg = err.response.data?.message;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch dashboard summary";
+			throw new Error(errorMsg);
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {
@@ -53,9 +71,11 @@ export const topBottomAgentReportApi = async (payload) => {
 		const res = await API.post("/topBottomAgentReport", payload);
 
 		if (res.data?.status !== "success") {
-			throw new Error(
-				res.data?.msg || "Failed to fetch top/bottom agent report"
-			);
+			let errorMsg = res.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch top/bottom agent report");
 		}
 		const performers = {
 			top_agents: res.data.top_agents,
@@ -64,9 +84,12 @@ export const topBottomAgentReportApi = async (payload) => {
 		return performers;
 	} catch (err) {
 		if (err.response) {
-			throw new Error(
-				err.response.data?.message || "Failed to fetch top/bottom agent report"
-			);
+			let errorMsg = err.response.data?.message;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch top/bottom agent report";
+			throw new Error(errorMsg);
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {

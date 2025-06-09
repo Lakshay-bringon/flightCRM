@@ -1,15 +1,38 @@
 import API from "../axios";
 
+// Helper to flatten error messages
+function flattenErrorMessages(error) {
+	if (!error) return [];
+	if (typeof error === "string") return [error];
+	if (Array.isArray(error)) return error.flatMap(flattenErrorMessages);
+	if (typeof error === "object") {
+		return Object.values(error).flatMap(flattenErrorMessages);
+	}
+	return [String(error)];
+}
+
 // Get active cards
 export const activeCardsApi = async () => {
 	try {
 		const res = await API.get("/activeGetCard");
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to fetch active cards");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch active cards");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to fetch active cards");
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch active cards";
+			throw new Error(errorMsg);
+		}
 		throw new Error("Get active cards error: " + err.message);
 	}
 };
@@ -21,11 +44,23 @@ export const addCardApi = async ({ card, shortName }, email, token) => {
 			sort_name: shortName,
 		});
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to add card");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to add card");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to add card");
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to add card";
+			throw new Error(errorMsg);
+		}
 		throw new Error("Add card error: " + err.message);
 	}
 };
@@ -34,11 +69,23 @@ export const getCardListApi = async (email, token) => {
 	try {
 		const res = await API.get("/getCard");
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to fetch cards");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch cards");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to fetch cards");
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch cards";
+			throw new Error(errorMsg);
+		}
 		throw new Error("Get card list error: " + err.message);
 	}
 };
@@ -51,11 +98,23 @@ export const updateCardApi = async ({ id, card, shortName }, email, token) => {
 			sort_name: shortName,
 		});
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to update card");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to update card");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to update card");
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to update card";
+			throw new Error(errorMsg);
+		}
 		throw new Error("Update card error: " + err.message);
 	}
 };
@@ -67,11 +126,23 @@ export const toggleCardStatusApi = async (id) => {
 			params: { id },
 		});
 		const { status, msg, data } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to toggle card status");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to toggle card status");
+		}
 		return data;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to toggle card status");
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to toggle card status";
+			throw new Error(errorMsg);
+		}
 		throw new Error("Toggle card status error: " + err.message);
 	}
 };
@@ -82,11 +153,23 @@ export const deleteCardApi = async (id, email, token) => {
 			params: { id },
 		});
 		const { status, msg } = res.data;
-		if (status !== 200) throw new Error(msg || "Failed to delete card");
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to delete card");
+		}
 		return true;
 	} catch (err) {
-		if (err.response)
-			throw new Error(err.response.data.msg || "Failed to delete card");
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to delete card";
+			throw new Error(errorMsg);
+		}
 		throw new Error("Delete card error: " + err.message);
 	}
 };
