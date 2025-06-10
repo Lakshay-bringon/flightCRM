@@ -186,3 +186,27 @@ export const getIpInfoApi = async () => {
 		throw new Error("Get IP info error: " + err.message);
 	}
 };
+
+export const deleteIpApi = async (id) => {
+	try {
+		const res = await API.get("/deleteIp", { params: { id } });
+		const { status, msg, data } = res.data;
+		if (status !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to delete IP");
+		}
+		return data;
+	} catch (err) {
+		if (err.response?.data?.msg) {
+			let errorMsg = err.response.data.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to delete IP");
+		}
+		throw new Error(err.message || "Delete IP error");
+	}
+};

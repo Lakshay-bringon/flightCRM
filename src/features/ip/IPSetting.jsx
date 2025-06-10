@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Globe, Shield, Plus, X } from "lucide-react";
+import React, { useEffect, useState, useRef } from "react";
+import { Globe, Shield, Plus, X, Edit, Trash } from "lucide-react";
 import { showPromiseToast } from "../../utils/showPromiseToast";
 import {
 	addIpApi,
@@ -7,6 +7,7 @@ import {
 	getIpListApi,
 	toggleIpStatusApi,
 	getIpInfoApi,
+	deleteIpApi,
 } from "../../api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -31,6 +32,7 @@ function IPSetting() {
 		blocked_ip: 0,
 		last_update: null,
 	});
+	const ipInputRef = useRef(null);
 
 	// Normalize API data for UI
 	const normalizeIp = (ipObj) => ({
@@ -116,7 +118,6 @@ function IPSetting() {
 		setForm({ ip: "", allowed_status: "allowed", description: "" });
 		setEditingId(null);
 	};
-
 	const handleEdit = (ipObj) => {
 		setForm({
 			ip: ipObj.ip,
@@ -124,10 +125,22 @@ function IPSetting() {
 			description: ipObj.description,
 		});
 		setEditingId(ipObj.id);
+		// Auto focus IP input when in edit mode
+		setTimeout(() => {
+			if (ipInputRef.current) {
+				ipInputRef.current.focus();
+			}
+		}, 100);
 	};
-
 	const handleDelete = async (ipObj) => {
-		// Implement delete API if available
+		if (window.confirm(`Are you sure you want to delete IP: ${ipObj.ip}?`)) {
+			await showPromiseToast(deleteIpApi(ipObj.id), {
+				loading: "Deleting IP...",
+				success: "IP deleted successfully!",
+				error: "Failed to delete IP",
+			});
+			await refreshData();
+		}
 	};
 
 	const handleToggleStatus = async (ipObj) => {
@@ -154,31 +167,39 @@ function IPSetting() {
 
 	return (
 		<div className="max-w-7xl mx-auto">
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+			<div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
 				{/* IP Configuration Form */}
 				<div className="lg:col-span-2">
 					<div className="rounded-lg bg-gray-800 bg-opacity-60 backdrop-blur-lg border border-gray-700">
-						<div className="p-4 border-b border-gray-700">
-							<h3 className="text-base font-semibold text-white">
-								Add IP Address
-							</h3>
+						<div className="p-3 border-b border-gray-700">
+							<div className="flex items-center gap-2">
+								{editingId ? (
+									<Edit className="w-4 h-4 text-blue-400" />
+								) : (
+									<Plus className="w-4 h-4 text-blue-400" />
+								)}
+								<h3 className="text-sm font-semibold text-white">
+									{editingId ? "Edit IP Address" : "Add IP Address"}
+								</h3>
+							</div>
 						</div>
-						<div className="p-4">
+						<div className="p-3">
 							<form onSubmit={handleAddOrUpdate}>
-								<div className="space-y-4">
-									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div className="space-y-3">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 										<div>
 											<label className="block text-xs font-medium text-gray-400 mb-1">
 												IP Address
 											</label>
 											<input
+												ref={ipInputRef}
 												type="text"
 												name="ip"
 												value={form.ip}
 												onChange={handleInputChange}
 												placeholder="IPv4 or IPv6 address"
 												pattern="^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|([a-fA-F0-9:]+))$"
-												className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-xs"
+												className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-xs"
 												required
 											/>
 										</div>
@@ -190,7 +211,7 @@ function IPSetting() {
 												name="allowed_status"
 												value={form.allowed_status}
 												onChange={handleInputChange}
-												className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:outline-none text-xs"
+												className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded text-white focus:border-blue-500 focus:outline-none text-xs"
 											>
 												<option value="allowed">Allow</option>
 												<option value="blocked">Block</option>
@@ -207,31 +228,42 @@ function IPSetting() {
 											value={form.description}
 											onChange={handleInputChange}
 											placeholder="Office Network"
-											className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-xs"
+											className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-xs"
 										/>
 									</div>
 									<div className="flex gap-2">
 										<button
 											type="submit"
-											className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 flex items-center justify-center text-xs"
+											className="flex-1 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 flex items-center justify-center text-xs font-medium"
 										>
-											<Plus className="w-4 h-4 mr-1" />
-											{editingId ? "Update IP Address" : "Add IP Address"}
+											{editingId ? (
+												<>
+													<Edit className="w-3 h-3 mr-1" />
+													Update IP
+												</>
+											) : (
+												<>
+													<Plus className="w-3 h-3 mr-1" />
+													Add IP
+												</>
+											)}
 										</button>
-										<button
-											type="button"
-											onClick={() => {
-												setForm({
-													ip: "",
-													allowed_status: "allowed",
-													description: "",
-												});
-												setEditingId(null);
-											}}
-											className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-all duration-200 text-xs"
-										>
-											Clear
-										</button>
+										{editingId && (
+											<button
+												type="button"
+												onClick={() => {
+													setForm({
+														ip: "",
+														allowed_status: "allowed",
+														description: "",
+													});
+													setEditingId(null);
+												}}
+												className="px-3 py-1.5 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-all duration-200 text-xs font-medium"
+											>
+												Cancel
+											</button>
+										)}
 									</div>
 								</div>
 							</form>
@@ -240,15 +272,15 @@ function IPSetting() {
 				</div>
 
 				{/* Security Status */}
-				<div>
+				<div className="lg:col-span-2">
 					<div className="rounded-lg bg-gray-800 bg-opacity-60 backdrop-blur-lg border border-gray-700">
-						<div className="flex items-center justify-between p-4 border-b border-gray-700">
-							<h3 className="text-base font-semibold text-white">
+						<div className="flex items-center justify-between p-3 border-b border-gray-700">
+							<h3 className="text-sm font-semibold text-white">
 								Security Status
 							</h3>
 							<div className="relative">
 								<button
-									className={`px-3 py-1 rounded-lg flex items-center gap-2 text-xs font-semibold transition-all duration-200 ${
+									className={`px-2 py-1 rounded flex items-center gap-1 text-xs font-semibold transition-all duration-200 ${
 										ipProtectionActive
 											? "bg-green-500/20 text-green-400 hover:bg-green-500/40"
 											: "bg-red-500/20 text-red-400 hover:bg-red-500/40"
@@ -266,34 +298,34 @@ function IPSetting() {
 									}
 									onMouseLeave={() => setShowDeactivateTooltip(false)}
 								>
-									<Shield className="w-4 h-4" />
-									{ipProtectionActive
-										? "IP Protection Active"
-										: "IP Protection Deactivated"}
+									<Shield className="w-3 h-3" />
+									{ipProtectionActive ? "Active" : "Deactivated"}
 								</button>
 								{ipProtectionActive && showDeactivateTooltip && (
-									<div className="absolute right-0 top-full mt-1 px-3 py-1 bg-gray-900 text-xs text-gray-200 rounded shadow-lg border border-gray-700 z-10 whitespace-nowrap">
+									<div className="absolute right-0 top-full mt-1 px-2 py-1 bg-gray-900 text-xs text-gray-200 rounded shadow-lg border border-gray-700 z-10 whitespace-nowrap">
 										Deactivate
 									</div>
 								)}
 							</div>
 						</div>
-						<div className="p-4 space-y-2">
+						<div className="p-3 space-y-2">
 							<div className="flex items-center justify-between text-xs">
 								<span className="text-gray-400">Allowed IPs</span>
-								<span className="text-white">{ipInfo.active_ip}</span>
+								<span className="text-white font-medium">
+									{ipInfo.active_ip}
+								</span>
 							</div>
 							<div className="flex items-center justify-between text-xs">
 								<span className="text-gray-400">Blocked IPs</span>
-								<span className="text-white">{ipInfo.blocked_ip}</span>
+								<span className="text-white font-medium">
+									{ipInfo.blocked_ip}
+								</span>
 							</div>
 							<div className="flex items-center justify-between text-xs">
 								<span className="text-gray-400">Last Updated</span>
-								<span className="text-white">
+								<span className="text-white text-right">
 									{ipInfo.last_update
-										? `${dayjs(ipInfo.last_update).format(
-												"MMM D, YYYY [at] h:mm A"
-										  )} (${dayjs(ipInfo.last_update).fromNow()})`
+										? dayjs(ipInfo.last_update).format("MMM D, h:mm A")
 										: "N/A"}
 								</span>
 							</div>
@@ -302,22 +334,23 @@ function IPSetting() {
 				</div>
 
 				{/* IP List */}
-				<div className="lg:col-span-3">
+				<div className="lg:col-span-4">
+					{" "}
 					<div className="rounded-xl bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700 overflow-hidden">
-						<div className="p-6 border-b border-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-							<h3 className="text-xl font-semibold text-white">
+						<div className="p-4 border-b border-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+							<h3 className="text-lg font-semibold text-white">
 								IP Access List
 							</h3>
 							<div className="flex gap-2 items-center w-full md:w-auto">
 								<input
 									type="text"
 									placeholder="Search IP..."
-									className="px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-xs focus:outline-none focus:border-blue-500 w-full md:w-48"
+									className="px-2 py-1.5 rounded bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-xs focus:outline-none focus:border-blue-500 w-full md:w-40"
 									value={search}
 									onChange={(e) => setSearch(e.target.value)}
 								/>
 								<button
-									className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 ${
+									className={`px-2 py-1 rounded text-xs font-semibold transition-all duration-200 ${
 										filter === "all"
 											? "bg-blue-500/20 text-blue-400"
 											: "bg-gray-700 text-gray-300"
@@ -327,7 +360,7 @@ function IPSetting() {
 									All
 								</button>
 								<button
-									className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 ${
+									className={`px-2 py-1 rounded text-xs font-semibold transition-all duration-200 ${
 										filter === "allowed"
 											? "bg-green-500/20 text-green-400"
 											: "bg-gray-700 text-gray-300"
@@ -337,7 +370,7 @@ function IPSetting() {
 									Allowed
 								</button>
 								<button
-									className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 ${
+									className={`px-2 py-1 rounded text-xs font-semibold transition-all duration-200 ${
 										filter === "blocked"
 											? "bg-red-500/20 text-red-400"
 											: "bg-gray-700 text-gray-300"
@@ -347,33 +380,35 @@ function IPSetting() {
 									Blocked
 								</button>
 							</div>
-						</div>
+						</div>{" "}
 						<div className="divide-y divide-gray-700">
 							{filteredIPs.length === 0 ? (
-								<div className="p-4 text-center text-gray-400 text-xs">
+								<div className="p-3 text-center text-gray-400 text-xs">
 									No IPs found.
 								</div>
 							) : (
 								filteredIPs.map((ipObj, idx) => (
 									<div
 										key={ipObj.id || ipObj.ip + idx}
-										className="p-4 hover:bg-gray-700/50 transition-all duration-200"
+										className="p-3 hover:bg-gray-700/50 transition-all duration-200"
 									>
 										<div className="flex items-center justify-between">
-											<div className="flex items-center space-x-4">
-												<Globe className="w-5 h-5 text-blue-400" />
+											<div className="flex items-center space-x-3">
+												<Globe className="w-4 h-4 text-blue-400" />
 												<div>
 													<h4 className="text-white font-medium text-xs">
 														{ipObj.ip}
 													</h4>
-													<p className="text-xs text-gray-400">
-														{ipObj.description}
-													</p>
+													{ipObj.description && (
+														<p className="text-xs text-gray-400">
+															{ipObj.description}
+														</p>
+													)}
 												</div>
-											</div>
+											</div>{" "}
 											<div className="flex items-center space-x-2">
 												<button
-													className={`px-2 py-0.5 text-xs rounded-full font-semibold transition-all duration-200 focus:outline-none ${
+													className={`px-2 py-0.5 text-xs rounded font-semibold transition-all duration-200 focus:outline-none ${
 														ipObj.allowed_status === "allowed"
 															? "bg-green-500/20 text-green-400 hover:bg-green-500/40"
 															: "bg-red-500/20 text-red-400 hover:bg-red-500/40"
@@ -385,14 +420,18 @@ function IPSetting() {
 														: "Blocked"}
 												</button>
 												<button
-													className="p-1 text-blue-400 hover:bg-blue-400/20 rounded-lg transition-all duration-200"
+													className="px-2 py-0.5 text-blue-400 hover:bg-blue-400/20 rounded transition-all duration-200 text-xs"
 													onClick={() => handleEdit(ipObj)}
 												>
 													Edit
 												</button>
-												{/* <button className="p-1 text-red-400 hover:bg-red-400/20 rounded-lg transition-all duration-200">
-                          <X className="w-4 h-4" />
-                        </button> */}
+												<button
+													className="p-1 text-red-400 hover:bg-red-400/20 rounded transition-all duration-200"
+													onClick={() => handleDelete(ipObj)}
+													title="Delete IP"
+												>
+													<Trash className="w-3 h-3" />
+												</button>
 											</div>
 										</div>
 									</div>
