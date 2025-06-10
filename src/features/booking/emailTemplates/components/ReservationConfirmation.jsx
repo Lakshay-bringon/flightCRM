@@ -7,9 +7,10 @@ import {
 	Text,
 	Section,
 	Img,
+	Hr,
 } from "@react-email/components";
 
-export const EmailCancelForFutureCredit = ({ bookingData }) => {
+export const ReservationConfirmation = ({ bookingData }) => {
 	const {
 		airline_name = "",
 		customer_name = "",
@@ -32,6 +33,7 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 		currency = "",
 		bid = "",
 	} = bookingData;
+
 	const fullAddress = [billing_address, city, state, zip, country]
 		.filter(Boolean)
 		.join(", ");
@@ -39,15 +41,14 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 	const baseUploadUrl =
 		import.meta.env.VITE_UPLOADS_BASE_URL ||
 		"https://apiskyline.aaditravel.com/uploads/";
-
 	return (
 		<Html>
 			<Head />
-			<Preview>Future Credit Confirmation – {pnr}</Preview>
+			<Preview>Reservation Confirmation – {pnr}</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<Text style={heading}>
-						{airline_name} – Future Credit Confirmation – {pnr}
+						{airline_name} – Reservation Confirmation – {pnr}
 					</Text>
 					<Text>Dear {customer_name},</Text>
 					<Text>Thank you for contacting us!</Text>
@@ -55,24 +56,14 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
 					</Text>
-
 					<Text>
-						As per our conversation and as agreed, your reservation has been
-						cancelled directly by <strong>{airline_name}</strong> under
-						confirmation no. <strong>{pnr}</strong> for a future credit of{" "}
-						<strong>USD {amount}</strong> per passenger.
-					</Text>
-
-					<Text>
-						This credit is valid to travel on <strong>{airline_name}</strong>{" "}
-						and is non-transferable to any other airline or person. At the time
-						of rebooking, a penalty of <strong>USD {amount}</strong> per
-						passenger plus fare difference may apply.
-					</Text>
-
-					<Text>
-						A charge of <strong>USD {amount}</strong> will be processed for the
-						cancellation with future credit.
+						As per our conversation and agreement, we have booked your
+						reservation under Confirmation Number <strong>{pnr}</strong> on{" "}
+						<strong>{airline_name}</strong> with a charge of{" "}
+						<strong>
+							{amount} {currency}
+						</strong>{" "}
+						(inclusive of taxes and fees) as per the below description:
 					</Text>
 
 					<Text style={subheading}>Charges Description:</Text>
@@ -89,12 +80,14 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 						))}
 					</table>
 
-					{/* {ecredit_image && (
-						<>
-							<Text style={subheading}>E-Credit Details:</Text>
-							<Img src={ecredit_image} alt="E-Credit Info" style={imgStyle} />
-						</>	
-					)} */}
+					<Text style={subheading}>Flight Details:</Text>
+					{itinerary_details && (
+						<Img
+							src={baseUploadUrl + itinerary_details}
+							alt="Itinerary"
+							style={imgStyle}
+						/>
+					)}
 
 					<Text style={subheading}>Passenger Details:</Text>
 					<table style={table}>
@@ -147,10 +140,16 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 					</table>
 
 					<Text>
+						Make sure that the displayed flight information is as you planned.
+						Please review the Names, Dates, Cities, and Departure – Arrival
+						times properly.
+					</Text>
+
+					<Text>
 						I certify that I, <strong>{card_holder}</strong>, am the authorized
 						user of this card and I will not dispute the payment with my
-						credit/debit card company/bank as this amount is being charged for
-						my personal travel.
+						credit/debit card company or bank, as this amount is being charged
+						for my personal travel.
 					</Text>
 
 					<Text>
@@ -161,9 +160,8 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 							rel="noopener noreferrer"
 							style={ctaLink}
 						>
-							<strong>I Agree / I Authorize</strong>
+							<strong>“I Agree / I Authorize”</strong>
 						</a>
-						.
 					</Text>
 
 					<Text style={note}>
@@ -173,8 +171,15 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 
 					<Text style={subheading}>Important:</Text>
 					<Text>
-						Your credit card may be billed in split charges. All service fees
-						are 100% non-refundable.
+						Your e-tickets will be sent via email within 24 hours if there is no
+						airline delay. Fares are not guaranteed until paid and ticketed. For
+						post-ticket changes, you are responsible for penalties, fare
+						difference, and applicable fees.
+					</Text>
+
+					<Text>
+						Note: Your card may be billed in split charges not exceeding the
+						total amount. All service fees are non-refundable.
 					</Text>
 
 					<Text style={subheading}>Disclaimer:</Text>
@@ -185,20 +190,7 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 					</Text>
 
 					<Text>
-						Airline changes are not confirmed until finalized by the airline. If
-						changes are made after ticket exchange, additional penalties and
-						fare differences apply.
-					</Text>
-
-					<Text style={subheading}>Refund Policy:</Text>
-					<Text>
-						Most airline tickets are non-refundable. Some tickets may be changed
-						with a fee and fare difference. Refunds depend on airline fare
-						rules.
-					</Text>
-
-					<Text>
-						For discrepancies or amendments, contact{" "}
+						For any changes or discrepancies, please contact us at{" "}
 						<strong>+1-877-413-0030</strong> or{" "}
 						<a href="mailto:booking@skylinetravelsllc.com">
 							booking@skylinetravelsllc.com
@@ -207,20 +199,113 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 					</Text>
 
 					<Text style={subheading}>Important Information:</Text>
+					<table style={table}>
+						<tbody>
+							<tr>
+								<td style={td}>
+									• Passenger names must match government ID (Passport for
+									international).
+								</td>
+							</tr>
+							<tr>
+								<td style={td}>• Ensure all travel documents are prepared.</td>
+							</tr>
+							<tr>
+								<td style={td}>
+									• Arrive 3 hours prior (international) or 2 hours prior
+									(domestic).
+								</td>
+							</tr>
+							<tr>
+								<td style={td}>
+									• Confirm international flights 72 hours before departure.
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
 					<Text>
-						• Passenger names must match ID/passport.
-						<br />
-						• Carry valid travel documents and visas.
-						<br />
-						• Arrive 3 hours (intl) or 2 hours (domestic) before departure.
-						<br />
-						• Confirm intl. flights 72 hours in advance.
-						<br />• Airline tickets are subject to penalties for any change.
+						If your credit card is declined, call us immediately at{" "}
+						<strong>+1-877-413-0030</strong>. Children 12+ are considered adults
+						for pricing.
 					</Text>
 
-					<Text style={subheading}>Still have questions?</Text>
+					<Text style={subheading}>For Changes:</Text>
+					<table style={table}>
+						<tbody>
+							<tr>
+								<td style={td}>
+									Call <strong>+1-877-413-0030</strong>. Fees apply due to
+									penalties or fare differences.
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<Text style={subheading}>For Cancellations:</Text>
+					<table style={table}>
+						<tbody>
+							<tr>
+								<td style={td}>
+									Call at least 3-4 hours before departure to avoid no-show.
+									Cancellation must be over the phone.
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<Text style={subheading}>Seat Assignments:</Text>
+					<table style={table}>
+						<tbody>
+							<tr>
+								<td style={td}>
+									Many airlines charge for advance seat assignments. Some allow
+									only during check-in. Contact us for assistance.
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<Text style={subheading}>Baggage Policy:</Text>
+					<table style={table}>
+						<tbody>
+							<tr>
+								<td style={td}>
+									Baggage fees may apply. Refer to the airline for rules.
+									Contact us for more info.
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<Text style={subheading}>Visa/Travel Documents:</Text>
+					<table style={table}>
+						<tbody>
+							<tr>
+								<td style={td}>
+									Ensure required travel documents and visas are ready. We are
+									not responsible for denied boarding due to missing documents.
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<Text style={subheading}>Check-In:</Text>
+					<table style={table}>
+						<tbody>
+							<tr>
+								<td style={td}>
+									Arrive 3 hours before international flights and 2 hours before
+									domestic. Confirm check-in procedures with your airline or
+									TSA.
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
 					<Text>
-						Call <strong>+1-877-413-0030</strong> or email{" "}
+						Still have questions? Call <strong>+1-877-413-0030</strong> or email
+						us at{" "}
 						<a href="mailto:booking@skylinetravelsllc.com">
 							booking@skylinetravelsllc.com
 						</a>
@@ -228,7 +313,7 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 					</Text>
 
 					<Text>
-						We value your business and hope to serve your travel needs soon.
+						We value your business and look forward to serving you again!
 					</Text>
 				</Container>
 			</Body>
@@ -236,7 +321,6 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 	);
 };
 
-// Reuse same styles
 const main = {
 	fontFamily: "Arial, sans-serif",
 	backgroundColor: "#f9f9f9",
@@ -275,7 +359,6 @@ const table = {
 	borderCollapse: "collapse",
 	marginBottom: "12px",
 };
-
 const td = {
 	border: "1px solid #ccc",
 	padding: "8px",
@@ -297,7 +380,6 @@ const imgStyle = {
 	marginTop: "8px",
 	marginBottom: "16px",
 };
-
 const ctaLink = {
 	display: "inline-block",
 	padding: "8px 12px",
@@ -309,4 +391,4 @@ const ctaLink = {
 	marginLeft: "6px",
 };
 
-export default EmailCancelForFutureCredit;
+export default ReservationConfirmation;

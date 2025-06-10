@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { renderToStaticMarkup } from "react-dom/server";
-import EmailNewBooking from "./components/EmailNewBooking";
+// import { renderToStaticMarkup } from "react-dom/server";
+import { render } from "@react-email/components";
 import EmailUpgrade from "./components/EmailUpgrade";
 import EmailExchange from "./components/EmailExchange";
 import EmailSeatAssignment from "./components/EmailSeatAssignment";
@@ -9,6 +9,7 @@ import EmailCancelForRefund from "./components/EmailCancelForRefund";
 import EmailCancelForFutureCredit from "./components/EmailCancelForFutureCredit";
 import EmailCardDecline from "./components/EmailCardDecline";
 import { TRANSACTION_TYPES } from "../../../constants";
+import ReservationConfirmation from "./components/ReservationConfirmation";
 
 const DynamicEmailTemplate = ({ transactionType, formData, emailType }) => {
 	const renderTemplate = () => {
@@ -17,7 +18,7 @@ const DynamicEmailTemplate = ({ transactionType, formData, emailType }) => {
 		} else {
 			switch (transactionType) {
 				case TRANSACTION_TYPES.NEW_BOOKING:
-					return <EmailNewBooking bookingData={formData} />;
+					return <ReservationConfirmation bookingData={formData} />;
 				case TRANSACTION_TYPES.UPGRADE:
 					return <EmailUpgrade bookingData={formData} />;
 				case TRANSACTION_TYPES.EXCHANGE:
@@ -42,8 +43,8 @@ DynamicEmailTemplate.propTypes = {
 	formData: PropTypes.object.isRequired,
 };
 
-export const generateEmailHTML = (transaction_type, formData) => {
-	return renderToStaticMarkup(
+export const generateEmailHTML = async (transaction_type, formData) => {
+	return await render(
 		<DynamicEmailTemplate
 			transactionType={transaction_type}
 			formData={formData}

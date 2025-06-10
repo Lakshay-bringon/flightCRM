@@ -1,110 +1,146 @@
-import React from "react";
+import {
+	Html,
+	Head,
+	Preview,
+	Body,
+	Container,
+	Text,
+} from "@react-email/components";
 
-const EmailCardDecline = ({
-	agent_name = created_by,
-	amount = "XXX.XX",
-	currency = "USD",
-}) => {
+export const EmailCardDecline = (props) => {
+	const {
+		agent_name = "",
+		created_by = "",
+		amount = "XXX.XX",
+		currency = "USD",
+	} = props;
+
+	const agentName = agent_name || created_by || "Agent";
+
 	return (
-		<div
-			style={{
-				fontFamily:
-					"-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
-				background: "#0f172a",
-				color: "#d1d5db",
-				lineHeight: 1.6,
-				padding: 20,
-				margin: 0,
-				boxSizing: "border-box",
-			}}
-		>
-			<div
-				style={{
-					maxWidth: 896,
-					margin: "0 auto",
-					background: "rgba(31, 41, 55, 0.9)",
-					border: "1px solid #374151",
-					borderRadius: 12,
-					boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-					overflow: "hidden",
-				}}
-			>
-				<div style={{ padding: 24 }}>
-					{/* Header */}
-					<div style={{ textAlign: "center", marginBottom: 24 }}>
-						<h1
-							style={{
-								color: "#ffffff",
-								fontSize: 20,
-								fontWeight: 700,
-								lineHeight: 1.4,
-								margin: 0,
-							}}
-						>
-							CARD DECLINE NOTICE
-						</h1>
-					</div>
-					{/* Content */}
-					<div
-						style={{
-							background: "#1f2937",
-							border: "1px solid #374151",
-							borderRadius: 8,
-							padding: 24,
-							marginBottom: 24,
-						}}
-					>
-						<p style={{ lineHeight: 1.75, marginBottom: 16 }}>
-							<strong style={{ color: "#f59e0b" }}>Attention!!</strong>
-						</p>
-						<p style={{ lineHeight: 1.75, marginBottom: 16 }}>
-							Your reservation is{" "}
-							<span style={{ color: "#ef4444", fontWeight: 600 }}>
-								still pending
-							</span>{" "}
-							due to{" "}
-							<span style={{ color: "#ef4444", fontWeight: 600 }}>
-								card decline
-							</span>
-							.
-						</p>
-						<p style={{ lineHeight: 1.75, marginBottom: 16 }}>
+		<Html>
+			<Head />
+			<Preview>Card Decline Notice</Preview>
+			<Body style={main}>
+				<Container style={container}>
+					<Text style={heading}>CARD DECLINE NOTICE</Text>
+
+					<div style={alertBox}>
+						<Text style={alertText}>
+							<strong style={warningText}>Attention!!</strong>
+						</Text>
+
+						<Text style={contentText}>
+							Your reservation is <span style={errorText}>still pending</span>{" "}
+							due to <span style={errorText}>card decline</span>.
+						</Text>
+
+						<Text style={contentText}>
 							Please call your bank to approve the payment and let us know once
 							done so that we can process your transaction of amount{" "}
-							<span style={{ color: "#10b981", fontWeight: 600 }}>
+							<span style={successText}>
 								{amount} {currency}
 							</span>
 							.
-						</p>
-						<p style={{ lineHeight: 1.75, marginBottom: 0 }}>
+						</Text>
+
+						<Text style={signatureText}>
 							Thanks
 							<br />
-							<span style={{ color: "#60a5fa", fontWeight: 600 }}>
-								{agent_name}
-							</span>
-						</p>
+							<span style={agentNameText}>{agentName}</span>
+						</Text>
 					</div>
-					{/* Footer */}
-					<div
-						style={{
-							textAlign: "center",
-							padding: 24,
-							borderTop: "1px solid #374151",
-							background: "rgba(17, 24, 39, 0.5)",
-							color: "#6b7280",
-							fontSize: 14,
-						}}
-					>
-						For any questions, call us at{" "}
-						<span style={{ color: "#f59e0b" }}>+1-877-413-0030</span> or email{" "}
-						<span style={{ color: "#f59e0b" }}>
+
+					<Text style={footerText}>
+						For any questions, call us at <strong>+1-877-413-0030</strong> or
+						email{" "}
+						<a href="mailto:booking@skylinetravelsllc.com" style={linkStyle}>
 							booking@skylinetravelsllc.com
-						</span>
-					</div>
-				</div>
-			</div>
-		</div>
+						</a>
+					</Text>
+				</Container>
+			</Body>
+		</Html>
 	);
+};
+
+const main = {
+	fontFamily: "Arial, sans-serif",
+	backgroundColor: "#f9f9f9",
+	margin: 0,
+	padding: 0,
+};
+
+const container = {
+	maxWidth: "600px",
+	margin: "0 auto",
+	backgroundColor: "#ffffff",
+	padding: "24px",
+	borderRadius: "8px",
+};
+
+const heading = {
+	fontSize: "18px",
+	fontWeight: "bold",
+	marginBottom: "16px",
+	textAlign: "center",
+	color: "#333",
+};
+
+const alertBox = {
+	backgroundColor: "#fef2f2",
+	border: "1px solid #fecaca",
+	borderRadius: "8px",
+	padding: "20px",
+	marginBottom: "20px",
+};
+
+const alertText = {
+	margin: "0 0 12px 0",
+	lineHeight: "1.5",
+};
+
+const warningText = {
+	color: "#dc2626",
+};
+
+const contentText = {
+	margin: "0 0 12px 0",
+	lineHeight: "1.5",
+	color: "#374151",
+};
+
+const errorText = {
+	color: "#dc2626",
+	fontWeight: "600",
+};
+
+const successText = {
+	color: "#059669",
+	fontWeight: "600",
+};
+
+const signatureText = {
+	margin: "0",
+	lineHeight: "1.5",
+	color: "#374151",
+};
+
+const agentNameText = {
+	color: "#2563eb",
+	fontWeight: "600",
+};
+
+const footerText = {
+	textAlign: "center",
+	fontSize: "14px",
+	color: "#6b7280",
+	marginTop: "20px",
+};
+
+const linkStyle = {
+	color: "#2563eb",
+	textDecoration: "none",
 };
 
 export default EmailCardDecline;

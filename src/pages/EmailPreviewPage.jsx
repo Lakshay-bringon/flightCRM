@@ -17,7 +17,8 @@ export default function EmailPreviewPage() {
 	const providerId = location.state?.providerId;
 	const formData = location.state?.formData;
 	const subject =
-		location.state?.subject || generateEmailSubject(formData || {});
+		location.state?.subject ||
+		generateEmailSubject(formData || {}, transactionType, emailType);
 
 	const handleSendEmail = async () => {
 		if (!emailHTML) {
@@ -39,9 +40,12 @@ export default function EmailPreviewPage() {
 
 		// Convert HTML to base64
 		const htmlContentBase64 = btoa(unescape(encodeURIComponent(emailHTML)));
-
 		// Generate dynamic email subject
-		const subject = generateEmailSubject(formData || {});
+		const subject = generateEmailSubject(
+			formData || {},
+			transactionType,
+			emailType
+		);
 
 		// Prepare API payload
 		const emailPayload = {
@@ -93,9 +97,9 @@ export default function EmailPreviewPage() {
 	console.log("Required fields:", { bid, providerId, emailHTML: !!emailHTML });
 
 	return (
-		<div className="w-full h-full flex flex-col min-h-0 flex-1">
+		<div className="w-full h-full flex flex-col">
 			{/* Fixed header with Go Back, title, subject, and send */}
-			<header className="w-full h-16 bg-gray-800 border-b border-gray-600 grid grid-cols-3 items-center px-6 flex-shrink-0">
+			<header className="w-full h-16 bg-gray-800 border-b border-gray-600 grid grid-cols-3 items-center px-6">
 				<div className="flex justify-start">
 					<button
 						onClick={() => navigate(-1)}

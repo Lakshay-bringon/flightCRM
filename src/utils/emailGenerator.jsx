@@ -1,16 +1,53 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { DynamicEmailTemplate } from "../features/booking/emailTemplates";
 
-export const generateEmailSubject = (bookingData) => {
+export const generateEmailSubject = (
+	bookingData,
+	transactionType,
+	emailType
+) => {
 	const { airline_name = "", pnr = "" } = bookingData;
-	if (airline_name && pnr) {
-		return `${airline_name.toUpperCase()} RESERVATION CONFIRMATION – ${pnr}`;
-	} else if (pnr) {
-		return `RESERVATION CONFIRMATION – ${pnr}`;
-	} else if (airline_name) {
-		return `${airline_name.toUpperCase()} RESERVATION CONFIRMATION`;
+
+	// Handle special email types first
+	if (emailType === "declined") {
+		return "CARD DECLINE NOTICE";
 	}
-	return "RESERVATION CONFIRMATION";
+
+	// Determine the subject prefix based on transaction type
+	let subjectPrefix = "RESERVATION CONFIRMATION"; // default
+
+	switch (transactionType) {
+		case "upgrade":
+			subjectPrefix = "UPGRADE CONFIRMATION";
+			break;
+		case "exchange":
+			subjectPrefix = "EXCHANGE CONFIRMATION";
+			break;
+		case "seat_assignment":
+			subjectPrefix = "SEAT ASSIGNMENT CONFIRMATION";
+			break;
+		case "cancel_for_refund":
+			subjectPrefix = "REFUND CONFIRMATION";
+			break;
+		case "cancel_for_future_credit":
+			subjectPrefix = "FUTURE CREDIT CONFIRMATION";
+			break;
+		case "new_booking":
+		default:
+			subjectPrefix = "RESERVATION CONFIRMATION";
+			break;
+	}
+
+	// Build the subject line with airline and PNR
+	if (airline_name && pnr) {
+		return `${airline_name.toUpperCase()} ${subjectPrefix} – ${pnr}`;
+	} else if (pnr) {
+		return `${subjectPrefix} – ${pnr}`;
+	} else if (airline_name) {
+		return `${airline_name.toUpperCase()} ${subjectPrefix}`;
+	}
+
+	return subjectPrefix;
 };
 
 export const generateEmailHTML = (transactionType, formData, emailType) => {
