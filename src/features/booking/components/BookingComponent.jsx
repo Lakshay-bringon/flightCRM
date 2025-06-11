@@ -342,7 +342,7 @@ function BookingComponent({
 		type,
 	}; // Render the wrapper with children components
 	return (
-		<div className="p-3 space-y-4" data-form-section="true">
+		<div className="space-y-4" data-form-section="true">
 			<div className="mb-4 p-3 rounded-xl bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700 shadow-xl">
 				{React.Children.map(children, (child) =>
 					React.cloneElement(child, { ...childrenProps })

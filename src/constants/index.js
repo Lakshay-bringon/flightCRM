@@ -17,15 +17,16 @@ export const TRANSACTION_TYPES = {
 
 // Booking Status
 export const BOOKING_STATUS = [
-	"pending",
-	"in-progress",
-	"cancelled",
-	"Ticketed & MCO charged",
+	"Pending",
+	"In-Progress",
+	"Cancelled",
+	"Ticketed & MCO Charged",
 ];
-export const AUTH_STATUS = ["pending", "approved", "rejected"];
+export const AUTH_STATUS = ["Pending", "Approved", "Rejected"];
 
-export const CHARGING_STATUS = ["pending", "charged", "declined"];
+export const CHARGING_STATUS = ["Pending", "Charged", "Declined"];
 
-export const REFUND_STATUS = ["pending", "approved", "rejected"];
+export const REFUND_STATUS = ["Pending", "Approved", "Rejected"];
 
-export const CHARGEBACK_STATUS = ["pending", "won", "lost"];
+export const CHARGEBACK_STATUS = ["Pending", "Won", "Lost"];
+//
