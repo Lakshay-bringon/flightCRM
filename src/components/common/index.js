@@ -10,3 +10,4 @@ export {
 	FormButton,
 } from "./Form.jsx";
 export { default as TimelineSelector } from "./TimelineSelector.jsx";
+export { default as EmailEditor } from "./EmailEditor.jsx";

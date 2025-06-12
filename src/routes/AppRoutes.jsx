@@ -139,10 +139,6 @@ export default function AppRoutes() {
 											/>{" "}
 											<Route path="access-denied" element={<AccessDenied />} />
 											<Route
-												path="email-preview/:emailType"
-												element={<EmailPreviewPage />}
-											/>
-											<Route
 												path="email-preview"
 												element={<EmailPreviewPage />}
 											/>

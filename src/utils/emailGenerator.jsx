@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { DynamicEmailTemplate } from "../features/booking/emailTemplates";
+import { render } from "@react-email/render";
 
 export const generateEmailSubject = (
 	bookingData,
@@ -50,8 +51,12 @@ export const generateEmailSubject = (
 	return subjectPrefix;
 };
 
-export const generateEmailHTML = (transactionType, formData, emailType) => {
-	const htmlString = renderToStaticMarkup(
+export const generateEmailHTML = async (
+	transactionType,
+	formData,
+	emailType
+) => {
+	const htmlString = await render(
 		<DynamicEmailTemplate
 			transactionType={transactionType}
 			formData={formData}
