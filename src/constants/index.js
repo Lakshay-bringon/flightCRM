@@ -26,6 +26,8 @@ export const AUTH_STATUS = ["Pending", "Approved", "Rejected"];
 
 export const CHARGING_STATUS = ["Pending", "Charged", "Declined"];
 
+export const CHARGING_TYPE = ["MCO", "Airline Charge"];
+
 export const REFUND_STATUS = ["Pending", "Approved", "Rejected"];
 
 export const CHARGEBACK_STATUS = ["Pending", "Won", "Lost"];

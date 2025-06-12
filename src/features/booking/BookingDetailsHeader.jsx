@@ -18,7 +18,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Modal } from "../../components/common";
 import Comments from "./Comments";
 import Activity from "./Actvity";
-import { generateEmailHTML } from "../../utils/emailGenerator.jsx";
 import { TRANSACTION_TYPES } from "../../constants";
 import { addCommentApi } from "../../api/booking/bookingApi";
 import { useAuth } from "../../auth/hooks/useAuth";
@@ -58,20 +57,13 @@ export default function BookingDetailsHeader({
 		// Default to find-bookings for booking routes
 		return "/find-bookings";
 	};
-
 	const handleEmailAction = (emailType) => {
-		let transactionType = formData.transaction_type;
-
-		const emailHTML = generateEmailHTML(transactionType, formData, emailType);
-
-		navigate(`/email-preview/${emailType}`, {
+		navigate(`/email-preview`, {
 			state: {
-				emailHTML,
 				emailType,
-				transactionType,
 				bid: formData.bid,
 				providerId: providerId,
-				formData: formData, // Pass complete form data for fallback
+				formData: formData,
 			},
 		});
 	};
@@ -105,7 +97,6 @@ export default function BookingDetailsHeader({
 			// Optionally show error toast or message
 		}
 	};
-
 	return (
 		<div className="sticky top-0 z-10 flex items-center py-4 bg-transparent ">
 			<div className="flex flex-1 gap-3">

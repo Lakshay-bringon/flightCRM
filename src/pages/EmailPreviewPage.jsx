@@ -1,25 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { dispatchEmailApi } from "../api/booking/bookingApi";
 import { showPromiseToast } from "../utils/showPromiseToast";
-import { generateEmailSubject } from "../utils/emailGenerator";
+import {
+	generateEmailSubject,
+	generateEmailHTML,
+} from "../utils/emailGenerator";
+import EmailEditor from "../components/common/EmailEditor.jsx";
+import Modal from "../components/common/Modal";
 
 export default function EmailPreviewPage() {
-	const { emailType } = useParams();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [isSending, setIsSending] = useState(false);
-	console.log("Email Type:", emailType, "Location state:", location.state); // Debugging log
+	const [emailHTML, setEmailHTML] = useState("");
+	const [isGenerating, setIsGenerating] = useState(true);
+	const [isEditing, setIsEditing] = useState(false);
+	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
-	const emailHTML = location.state?.emailHTML;
-	const transactionType = location.state?.transactionType;
+	const formData = location.state?.formData;
+	const emailType = location.state?.emailType;
+	const transactionType =
+		location.state?.transactionType || formData.transaction_type;
 	const bid = location.state?.bid;
 	const providerId = location.state?.providerId;
-	const formData = location.state?.formData;
-	const subject =
-		location.state?.subject ||
-		generateEmailSubject(formData || {}, transactionType, emailType);
+	const subject = generateEmailSubject(formData, transactionType, emailType);
 
+	// Generate email HTML in useEffect
+	useEffect(() => {
+		if (transactionType && formData && emailType) {
+			setIsGenerating(true);
+			try {
+				generateEmailHTML(transactionType, formData, emailType)
+					.then((generatedHTML) => {
+						setEmailHTML(generatedHTML);
+					})
+					.catch((error) => {
+						console.error("Error generating email HTML:", error);
+						setEmailHTML("");
+					});
+			} catch (error) {
+				console.error("Error generating email HTML:", error);
+				setEmailHTML("");
+			} finally {
+				setIsGenerating(false);
+			}
+		} else {
+			setIsGenerating(false);
+		}
+	}, [transactionType, formData, emailType]);
 	const handleSendEmail = async () => {
 		if (!emailHTML) {
 			alert("No email content to send");
@@ -36,6 +65,11 @@ export default function EmailPreviewPage() {
 			return;
 		}
 
+		setShowConfirmationModal(true);
+	};
+
+	const confirmSendEmail = async () => {
+		setShowConfirmationModal(false);
 		setIsSending(true);
 
 		// Convert HTML to base64
@@ -72,6 +106,35 @@ export default function EmailPreviewPage() {
 			setIsSending(false);
 		});
 	};
+
+	const handleEditEmail = () => {
+		setIsEditing(true);
+	};
+
+	const handleSaveEditedEmail = (editedHTML) => {
+		setEmailHTML(editedHTML);
+		setIsEditing(false);
+	};
+
+	const handleCancelEdit = () => {
+		setIsEditing(false);
+	};
+	if (isGenerating) {
+		return (
+			<div className="w-full h-full flex justify-center items-center">
+				<div className="text-center p-8">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+					<h2 className="text-xl font-semibold text-blue-400 mb-2">
+						Generating Email...
+					</h2>
+					<p className="text-gray-300">
+						Please wait while we prepare your email content.
+					</p>
+				</div>
+			</div>
+		);
+	}
+
 	if (!emailHTML) {
 		return (
 			<div className="w-full h-full flex justify-center items-center">
@@ -79,8 +142,13 @@ export default function EmailPreviewPage() {
 					<h2 className="text-xl font-semibold text-red-400 mb-4">
 						No Email Content Available
 					</h2>
-					<p className="text-gray-300">
-						No email content was provided. Please go back and try again.
+					<p className="text-gray-300 mb-2">
+						{!transactionType || !formData || !emailType
+							? "Missing required data to generate email content."
+							: "Failed to generate email content. Please try again."}
+					</p>
+					<p className="text-gray-400 text-sm mb-4">
+						Required: Transaction Type, Form Data, and Email Type
 					</p>
 					<button
 						onClick={() => window.history.back()}
@@ -95,54 +163,114 @@ export default function EmailPreviewPage() {
 
 	// Debug logging for required fields
 	console.log("Required fields:", { bid, providerId, emailHTML: !!emailHTML });
-
 	return (
 		<div className="w-full h-full flex flex-col">
-			{/* Fixed header with Go Back, title, subject, and send */}
-			<header className="w-full h-16 bg-gray-800 border-b border-gray-600 grid grid-cols-3 items-center px-6">
-				<div className="flex justify-start">
+			{/* Confirmation Modal */}
+			<Modal
+				isOpen={showConfirmationModal}
+				onClose={() => setShowConfirmationModal(false)}
+				title="Confirm Email Sending"
+			>
+				<p className="text-gray-300">
+					Have you proofread the email content? Once sent, it cannot be undone.
+				</p>
+				<div className="flex justify-end gap-4 mt-4">
 					<button
-						onClick={() => navigate(-1)}
+						onClick={() => setShowConfirmationModal(false)}
 						className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition"
 					>
-						Go Back
+						Cancel
 					</button>
-				</div>
-				<div className="flex flex-col items-center">
-					<h1 className="text-lg font-semibold text-white text-center">
-						{subject}
-					</h1>
-				</div>
-				<div className="flex justify-end">
 					<button
-						onClick={handleSendEmail}
-						disabled={isSending || !emailHTML || !bid || !providerId}
-						className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition ${
-							isSending || !emailHTML || !bid || !providerId
-								? "bg-gray-600 text-gray-400 cursor-not-allowed"
-								: ""
-						}`}
-						title={!bid || !providerId ? "Missing booking/provider info" : ""}
+						onClick={confirmSendEmail}
+						className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
 					>
-						{isSending ? "Sending..." : "Send Email"}
+						Confirm
 					</button>
 				</div>
-			</header>
-			{/* Email preview fills the rest of the space */}
-			<div className="flex-1 min-h-0">
-				<iframe
-					title="Email Preview"
-					srcDoc={emailHTML}
-					sandbox="allow-same-origin allow-scripts"
-					className="w-full h-full bg-white border shadow-lg rounded"
-					style={{
-						background: "transparent",
-						border: "none",
-						height: "100%",
-						width: "100%",
-					}}
+			</Modal>
+
+			{/* Show Email Editor when in editing mode */}
+			{isEditing ? (
+				<EmailEditor
+					initialHtml={emailHTML}
+					onSave={handleSaveEditedEmail}
+					onCancel={handleCancelEdit}
+					isSaving={false}
 				/>
-			</div>
+			) : (
+				<>
+					{/* Fixed header with Go Back, title, subject, edit, and send */}
+					<header className="w-full h-16 bg-gray-800 border-b border-gray-600 grid grid-cols-3 items-center px-6">
+						<div className="flex justify-start">
+							<button
+								onClick={() => navigate(-1)}
+								className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition"
+							>
+								Go Back
+							</button>
+						</div>
+						<div className="flex flex-col items-center">
+							<h1 className="text-lg font-semibold text-white text-center">
+								{subject}
+							</h1>
+						</div>
+						<div className="flex justify-end gap-3">
+							<button
+								onClick={handleEditEmail}
+								disabled={isGenerating || !emailHTML}
+								className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition ${
+									isGenerating || !emailHTML
+										? "bg-gray-600 text-gray-400 cursor-not-allowed"
+										: ""
+								}`}
+								title={
+									isGenerating
+										? "Generating email content..."
+										: !emailHTML
+										? "No email content to edit"
+										: "Edit email content"
+								}
+							>
+								{isGenerating ? "Generating..." : "Edit"}
+							</button>
+							<button
+								onClick={handleSendEmail}
+								disabled={
+									isSending || !emailHTML || !bid || !providerId || isGenerating
+								}
+								className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition ${
+									isSending || !emailHTML || !bid || !providerId || isGenerating
+										? "bg-gray-600 text-gray-400 cursor-not-allowed"
+										: ""
+								}`}
+								title={
+									!bid || !providerId
+										? "Missing booking/provider info"
+										: isGenerating
+										? "Generating email content..."
+										: ""
+								}
+							>
+								{isSending
+									? "Sending..."
+									: isGenerating
+									? "Generating..."
+									: "Send Email"}
+							</button>
+						</div>
+					</header>
+					{/* Email preview fills the rest of the space */}
+					<div className="flex-1 min-h-0">
+						<iframe
+							title="Email Preview"
+							srcDoc={emailHTML}
+							sandbox="allow-same-origin allow-scripts"
+							className="w-full h-full bg-white border shadow-lg rounded"
+						/>
+					</div>
+				</>
+			)}
 		</div>
 	);
 }

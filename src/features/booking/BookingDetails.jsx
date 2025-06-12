@@ -146,21 +146,19 @@ function BookingDetailsContent() {
 		} catch (err) {
 			console.error("Error updating chargeback details:", err);
 		}
-	};
-
-	// Save charging details function
+	}; // Save charging details function
 	const saveChargingDetails = async (updateData) => {
 		try {
+			console.log("BookingDetails - Received updateData:", updateData);
+
+			// The updateData now contains: { bid, chargingDetailsData, userId }
 			const payload = {
-				bid: apiData?.BID || apiData?.bid,
-				chargingDetailsType: updateData.chargingDetailsType,
-				chargingDetailsTransactionId: updateData.chargingDetailsTransactionId,
-				chargingDetailsAmount: updateData.chargingDetailsAmount,
-				chargingDetailsStatus: updateData.chargingDetailsStatus,
-				chargingDetailsChargedOn: updateData.chargingDetailsChargedOn,
-				chargingDetailsChargeby: updateData.chargingDetailsChargeby,
-				chargingDetailsMerchantName: updateData.chargingDetailsMerchantName,
+				bid: updateData.bid || apiData?.BID || apiData?.bid,
+				chargingDetailsData: updateData.chargingDetailsData,
+				userId: updateData.userId || user?.id,
 			};
+
+			console.log("BookingDetails - Sending payload to API:", payload);
 
 			await showPromiseToast(updateBookingChargingDetails(payload), {
 				loading: "Updating charging details...",

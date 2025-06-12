@@ -5,11 +5,12 @@ import {
 	formatSafeDate,
 	formatLocalDateString,
 } from "../../../utils/formatters";
-import { CHARGING_STATUS } from "../../../constants";
-
+import { CHARGING_STATUS, CHARGING_TYPE } from "../../../constants";
+import { useNavigate } from "react-router-dom";
 const SECTION_ID = "charging-details";
 
 const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
+	const navigate = useNavigate();
 	const { startEditing, stopEditing } = useEditingContext();
 	const [chargingDetails, setChargingDetails] = useState([
 		{
@@ -23,46 +24,68 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 			transactionId: "",
 			description: "",
 		},
-	]);
-	// Update state when booking data is loaded
+	]); // Update state when booking data is loaded
 	useEffect(() => {
 		if (apiData) {
-			setChargingDetails([
-				{
-					type: apiData.chargingDetailsType || "MCO",
-					amount:
-						apiData.chargingDetailsAmount ||
-						apiData.bookingData?.amount ||
-						"0.00",
-					status: apiData.chargingDetailsStatus,
-					chargedOn: apiData.chargingDetailsChargedOn || "",
-					chargedBy: apiData.chargingDetailsChargeby || "",
-					merchantName: apiData.chargingDetailsMerchantName || "",
-					refundedOn: apiData.refundDetailsRefundOn || "",
-					transactionId: apiData.chargingDetailsTransactionId || "",
-					description: apiData.chargingDetailsDescription || "",
-				},
-			]);
+			// Check if new data structure exists (chargingDetailsData)
+			if (apiData.chargingDetailsData) {
+				const chargingDetailsData = JSON.parse(apiData.chargingDetailsData);
+				console.log("Charging Details Data:", chargingDetailsData["MCO"]);
+				setChargingDetails([
+					...(Array.isArray(chargingDetailsData?.airlineCharge)
+						? chargingDetailsData.airlineCharge
+						: []),
+					...(Array.isArray(chargingDetailsData?.MCO)
+						? chargingDetailsData.MCO
+						: []),
+				]);
+			}
 		}
 	}, [apiData]);
+
+	useEffect(() => {
+		console.log("Charging Details Updated:", chargingDetails);
+	}, [chargingDetails]);
+
+	const handleEmailAction = (emailType, detail) => {
+		navigate(`/email-preview`, {
+			state: {
+				emailType,
+				bid: apiData?.bid,
+				providerId: apiData?.provider_id,
+				formData: detail,
+				transactionType: apiData?.transaction_type,
+			},
+		});
+	};
+
 	const handleSave = useCallback(async () => {
 		if (onSave) {
-			// Save all charging details
+			// Group transactions by type
+			const groupedDetails = chargingDetails.reduce((acc, detail) => {
+				const key = detail.type === "Airline Charge" ? "airlineCharge" : "MCO";
+				if (!acc[key]) acc[key] = [];
+				acc[key].push({
+					type: detail.type,
+					transactionId: detail.transactionId,
+					amount: detail.amount,
+					status: detail.status,
+					chargedOn: detail.chargedOn,
+					chargedBy: detail.chargedBy,
+					merchantName: detail.merchantName,
+					description: detail.description,
+				});
+				return acc;
+			}, {}); // Construct the payload
 			const saveData = {
-				chargingDetails: chargingDetails.map((detail) => ({
-					chargingDetailsType: detail.type,
-					chargingDetailsTransactionId: detail.transactionId,
-					chargingDetailsAmount: detail.amount,
-					chargingDetailsStatus: detail.status,
-					chargingDetailsChargedOn: detail.chargedOn,
-					chargingDetailsChargeby: detail.chargedBy,
-					chargingDetailsMerchantName: detail.merchantName,
-					chargingDetailsDescription: detail.description,
-				})),
+				bid: apiData?.bid || "",
+				chargingDetailsData: groupedDetails,
 			};
+			console.log("Save Data:", saveData);
+
 			await onSave(saveData);
 		}
-	}, [onSave, chargingDetails]);
+	}, [onSave, chargingDetails, apiData]);
 
 	const handleEditStart = useCallback(() => {
 		startEditing(SECTION_ID);
@@ -129,7 +152,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 						</div>
 					)}
 					{/* Render each charging detail */}
-					{chargingDetails.map((detail, index) => (
+					{chargingDetails?.map((detail, index) => (
 						<div
 							key={index}
 							className="border border-gray-600 rounded-lg p-3 space-y-3"
@@ -148,7 +171,19 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 										Remove
 									</button>
 								)}
+								{!isEditing &&
+									detail.status ===
+										CHARGING_STATUS.indexOf("Declined").toString() && (
+										<button
+											type="button"
+											onClick={() => handleEmailAction("declined", detail)}
+											className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs flex items-center gap-1"
+										>
+											Send Card Decline Email
+										</button>
+									)}
 							</div>
+							{/* Send Card Decline Email Button */}
 
 							<div className="grid text-white grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
 								{" "}
@@ -161,17 +196,25 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 										{isEditing ? (
 											<select
 												className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
-												value={detail.type || "MCO"}
+												value={detail.type}
 												onChange={(e) =>
 													updateChargingDetail(index, "type", e.target.value)
 												}
 											>
-												<option value="MCO">MCO</option>
-												<option value="Airline Charge">Airline Charge</option>
+												<option value="">Select type</option>
+												{CHARGING_TYPE.map((type, typeIndex) => (
+													<option key={typeIndex} value={typeIndex}>
+														{type}
+													</option>
+												))}
 											</select>
 										) : (
 											<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-xs">
-												<div className="text-white">{detail.type || "N/A"}</div>
+												<div className="text-white">
+													{detail.type !== undefined && detail.type !== null
+														? CHARGING_TYPE[detail.type] || detail.type
+														: "N/A"}
+												</div>
 											</div>
 										)}
 									</div>
