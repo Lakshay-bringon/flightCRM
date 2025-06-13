@@ -5,6 +5,7 @@ export default function ItineraryDetailsInput({
 	image,
 	setImage,
 	onImageClick,
+	heading = "Itinerary Details",
 }) {
 	const fileInputRef = useRef(null);
 	const [preview, setPreview] = useState(null);
@@ -111,7 +112,7 @@ export default function ItineraryDetailsInput({
 
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg mb-6">
-			<h3 className="font-semibold mb-2">Itinerary Details</h3>
+			<h3 className="font-semibold mb-2">{heading}</h3>
 			{preview ? (
 				<div className="flex items-center justify-between bg-gray-700 text-white px-3 py-2 rounded mb-2">
 					<div

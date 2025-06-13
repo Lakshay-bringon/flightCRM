@@ -18,7 +18,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Modal } from "../../components/common";
 import Comments from "./Comments";
 import Activity from "./Actvity";
-import { TRANSACTION_TYPES } from "../../constants";
+
 import { addCommentApi } from "../../api/booking/bookingApi";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { showPromiseToast } from "../../utils/showPromiseToast";
@@ -122,7 +122,7 @@ export default function BookingDetailsHeader({
 						>
 							<Mails size={18} /> Email <ChevronDown size={16} />
 						</Button>
-					</PopoverTrigger>
+					</PopoverTrigger>{" "}
 					<PopoverContent align="start" className="w-48 p-1">
 						<button
 							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
@@ -132,12 +132,20 @@ export default function BookingDetailsHeader({
 							Auth
 						</button>
 
-						<button
+						{/* <button
 							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
 							type="button"
 							onClick={() => handleEmailAction("declined")}
 						>
 							Card Declined
+						</button> */}
+
+						<button
+							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
+							type="button"
+							onClick={() => handleEmailAction("e-ticket")}
+						>
+							E-Ticket
 						</button>
 					</PopoverContent>
 				</Popover>{" "}

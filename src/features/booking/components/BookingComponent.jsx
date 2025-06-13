@@ -12,6 +12,7 @@ import {
 import { bookingSchema } from "../schemas/bookingSchema.js";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../auth/hooks/useAuth.jsx";
+import { formatESTDateForInput } from "../../../utils/formatters.js";
 
 function BookingComponent({
 	children,
@@ -62,7 +63,7 @@ function BookingComponent({
 			amount: "",
 			cardNumber: "",
 			airline_name: "",
-			purchase_date: new Date().toISOString().split("T")[0],
+			purchase_date: formatESTDateForInput(),
 			email: "",
 			phone: "",
 			card_holder: "",
@@ -114,7 +115,7 @@ function BookingComponent({
 				amount: "",
 				cardNumber: "",
 				airline_name: "",
-				purchase_date: new Date().toISOString().split("T")[0],
+				purchase_date: formatESTDateForInput(),
 				email: "",
 				phone: "",
 				card_holder: "",

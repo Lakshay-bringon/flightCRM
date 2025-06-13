@@ -4,6 +4,7 @@ import { useEditingContext } from "../context/EditingContext";
 import {
 	formatSafeDate,
 	formatLocalDateString,
+	formatESTDateForInput,
 } from "../../../utils/formatters";
 import { CHARGING_STATUS, CHARGING_TYPE } from "../../../constants";
 import { useNavigate } from "react-router-dom";
@@ -325,7 +326,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 														e.target.value
 													)
 												}
-												max={new Date().toISOString().split("T")[0]}
+												max={formatESTDateForInput()}
 											/>
 										) : (
 											<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-xs">

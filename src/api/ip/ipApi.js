@@ -74,7 +74,7 @@ export const updateIpApi = async ({ id, ip, allowed_status, description }) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -84,7 +84,7 @@ export const updateIpApi = async ({ id, ip, allowed_status, description }) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Update IP error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -117,7 +117,7 @@ export const getIpListApi = async () => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Get IP list error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -150,7 +150,7 @@ export const toggleIpStatusApi = async (id) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Toggle IP status error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -183,7 +183,7 @@ export const getIpInfoApi = async () => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Get IP info error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 

@@ -11,6 +11,11 @@ import { CalendarSearch } from "lucide-react";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../../lib/utils";
+import {
+	getCurrentESTDate,
+	convertToEST,
+	formatESTDateForInput,
+} from "../../utils/formatters";
 
 const timeRanges = [
 	{ id: "today", label: "Today" },
@@ -21,25 +26,43 @@ const timeRanges = [
 ];
 
 export function TimelineSelector({ onRangeChange }) {
+	// Initialize with proper EST dates for "today"
+	const today = getCurrentESTDate();
+	console.log("TimelineSelector - today:", today);
+	console.log(
+		"TimelineSelector - today formatted:",
+		formatESTDateForInput(today)
+	);
+
 	const [date, setDate] = React.useState({
-		from: startOfDay(new Date()),
-		to: new Date(),
+		from: today,
+		to: today,
 	});
 
 	const [selectedRange, setSelectedRange] = React.useState(timeRanges[0]);
 	const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
+	// Call onRangeChange with initial values on mount
+	React.useEffect(() => {
+		console.log("TimelineSelector - useEffect - sending range:", {
+			start: today,
+			end: today,
+		});
+		onRangeChange({ start: today, end: today });
+	}, []); // Empty dependency array to run only once on mount
 
 	const handleRangeSelect = (range) => {
 		setSelectedRange(range);
 		setIsDatePickerOpen(false);
 
-		const now = new Date();
+		const now = getCurrentESTDate();
 		let start = now;
 		let end = now;
 
 		switch (range.id) {
 			case "today":
-				start = startOfDay(now);
+				// For "today", both start and end should be the same date
+				start = now;
+				end = now;
 				break;
 			case "30d":
 				start = subDays(now, 30);
@@ -60,9 +83,15 @@ export function TimelineSelector({ onRangeChange }) {
 		setDate({ from: start, to: end });
 		onRangeChange({ start, end });
 	};
-
 	const handleDateChange = (field, value) => {
-		const newDate = value ? new Date(value) : null;
+		// Convert the input date string to EST timezone properly
+		let newDate = null;
+		if (value) {
+			// Create a date from the input value and convert to EST
+			const inputDate = new Date(value + "T00:00:00"); // Add time to avoid timezone issues
+			newDate = convertToEST(inputDate);
+		}
+
 		const newDateRange = {
 			...date,
 			[field]: newDate,
@@ -147,10 +176,11 @@ export function TimelineSelector({ onRangeChange }) {
 									document.getElementById("start-date").showPicker()
 								}
 							>
+								{" "}
 								<input
 									id="start-date"
 									type="date"
-									value={date.from ? format(date.from, "yyyy-MM-dd") : ""}
+									value={date.from ? formatESTDateForInput(date.from) : ""}
 									onChange={(e) => handleDateChange("from", e.target.value)}
 									className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
 								/>
@@ -165,10 +195,11 @@ export function TimelineSelector({ onRangeChange }) {
 								className="relative"
 								onClick={() => document.getElementById("end-date").showPicker()}
 							>
+								{" "}
 								<input
 									id="end-date"
 									type="date"
-									value={date.to ? format(date.to, "yyyy-MM-dd") : ""}
+									value={date.to ? formatESTDateForInput(date.to) : ""}
 									onChange={(e) => handleDateChange("to", e.target.value)}
 									className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
 								/>

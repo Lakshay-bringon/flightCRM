@@ -157,14 +157,20 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 							removeCharge={removeCharge}
 						/>
 						<ItineraryDetailsInput
-							value={itineraryDetails}
-							onChange={setItineraryDetails}
+							heading="Refund Details"
 							image={itineraryImage}
 							setImage={setItineraryImage}
 							onImageClick={() => {
 								setPreviewImage(itineraryImage);
 								setShowPreview(true);
 							}}
+						/>
+						{/* Passenger Details Section */}
+						<PassengerDetails
+							passengers={passengers}
+							register={register}
+							addPassenger={addPassenger}
+							removePassenger={removePassenger}
 						/>
 						<PurchaseSummary
 							register={register}

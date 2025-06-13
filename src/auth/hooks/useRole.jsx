@@ -1,11 +1,11 @@
-import { useAuth } from "./useAuth";
+import { useAuthContext } from "../AuthProvider";
 
 export const useHasRole = (role) => {
-	const { user } = useAuth();
-	return user?.role === role;
+	const { role: userRole } = useAuthContext();
+	return userRole === role;
 };
 
 export const useHasAnyRole = (roles = []) => {
-	const { user } = useAuth();
-	return roles.includes(user?.role);
+	const { role: userRole } = useAuthContext();
+	return roles.includes(userRole);
 };

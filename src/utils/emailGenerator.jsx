@@ -16,7 +16,6 @@ export const generateEmailSubject = (
 
 	// Determine the subject prefix based on transaction type
 	let subjectPrefix = "RESERVATION CONFIRMATION"; // default
-
 	switch (transactionType) {
 		case "upgrade":
 			subjectPrefix = "UPGRADE CONFIRMATION";
@@ -32,6 +31,9 @@ export const generateEmailSubject = (
 			break;
 		case "cancel_for_future_credit":
 			subjectPrefix = "FUTURE CREDIT CONFIRMATION";
+			break;
+		case "e_ticket":
+			subjectPrefix = "E-TICKET CONFIRMATION";
 			break;
 		case "new_booking":
 		default:

@@ -43,7 +43,7 @@ export const getRevenueDashboardApi = async (userId) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -53,29 +53,96 @@ export const getRevenueDashboardApi = async (userId) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Get revenue dashboard error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
-export const getDetailedRevenueApi = async (payload) => {
+// export const getDetailedRevenueApi = async (payload) => {
+// 	try {
+// 		if (!payload?.userId) throw new Error("userId is required in payload");
+// 		if (
+// 			payload.dateFilter === "custom" &&
+// 			(!payload.startDate || !payload.endDate)
+// 		) {
+// 			throw new Error(
+// 				"startDate and endDate are required for custom dateFilter"
+// 			);
+// 		}
+// 		const res = await API.post(`/detailedRevenue`, payload);
+// 		if (res.data?.status !== 200) {
+// 			let errorMsg = res.data?.msg;
+// 			if (typeof errorMsg === "object") {
+// 				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+// 			}
+// 			throw new Error(errorMsg || "Failed to fetch detailed revenue");
+// 		}
+// 		return res.data.data;
+// 	} catch (err) {
+// 		// Handle API errors
+// 		if (err.response) {
+// 			let errorMsg = err.response.data?.msg || err.response.data?.message;
+// 			if (typeof errorMsg === "object") {
+// 				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+// 			}
+// 			errorMsg = errorMsg || "Failed to fetch detailed revenue";
+
+// 			const errorDetails = err.response.data?.errors;
+// 			if (errorDetails && typeof errorDetails === "object") {
+// 				// Handle validation errors from server
+// 				const validationErrors = Object.entries(errorDetails)
+// 					.map(
+// 						([field, messages]) =>
+// 							`${field}: ${
+// 								Array.isArray(messages) ? messages.join(", ") : messages
+// 							}`
+// 					)
+// 					.join("; ");
+// 				throw new Error(validationErrors);
+// 			}
+// 			throw new Error(errorMsg);
+// 		}
+
+// 		// Handle network errors
+// 		if (err.request) {
+// 			throw new Error("Network error: Unable to connect to server");
+// 		}
+
+// 		throw new Error(err.message);
+// 	}
+// };
+
+export const getRevenueListApi = async (params) => {
 	try {
-		if (!payload?.userId) throw new Error("userId is required in payload");
-		if (
-			payload.dateFilter === "custom" &&
-			(!payload.startDate || !payload.endDate)
-		) {
-			throw new Error(
-				"startDate and endDate are required for custom dateFilter"
-			);
-		}
-		const res = await API.post(`/detailedRevenue`, payload);
+		// Validate required parameters
+		if (!params?.userId) throw new Error("userId is required");
+		if (!params?.date_from) throw new Error("date_from is required");
+		if (!params?.date_to) throw new Error("date_to is required");
+
+		// Prepare query parameters
+		const queryParams = {
+			userId: params.userId,
+			date_from: params.date_from,
+			date_to: params.date_to,
+			show_refund: params.show_refund ?? false,
+			show_chargeback: params.show_chargeback ?? false,
+			// Add pagination and sorting parameters
+			page: params.page || 1,
+			limit: params.limit || 10,
+			// Add optional filters
+			agentId: params.agentId,
+			providerId: params.providerId,
+		};
+
+		const res = await API.get("/revenueList", { params: queryParams });
+
 		if (res.data?.status !== 200) {
 			let errorMsg = res.data?.msg;
 			if (typeof errorMsg === "object") {
 				errorMsg = flattenErrorMessages(errorMsg).join(" ");
 			}
-			throw new Error(errorMsg || "Failed to fetch detailed revenue");
+			throw new Error(errorMsg || "Failed to fetch revenue list");
 		}
+
 		return res.data.data;
 	} catch (err) {
 		// Handle API errors
@@ -84,7 +151,7 @@ export const getDetailedRevenueApi = async (payload) => {
 			if (typeof errorMsg === "object") {
 				errorMsg = flattenErrorMessages(errorMsg).join(" ");
 			}
-			errorMsg = errorMsg || "Failed to fetch detailed revenue";
+			errorMsg = errorMsg || "Failed to fetch revenue list";
 
 			const errorDetails = err.response.data?.errors;
 			if (errorDetails && typeof errorDetails === "object") {
@@ -97,7 +164,7 @@ export const getDetailedRevenueApi = async (payload) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -107,6 +174,6 @@ export const getDetailedRevenueApi = async (payload) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Get detailed revenue error: " + err.message);
+		throw new Error(err.message);
 	}
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Section from "../Section";
 import { useEditingContext } from "../context/EditingContext";
-import { formatSafeDate } from "../../../utils/formatters";
+import { formatSafeDate, getESTTimestamp } from "../../../utils/formatters";
 import { AUTH_STATUS, BOOKING_STATUS } from "../../../constants";
 import { useAuth } from "../../../auth/hooks/useAuth";
 const SECTION_ID = "provider-details";
@@ -13,7 +13,7 @@ const ProviderDetailsSection = React.memo(({ apiData, bid, onSave }) => {
 		bid: bid || "N/A",
 		provider: "N/A",
 		transactionType: "N/A",
-		dateCreated: new Date().toISOString(),
+		dateCreated: getESTTimestamp(),
 		authStatus: 0,
 		bidStatus: 0,
 		agent: "N/A",

@@ -34,7 +34,7 @@ export const loginApi = async (email, password) => {
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {
-			throw new Error("Login error: " + err.message);
+			throw new Error(err.message);
 		}
 	}
 };
@@ -82,7 +82,7 @@ export const changePasswordApi = async ({
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {
-			throw new Error("Change password error: " + err.message);
+			throw new Error(err.message);
 		}
 	}
 };
@@ -116,7 +116,7 @@ export const forgetPasswordApi = async (email) => {
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {
-			throw new Error("Forget password error: " + err.message);
+			throw new Error(err.message);
 		}
 	}
 };
@@ -179,7 +179,7 @@ export const verifyOTPApi = async (email, otp) => {
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {
-			throw new Error("Verify OTP error: " + err.message);
+			throw new Error(err.message);
 		}
 	}
 };
@@ -213,7 +213,7 @@ export const resendOTPApi = async (email) => {
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {
-			throw new Error("Resend OTP error: " + err.message);
+			throw new Error(err.message);
 		}
 	}
 };

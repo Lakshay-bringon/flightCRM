@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
 	User,
@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useDataContext } from "../../context/DataContext";
+import { getRevenueDashboardApi } from "../../api/revenue/revenueApi";
+import { currencyFormatter } from "../../utils/formatters";
 
 function ProfilePage() {
 	const location = useLocation();
@@ -23,6 +25,30 @@ function ProfilePage() {
 	const { leaders } = useDataContext();
 	const user = location.state?.user || authUser;
 	const navigate = useNavigate();
+
+	// State for dashboard data
+	const [dashboard, setDashboard] = useState(null);
+	const [loading, setLoading] = useState(true);
+
+	// Fetch dashboard data
+	useEffect(() => {
+		async function fetchDashboardData() {
+			if (!user?.id) return;
+
+			try {
+				setLoading(true);
+				const dashboardData = await getRevenueDashboardApi(user.id);
+				setDashboard(dashboardData || null);
+			} catch (err) {
+				console.error("Failed to fetch dashboard data:", err);
+				setDashboard(null);
+			} finally {
+				setLoading(false);
+			}
+		}
+
+		fetchDashboardData();
+	}, [user?.id]);
 
 	// Map role_id and status to display values
 	const getRole = (role_id) => {
@@ -46,16 +72,17 @@ function ProfilePage() {
 		user?.role_id === "3" || user?.role_id === 3
 			? `${user?.alias || user?.email}'s Team`
 			: "Not Assigned";
-
 	const userData = {
 		name: user?.alies_name || user?.name || "Guest",
 		role: getRole(user?.role_id),
 		isActive,
 		email: user?.email || "N/A",
 		phone: user?.phone || "N/A",
-		monthlyMCO: 0,
-		totalBookings: 0,
-		monthlyChargeback: 0,
+		// Use real dashboard data if available, otherwise fallback to 0
+		monthlyMCO: dashboard?.totalRevenue || 0,
+		totalBookings: dashboard?.totalBookings || 0,
+		monthlyChargeback:
+			Number(dashboard?.chargeBack || 0) + Number(dashboard?.totalRefund || 0),
 		alias: user?.id || "N/A",
 		team,
 		joinedDate,
@@ -173,29 +200,34 @@ function ProfilePage() {
 				<div className="p-4 border-b border-gray-700 flex justify-between items-center">
 					<h3 className="text-base font-semibold text-white">Stats</h3>
 					<span className="text-xs text-gray-400">Monthly</span>
-				</div>
-
+				</div>{" "}
 				{/* Stats Grid */}
 				<div className="p-4">
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-						<StatCard
-							icon={DollarSign}
-							label="MCO"
-							value={`$${userData.monthlyMCO || "0"}`}
-							valueColor="text-green-400"
-						/>
-						<StatCard
-							icon={Ticket}
-							label="Total Bookings"
-							value={userData.totalBookings || "0"}
-						/>
-						<StatCard
-							icon={AlertCircle}
-							label="Chargeback + Refund"
-							value={`$${userData.monthlyChargeback || "0"}`}
-							valueColor="text-red-400"
-						/>
-					</div>
+					{loading ? (
+						<div className="flex justify-center items-center py-8">
+							<div className="text-gray-400">Loading stats...</div>
+						</div>
+					) : (
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+							<StatCard
+								icon={DollarSign}
+								label="MCO"
+								value={currencyFormatter.format(userData.monthlyMCO)}
+								valueColor="text-green-400"
+							/>
+							<StatCard
+								icon={Ticket}
+								label="Total Bookings"
+								value={userData.totalBookings}
+							/>
+							<StatCard
+								icon={AlertCircle}
+								label="Chargeback + Refund"
+								value={currencyFormatter.format(userData.monthlyChargeback)}
+								valueColor="text-red-400"
+							/>
+						</div>
+					)}
 				</div>
 			</div>
 			{/* Detailed Information */}

@@ -8,6 +8,7 @@ import EmailSeatAssignment from "./components/EmailSeatAssignment";
 import EmailCancelForRefund from "./components/EmailCancelForRefund";
 import EmailCancelForFutureCredit from "./components/EmailCancelForFutureCredit";
 import EmailCardDecline from "./components/EmailCardDecline";
+import ETicket from "./components/ETicket";
 import { TRANSACTION_TYPES } from "../../../constants";
 import ReservationConfirmation from "./components/ReservationConfirmation";
 
@@ -15,6 +16,8 @@ const DynamicEmailTemplate = ({ transactionType, formData, emailType }) => {
 	const renderTemplate = () => {
 		if (emailType === "declined") {
 			return <EmailCardDecline {...formData} />;
+		} else if (emailType === "e-ticket") {
+			return <ETicket bookingData={formData} />;
 		} else {
 			switch (transactionType) {
 				case TRANSACTION_TYPES.NEW_BOOKING:

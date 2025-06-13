@@ -33,7 +33,7 @@ export const activeQueuesApi = async () => {
 			errorMsg = errorMsg || "Failed to fetch active queue";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Get active queue error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -59,7 +59,7 @@ export const addQueueApi = async (queue, number) => {
 			errorMsg = errorMsg || "Failed to add queue";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Add queue error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -85,7 +85,7 @@ export const updateQueueApi = async ({ id, queue, number }) => {
 			errorMsg = errorMsg || "Failed to update queue";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Update queue error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -111,7 +111,7 @@ export const deleteQueueApi = async (id) => {
 			errorMsg = errorMsg || "Failed to delete queue";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Delete queue error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -137,7 +137,7 @@ export const getQueueApi = async (id) => {
 			errorMsg = errorMsg || "Failed to fetch queue";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Get queue error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -151,7 +151,7 @@ export const toggleQueueStatusApi = async (id) => {
 	} catch (err) {
 		if (err.response)
 			throw new Error(err.response.data.msg || "Failed to toggle queue status");
-		throw new Error("Toggle queue status error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -165,6 +165,6 @@ export const getQueueListApi = async () => {
 	} catch (err) {
 		if (err.response)
 			throw new Error(err.response.data.msg || "Failed to fetch queue list");
-		throw new Error("Get queue list error: " + err.message);
+		throw new Error(err.message);
 	}
 };

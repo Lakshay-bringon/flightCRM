@@ -192,12 +192,11 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 							removeCharge={removeCharge}
 						/>
 						<ItineraryDetailsInput
-							value={itineraryDetails}
-							onChange={setItineraryDetails}
+							heading="E-Credit Details"
 							image={itineraryImage}
 							setImage={setItineraryImage}
-							onImageClick={(preview) => {
-								setPreviewImage(preview);
+							onImageClick={() => {
+								setPreviewImage(itineraryImage);
 								setShowPreview(true);
 							}}
 						/>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
 	ArrowLeft,
@@ -9,7 +9,10 @@ import {
 	ChevronUp,
 	FileText,
 } from "lucide-react";
-import { currencyFormatter } from "../../utils/formatters";
+import { currencyFormatter, formatESTDateTime } from "../../utils/formatters";
+import { BOOKING_STATUS } from "../../constants";
+import { getRevenueListApi } from "../../api/revenue/revenueApi";
+import { showPromiseToast } from "../../utils/showPromiseToast";
 
 function BookingDetailRow({ data }) {
 	const navigate = useNavigate();
@@ -23,41 +26,26 @@ function BookingDetailRow({ data }) {
 			onClick={handleRowClick}
 			className="border-b border-gray-700/50 hover:bg-gray-700/50 cursor-pointer transition-colors even:bg-gray-800/50"
 		>
-			<td
-				style={{ width: "15%", textAlign: "center" }}
-				className="py-3 px-4 text-white truncate"
-			>
+			<td className="w-[15%] py-3 px-4 text-white truncate border-r border-gray-700/50 text-center">
 				{data.bid}
 			</td>
-			<td
-				style={{ width: "15%", textAlign: "center" }}
-				className="py-3 px-4 text-green-400 truncate"
-			>
-				{currencyFormatter.format(data.mco || data.amount)}
+			<td className="w-[12%] py-3 px-4 text-green-400 truncate border-r border-gray-700/50 text-center">
+				{currencyFormatter.format(data.revenue || 0)}
 			</td>
-			<td
-				style={{ width: "15%", textAlign: "center" }}
-				className="py-3 px-4 text-orange-400 truncate"
-			>
+			<td className="w-[12%] py-3 px-4 text-orange-400 truncate border-r border-gray-700/50 text-center">
 				{currencyFormatter.format(data.refund || 0)}
 			</td>
-			<td
-				style={{ width: "15%", textAlign: "center" }}
-				className="py-3 px-4 text-red-400 truncate"
-			>
+			<td className="w-[12%] py-3 px-4 text-red-400 truncate border-r border-gray-700/50 text-center">
 				{currencyFormatter.format(data.chargeback || 0)}
 			</td>
-			<td
-				style={{ width: "20%", textAlign: "center" }}
-				className="py-3 px-4 text-gray-300 truncate"
-			>
-				{data.created_at}
+			<td className="w-[15%] py-3 px-4 text-gray-300 truncate border-r border-gray-700/50 text-center">
+				{BOOKING_STATUS[data.bid_status] || "-"}
 			</td>
-			<td
-				style={{ width: "20%", textAlign: "center" }}
-				className="py-3 px-4 text-gray-300 truncate"
-			>
-				{data.userName}
+			<td className="w-[18%] py-3 px-4 text-gray-300 truncate border-r border-gray-700/50 text-center">
+				{formatESTDateTime(data.datetime)}
+			</td>
+			<td className="w-[16%] py-3 px-4 text-gray-300 truncate text-center">
+				{data.agent_name || "-"}
 			</td>
 		</tr>
 	);
@@ -67,57 +55,106 @@ function RevenueDetails() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const searchParams = location.state?.searchParams || {};
-	const apiData = location.state?.results || [];
 
-	// If API returned an array, use it. If it's an object with a list, use that list.
-	const details = Array.isArray(apiData) ? apiData : apiData?.list || [];
+	// State for server-side data
+	const [data, setData] = useState({
+		records: [],
+		total: 0,
+		page: 1,
+		limit: 10,
+	});
+	const [loading, setLoading] = useState(false);
 
 	// Sorting state
-	const [sortBy, setSortBy] = useState("date");
+	const [sortBy, setSortBy] = useState("datetime");
 	const [sortDir, setSortDir] = useState("desc");
 
-	function handleSort(col) {
-		if (sortBy === col) {
-			setSortDir(sortDir === "asc" ? "desc" : "asc");
-		} else {
-			setSortBy(col);
-			setSortDir("asc");
-		}
-	}
-
-	function getSortedDetails() {
-		const sorted = [...details];
-		sorted.sort((a, b) => {
-			let aVal = a[sortBy];
-			let bVal = b[sortBy];
-			if (sortBy === "amount" || sortBy === "mco") {
-				aVal = Number(aVal);
-				bVal = Number(bVal);
-			}
-			if (sortBy === "date") {
-				aVal = new Date(aVal);
-				bVal = new Date(bVal);
-			}
-			if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
-			if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
-			return 0;
-		});
-		return sorted;
-	}
-
-	// Pagination
+	// Pagination state - default limit changed to 10
 	const [currentPage, setCurrentPage] = useState(1);
-	const [itemsPerPage, setItemsPerPage] = useState(5);
-	const totalPages = Math.ceil(details.length / itemsPerPage);
-	const sortedDetails = getSortedDetails();
-	const paginatedDetails = sortedDetails.slice(
-		(currentPage - 1) * itemsPerPage,
-		currentPage * itemsPerPage
-	);
+	const [itemsPerPage, setItemsPerPage] = useState(10);
 
+	// Calculate total pages from server data
+	const totalPages = Math.ceil(data.total / itemsPerPage);
+	// Fetch data from API with server-side pagination (no sorting parameters)
+	const fetchData = async (page = 1, limit = itemsPerPage) => {
+		setLoading(true);
+		try {
+			const payload = {
+				...searchParams,
+				page,
+				limit,
+			};
+
+			const response = await getRevenueListApi(payload);
+			setData({
+				records: response.records || [],
+				total: response.total || 0,
+				page: response.page || 1,
+				limit: response.limit || limit,
+			});
+		} catch (error) {
+			console.error("Failed to fetch revenue details:", error);
+			showPromiseToast(Promise.reject(error), {
+				loading: "Loading...",
+				success: "Data loaded!",
+				error: "Failed to load data",
+			});
+		} finally {
+			setLoading(false);
+		}
+	};
+	// Initial data fetch
+	useEffect(() => {
+		fetchData(currentPage, itemsPerPage);
+	}, []); // Only run on component mount
+
+	// Local sorting function
+	const sortRecords = (records, field, direction) => {
+		return [...records].sort((a, b) => {
+			let aVal = a[field] || "";
+			let bVal = b[field] || "";
+
+			// Handle different data types
+			if (field === "revenue" || field === "refund" || field === "chargeback") {
+				aVal = Number(aVal) || 0;
+				bVal = Number(bVal) || 0;
+			} else if (field === "datetime") {
+				aVal = new Date(aVal).getTime() || 0;
+				bVal = new Date(bVal).getTime() || 0;
+			} else {
+				aVal = String(aVal).toLowerCase();
+				bVal = String(bVal).toLowerCase();
+			}
+
+			if (direction === "asc") {
+				return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+			} else {
+				return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+			}
+		});
+	};
+
+	// Get sorted records for display
+	const sortedRecords = sortRecords(data.records, sortBy, sortDir);
+
+	// Handle sorting (local only, no API call)
+	const handleSort = (col) => {
+		const newSortDir = sortBy === col && sortDir === "asc" ? "desc" : "asc";
+		setSortBy(col);
+		setSortDir(newSortDir);
+	};
+	// Handle pagination (only fetch new data when page changes)
+	const handlePageChange = (newPage) => {
+		setCurrentPage(newPage);
+		fetchData(newPage, itemsPerPage);
+	};
+
+	// Handle rows per page change (fetch new data with new limit)
 	const handleRowsPerPageChange = (newValue) => {
-		setItemsPerPage(Number(newValue));
+		const newLimit = Number(newValue);
+		setItemsPerPage(newLimit);
 		setCurrentPage(1);
+		fetchData(1, newLimit);
 	};
 
 	function SortIcon({ active, dir }) {
@@ -130,7 +167,7 @@ function RevenueDetails() {
 	}
 
 	return (
-		<div className="max-w-7xl mx-auto flex flex-col h-[calc(100vh-4rem)]">
+		<div className="max-w-7xl mx-auto flex flex-col h-full">
 			<div className="rounded-xl bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700 overflow-hidden flex flex-col flex-1">
 				{/* Header */}
 				<div className="flex items-center justify-between p-4 border-b border-gray-700 gap-2 bg-gray-800/80">
@@ -144,32 +181,34 @@ function RevenueDetails() {
 						<h2 className="text-lg font-semibold text-white">
 							Revenue Details
 						</h2>
-					</div>
+					</div>{" "}
 					<button
 						onClick={() => {
-							// Export logic
+							// Export logic using sorted records
 							const headers = [
 								"Booking ID",
 								"MCO",
 								"Refund",
 								"Chargeback",
+								"Booking Status",
 								"Date",
 								"Agent",
 							];
 							const csvContent = [
 								headers.join(","),
-								...details.map((row) =>
+								...sortedRecords.map((row) =>
 									[
-										row.bookingId,
+										row.bid,
 										currencyFormatter
-											.format(row.mco || row.amount)
+											.format(row.revenue || 0)
 											.replace(/,/g, ""),
 										currencyFormatter.format(row.refund || 0).replace(/,/g, ""),
 										currencyFormatter
 											.format(row.chargeback || 0)
 											.replace(/,/g, ""),
-										row.date,
-										`"${row.agent || "-"}"`,
+										`"${BOOKING_STATUS[row.bid_status] || "-"}"`,
+										row.datetime,
+										`"${row.agent_name || "-"}"`,
 									].join(",")
 								),
 							].join("\n");
@@ -189,8 +228,7 @@ function RevenueDetails() {
 						<Download className="w-4 h-4" />
 						Export Data
 					</button>
-				</div>
-
+				</div>{" "}
 				{/* Summary Bar */}
 				<div className="px-4 py-3 border-b border-gray-700 bg-gray-800/40 grid grid-cols-4 gap-4">
 					<div className="flex items-center gap-2">
@@ -199,8 +237,8 @@ function RevenueDetails() {
 							<div className="text-xs text-gray-400">Total Revenue</div>
 							<div className="text-sm font-medium text-blue-400">
 								{currencyFormatter.format(
-									details.reduce(
-										(sum, r) => sum + (Number(r.mco || r.amount) || 0),
+									sortedRecords.reduce(
+										(sum, r) => sum + (Number(r.revenue) || 0),
 										0
 									)
 								)}
@@ -212,7 +250,7 @@ function RevenueDetails() {
 						<div>
 							<div className="text-xs text-gray-400">Total Bookings</div>
 							<div className="text-sm font-medium text-green-400">
-								{sortedDetails.length}
+								{data.total}
 							</div>
 						</div>
 					</div>
@@ -222,11 +260,11 @@ function RevenueDetails() {
 							<div className="text-xs text-gray-400">Avg. Booking Value</div>
 							<div className="text-sm font-medium text-purple-400">
 								{currencyFormatter.format(
-									details.length > 0
-										? details.reduce(
-												(sum, r) => sum + (Number(r.mco || r.amount) || 0),
+									sortedRecords.length > 0
+										? sortedRecords.reduce(
+												(sum, r) => sum + (Number(r.revenue) || 0),
 												0
-										  ) / details.length
+										  ) / sortedRecords.length
 										: 0
 								)}
 							</div>
@@ -237,167 +275,176 @@ function RevenueDetails() {
 						<div>
 							<div className="text-xs text-gray-400">Refunds + Chargebacks</div>
 							<div className="text-sm font-medium text-red-400">
-								{/* Placeholder, update if you have this info in API */}-
+								{currencyFormatter.format(
+									sortedRecords.reduce(
+										(sum, r) =>
+											sum +
+											(Number(r.refund) || 0) +
+											(Number(r.chargeback) || 0),
+										0
+									)
+								)}
 							</div>
 						</div>
 					</div>
 				</div>
-
 				<div className="flex-1 p-4 flex flex-col overflow-hidden">
 					{/* Details Record Table */}
 					<div className="flex-1 flex flex-col overflow-hidden">
-						<div className="flex-1 overflow-hidden">
-							<div className="w-full h-full flex flex-col">
-								<div className="flex-shrink-0">
-									<table className="w-full">
-										<thead>
-											<tr className="text-left text-sm text-gray-400 border-b border-gray-700">
-												<th
-													style={{ width: "15%" }}
-													className="pb-3 px-4 font-medium cursor-pointer select-none text-center"
-													onClick={() => handleSort("bid")}
-												>
-													Booking ID{" "}
-													<SortIcon active={sortBy === "bid"} dir={sortDir} />
-												</th>
-												<th
-													style={{ width: "15%" }}
-													className="pb-3 px-4 font-medium cursor-pointer select-none text-center"
-													onClick={() => handleSort("mco")}
-												>
-													MCO{" "}
-													<SortIcon active={sortBy === "mco"} dir={sortDir} />
-												</th>
-												<th
-													style={{ width: "15%" }}
-													className="pb-3 px-4 font-medium cursor-pointer select-none text-center"
-													onClick={() => handleSort("refund")}
-												>
-													Refund{" "}
-													<SortIcon
-														active={sortBy === "refund"}
-														dir={sortDir}
-													/>
-												</th>
-												<th
-													style={{ width: "15%" }}
-													className="pb-3 px-4 font-medium cursor-pointer select-none text-center"
-													onClick={() => handleSort("chargeback")}
-												>
-													Chargeback{" "}
-													<SortIcon
-														active={sortBy === "chargeback"}
-														dir={sortDir}
-													/>
-												</th>
-												<th
-													style={{ width: "20%" }}
-													className="pb-3 px-4 font-medium cursor-pointer select-none text-center"
-													onClick={() => handleSort("created_at")}
-												>
-													Date{" "}
-													<SortIcon
-														active={sortBy === "created_at"}
-														dir={sortDir}
-													/>
-												</th>
-												<th
-													style={{ width: "20%" }}
-													className="pb-3 px-4 font-medium cursor-pointer select-none text-center"
-													onClick={() => handleSort("userName")}
-												>
-													Agent{" "}
-													<SortIcon
-														active={sortBy === "userName"}
-														dir={sortDir}
-													/>
-												</th>
-											</tr>
-										</thead>
-									</table>
-								</div>
-								<div className="flex-1 overflow-y-auto min-h-0">
-									<table className="w-full">
-										<tbody className="text-sm">
-											{paginatedDetails.map((row, idx) => (
-												<BookingDetailRow key={row.id || idx} data={row} />
-											))}
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
-						{/* Pagination Section */}
-						<div className="flex-shrink-0">
-							{totalPages > 0 && (
-								<div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3 border-t border-gray-700 bg-gray-800/60 gap-2">
-									<div className="text-sm text-gray-400 mb-2 md:mb-0">
-										Showing{" "}
-										{sortedDetails.length === 0
-											? 0
-											: (currentPage - 1) * itemsPerPage + 1}{" "}
-										to{" "}
-										{Math.min(currentPage * itemsPerPage, sortedDetails.length)}{" "}
-										of {sortedDetails.length} records
-									</div>
-									<div className="flex items-center gap-4">
-										<div className="flex gap-2">
-											<button
-												onClick={() => setCurrentPage(currentPage - 1)}
-												disabled={currentPage === 1}
-												className="px-3 py-1 text-sm rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+						<div className="flex-1 overflow-y-auto">
+							<table className="w-full table-fixed">
+								<thead className="sticky top-0 bg-gray-800 z-10">
+									<tr className="text-left text-sm text-gray-400 border-b border-gray-700">
+										<th className="w-[15%] pb-3 px-4 font-medium text-center border-r border-gray-700">
+											Booking ID
+										</th>
+										<th
+											className="w-[12%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
+											onClick={() => handleSort("revenue")}
+										>
+											MCO{" "}
+											<SortIcon active={sortBy === "revenue"} dir={sortDir} />
+										</th>
+										<th
+											className="w-[12%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
+											onClick={() => handleSort("refund")}
+										>
+											Refund{" "}
+											<SortIcon active={sortBy === "refund"} dir={sortDir} />
+										</th>
+										<th
+											className="w-[12%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
+											onClick={() => handleSort("chargeback")}
+										>
+											Chargeback{" "}
+											<SortIcon
+												active={sortBy === "chargeback"}
+												dir={sortDir}
+											/>
+										</th>
+										<th
+											className="w-[15%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
+											onClick={() => handleSort("bid_status")}
+										>
+											Booking status{" "}
+											<SortIcon
+												active={sortBy === "bid_status"}
+												dir={sortDir}
+											/>
+										</th>
+										<th
+											className="w-[18%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
+											onClick={() => handleSort("datetime")}
+										>
+											Date{" "}
+											<SortIcon active={sortBy === "datetime"} dir={sortDir} />
+										</th>
+										<th
+											className="w-[16%] pb-3 px-4 font-medium cursor-pointer select-none text-center hover:text-white transition-colors"
+											onClick={() => handleSort("agent_name")}
+										>
+											Agent{" "}
+											<SortIcon
+												active={sortBy === "agent_name"}
+												dir={sortDir}
+											/>
+										</th>
+									</tr>
+								</thead>{" "}
+								<tbody className="text-sm">
+									{loading ? (
+										<tr>
+											<td
+												colSpan="7"
+												className="py-8 text-center text-gray-400"
 											>
-												Previous
-											</button>
-											<div className="flex items-center gap-1">
-												{Array.from(
-													{ length: totalPages },
-													(_, i) => i + 1
-												).map((p) => (
+												Loading...
+											</td>
+										</tr>
+									) : sortedRecords.length === 0 ? (
+										<tr>
+											<td
+												colSpan="7"
+												className="py-8 text-center text-gray-400"
+											>
+												No data found
+											</td>
+										</tr>
+									) : (
+										sortedRecords.map((row, idx) => (
+											<BookingDetailRow key={row.bid || idx} data={row} />
+										))
+									)}
+								</tbody>
+							</table>
+						</div>
+					</div>
+					{/* Pagination Section */}
+					<div className="flex-shrink-0">
+						{totalPages > 0 && (
+							<div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3 border-t border-gray-700 bg-gray-800/60 gap-2">
+								<div className="text-sm text-gray-400 mb-2 md:mb-0">
+									Showing{" "}
+									{data.total === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}{" "}
+									to {Math.min(currentPage * itemsPerPage, data.total)} of{" "}
+									{data.total} records
+								</div>
+								<div className="flex items-center gap-4">
+									<div className="flex gap-2">
+										<button
+											onClick={() => handlePageChange(currentPage - 1)}
+											disabled={currentPage === 1 || loading}
+											className="px-3 py-1 text-sm rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+										>
+											Previous
+										</button>
+										<div className="flex items-center gap-1">
+											{Array.from({ length: totalPages }, (_, i) => i + 1).map(
+												(p) => (
 													<button
 														key={p}
-														onClick={() => setCurrentPage(p)}
+														onClick={() => handlePageChange(p)}
+														disabled={loading}
 														className={`w-8 h-8 text-sm rounded-lg ${
 															currentPage === p
 																? "bg-blue-500 text-white"
 																: "bg-gray-700 text-gray-300 hover:bg-gray-600"
-														}`}
+														} disabled:opacity-50 disabled:cursor-not-allowed`}
 													>
 														{p}
 													</button>
-												))}
-											</div>
-											<button
-												onClick={() => setCurrentPage(currentPage + 1)}
-												disabled={currentPage === totalPages}
-												className="px-3 py-1 text-sm rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-											>
-												Next
-											</button>
+												)
+											)}
 										</div>
-										{/* Rows per page selector */}
-										<div className="flex items-center gap-2">
-											<span className="text-gray-400 text-sm">
-												Rows per page:
-											</span>
-											<select
-												value={itemsPerPage}
-												onChange={(e) =>
-													handleRowsPerPageChange(e.target.value)
-												}
-												className="bg-gray-700 text-gray-200 rounded px-2 py-1 text-sm border border-gray-600 focus:outline-none focus:border-blue-500"
-											>
-												{[5, 10, 20, 50].map((value) => (
-													<option key={value} value={value}>
-														{value}
-													</option>
-												))}
-											</select>
-										</div>
+										<button
+											onClick={() => handlePageChange(currentPage + 1)}
+											disabled={currentPage === totalPages || loading}
+											className="px-3 py-1 text-sm rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+										>
+											Next
+										</button>
+									</div>
+									{/* Rows per page selector */}
+									<div className="flex items-center gap-2">
+										<span className="text-gray-400 text-sm">
+											Rows per page:
+										</span>
+										<select
+											value={itemsPerPage}
+											onChange={(e) => handleRowsPerPageChange(e.target.value)}
+											disabled={loading}
+											className="bg-gray-700 text-gray-200 rounded px-2 py-1 text-sm border border-gray-600 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+										>
+											{[5, 10, 20, 50].map((value) => (
+												<option key={value} value={value}>
+													{value}
+												</option>
+											))}
+										</select>
 									</div>
 								</div>
-							)}
-						</div>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>

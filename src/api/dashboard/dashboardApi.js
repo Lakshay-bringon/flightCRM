@@ -47,7 +47,7 @@ export const dashboardSummaryApi = async (payload) => {
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {
-			throw new Error("Error: " + err.message);
+			throw new Error(err.message);
 		}
 	}
 };
@@ -93,7 +93,53 @@ export const topBottomAgentReportApi = async (payload) => {
 		} else if (err.request) {
 			throw new Error("No response from server");
 		} else {
-			throw new Error("Error: " + err.message);
+			throw new Error(err.message);
+		}
+	}
+};
+
+/**
+ * Fetch dashboard overview data
+ * @param {Object} params - { userId, date_from, date_to }
+ * @returns {Promise<Object>} Dashboard overview data
+ */
+export const dashboardOverviewApi = async (params) => {
+	try {
+		// Validate required parameters
+		if (!params?.userId) throw new Error("userId is required");
+		if (!params?.date_from) throw new Error("date_from is required");
+		if (!params?.date_to) throw new Error("date_to is required");
+
+		// Prepare query parameters
+		const queryParams = {
+			userId: params.userId,
+			date_from: params.date_from,
+			date_to: params.date_to,
+		};
+
+		const res = await API.get("/dashboardOverview", { params: queryParams });
+
+		if (res.data?.status !== 200) {
+			let errorMsg = res.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to fetch dashboard overview");
+		}
+
+		return res.data.data;
+	} catch (err) {
+		if (err.response) {
+			let errorMsg = err.response.data?.message || err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to fetch dashboard overview";
+			throw new Error(errorMsg);
+		} else if (err.request) {
+			throw new Error("No response from server");
+		} else {
+			throw new Error(err.message);
 		}
 	}
 };

@@ -48,7 +48,7 @@ export const updateUserApi = async (formData) => {
 	} catch (err) {
 		if (err.response)
 			throw new Error(err.response.data.msg || "Failed to update user");
-		throw new Error("Update user error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -62,7 +62,7 @@ export const toggleUserStatusApi = async (id) => {
 	} catch (err) {
 		if (err.response)
 			throw new Error(err.response.data.msg || "Failed to toggle user status");
-		throw new Error("Toggle user status error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -76,7 +76,7 @@ export const getUserListApi = async () => {
 	} catch (err) {
 		if (err.response)
 			throw new Error(err.response.data.msg || "Failed to fetch user list");
-		throw new Error("Get user list error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -90,7 +90,7 @@ export const getUserByIdApi = async (id) => {
 	} catch (err) {
 		if (err.response)
 			throw new Error(err.response.data.msg || "Failed to fetch user");
-		throw new Error("Get user by id error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -104,7 +104,7 @@ export const getUserByRoleApi = async (roleId) => {
 	} catch (err) {
 		if (err.response)
 			throw new Error(err.response.data.msg || "Failed to fetch users by role");
-		throw new Error("Get users by role error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -118,7 +118,7 @@ export const getTeamApi = async (leader_id) => {
 	} catch (err) {
 		if (err.response)
 			throw new Error(err.response.data.msg || "Failed to fetch team members");
-		throw new Error("Get team error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -132,6 +132,6 @@ export const deleteUserApi = async (id) => {
 	} catch (err) {
 		if (err.response)
 			throw new Error(err.response.data.msg || "Failed to delete user");
-		throw new Error("Delete user error: " + err.message);
+		throw new Error(err.message);
 	}
 };

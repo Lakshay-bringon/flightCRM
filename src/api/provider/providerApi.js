@@ -40,7 +40,7 @@ export const activeProvidersApi = async () => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Get active providers error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -77,7 +77,7 @@ export const addProviderApi = async (providerData) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -87,7 +87,7 @@ export const addProviderApi = async (providerData) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Add provider error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -120,7 +120,7 @@ export const updateProviderApi = async (providerData) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Update provider error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -153,7 +153,7 @@ export const deleteProviderApi = async (providerId) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Delete provider error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -186,7 +186,7 @@ export const getProvidersApi = async () => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Get providers error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -221,7 +221,7 @@ export const toggleProviderStatusApi = async (providerId) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Toggle provider status error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -254,6 +254,6 @@ export const getProviderByIdApi = async (id) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Get provider by id error: " + err.message);
+		throw new Error(err.message);
 	}
 };

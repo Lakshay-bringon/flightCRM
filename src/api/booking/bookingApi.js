@@ -48,7 +48,7 @@ export const updateBookingApi = async (updateData) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -58,7 +58,7 @@ export const updateBookingApi = async (updateData) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Update booking error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -95,7 +95,7 @@ export const createReservationApi = async (reservationData) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -105,7 +105,7 @@ export const createReservationApi = async (reservationData) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Create reservation error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -149,7 +149,7 @@ export const updateBookingProviderDetails = async (providerData) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -159,7 +159,7 @@ export const updateBookingProviderDetails = async (providerData) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Update provider details error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -203,7 +203,7 @@ export const updateRefundDetails = async (refundData) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -213,7 +213,7 @@ export const updateRefundDetails = async (refundData) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Update refund details error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -257,7 +257,7 @@ export const updateChargebackDetails = async (chargebackData) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -267,7 +267,7 @@ export const updateChargebackDetails = async (chargebackData) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Update chargeback details error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -299,7 +299,6 @@ export const updateBookingChargingDetails = async (chargingData) => {
 				errorMsg = flattenErrorMessages(errorMsg).join(" ");
 			}
 			errorMsg = errorMsg || "Failed to update charging details";
-
 			const errorDetails = err.response.data?.errors;
 			if (errorDetails && typeof errorDetails === "object") {
 				// Handle validation errors from server
@@ -311,17 +310,16 @@ export const updateBookingChargingDetails = async (chargingData) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
-
 		// Handle network errors
 		if (err.request) {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Update charging details error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -358,7 +356,6 @@ export const findBookingApi = async (searchData) => {
 				errorMsg = flattenErrorMessages(errorMsg).join(" ");
 			}
 			errorMsg = errorMsg || "Failed to find bookings";
-
 			const errorDetails = err.response.data?.errors;
 			if (errorDetails && typeof errorDetails === "object") {
 				// Handle validation errors from server
@@ -370,17 +367,16 @@ export const findBookingApi = async (searchData) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
-
 		// Handle network errors
 		if (err.request) {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Find booking error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -424,7 +420,7 @@ export const getBookingByBid = async (bid) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Get booking error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -467,7 +463,7 @@ export const dispatchEmailApi = async (emailData) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -476,7 +472,7 @@ export const dispatchEmailApi = async (emailData) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Dispatch email error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -518,7 +514,7 @@ export const addCommentApi = async (payload) => {
 							}`
 					)
 					.join("; ");
-				throw new Error(`Validation errors: ${validationErrors}`);
+				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
@@ -527,7 +523,7 @@ export const addCommentApi = async (payload) => {
 			throw new Error("Network error: Unable to connect to server");
 		}
 
-		throw new Error("Add comment error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -560,7 +556,7 @@ export const getCommentsByBidApi = async (bid) => {
 		if (err.request) {
 			throw new Error("Network error: Unable to connect to server");
 		}
-		throw new Error("Get comments error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -593,7 +589,7 @@ export const getActivityByBidApi = async (bid) => {
 		if (err.request) {
 			throw new Error("Network error: Unable to connect to server");
 		}
-		throw new Error("Get activity error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -631,6 +627,6 @@ export const getRecentBookingsApi = async () => {
 		if (err.request) {
 			throw new Error("Network error: Unable to connect to server");
 		}
-		throw new Error("Get recent bookings error: " + err.message);
+		throw new Error(err.message);
 	}
 };

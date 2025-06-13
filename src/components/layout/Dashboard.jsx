@@ -6,23 +6,23 @@ import { TimelineSelector } from "../common";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useHasRole } from "../../auth/hooks/useRole";
 import {
-	dashboardSummaryApi,
+	dashboardOverviewApi,
 	topBottomAgentReportApi,
 } from "../../api/dashboard/dashboardApi";
 import { showPromiseToast } from "../../utils/showPromiseToast";
+import {
+	formatESTDateForInput,
+	getCurrentESTDate,
+} from "../../utils/formatters";
 
 export default function AdminDashboard() {
-	// Helper: format a Date to local YYYY-MM-DD (avoids UTC shift)
+	// Helper: format a Date to local YYYY-MM-DD (avoids UTC shift) - DEPRECATED: Use formatESTDateForInput instead
 	const formatLocalDate = (d) => {
-		const year = d.getFullYear();
-		const month = String(d.getMonth() + 1).padStart(2, "0");
-		const day = String(d.getDate()).padStart(2, "0");
-		return `${year}-${month}-${day}`;
+		return formatESTDateForInput(d);
 	};
-
 	const [dateRange, setDateRange] = useState({
-		start: new Date(),
-		end: new Date(),
+		start: getCurrentESTDate(),
+		end: getCurrentESTDate(),
 	});
 	const [summary, setSummary] = useState(null);
 	const [topBottom, setTopBottom] = useState(null);
@@ -31,6 +31,9 @@ export default function AdminDashboard() {
 
 	const fetchDashboardData = async (range) => {
 		const payload = {
+			userId: user?.id,
+			date_to: formatLocalDate(range.end),
+			date_from: formatLocalDate(range.start),
 			dateFilter: "custom",
 			startDate: formatLocalDate(range.start),
 			endDate: formatLocalDate(range.end),
@@ -38,7 +41,7 @@ export default function AdminDashboard() {
 		try {
 			const [summaryRes, topBottomRes] = await showPromiseToast(
 				Promise.all([
-					dashboardSummaryApi(payload),
+					dashboardOverviewApi(payload),
 					topBottomAgentReportApi(payload),
 				]),
 				{
@@ -81,30 +84,25 @@ export default function AdminDashboard() {
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 						<StatsCard
 							title="Total Bookings"
-							value={summary ? summary.totalBooking : "-"}
+							value={summary ? summary.totalBookings : "-"}
 							icon={Plane}
 							color="blue"
 						/>
 						<StatsCard
 							title="Active Agents"
-							value={summary ? summary.totalActiveAgents : "-"}
+							value={summary ? summary.activeAgents : "-"}
 							icon={Users}
 							color="green"
 						/>
 						<StatsCard
 							title="Revenue"
-							value={summary ? summary.totalMcoAmount : "-"}
+							value={summary ? summary.revenue : "-"}
 							icon={TrendingUp}
 							color="purple"
 						/>
 						<StatsCard
 							title="Chargeback + Refund"
-							value={
-								summary
-									? Number(summary.totalChargebackAmount || 0) +
-									  Number(summary.totalRefundAmount || 0)
-									: "-"
-							}
+							value={summary ? Number(summary.chargeback_refund) : "-"}
 							icon={AlertTriangle}
 							color="red"
 						/>
@@ -114,11 +112,11 @@ export default function AdminDashboard() {
 						<TopPerformers
 							dateRange={dateRange}
 							data={
-								Array.isArray(topBottom?.top_agents)
-									? topBottom.top_agents.map((agent) => ({
-											id: agent.agentName,
-											name: agent.agentName,
-											revenue: agent.totalMCO,
+								Array.isArray(summary?.topPerformers)
+									? summary.topPerformers.map((agent) => ({
+											id: agent.agent_id,
+											name: agent.agent_name,
+											revenue: agent.totalRevenue,
 											bookings: agent.totalBookings,
 											badge: "Top Performer",
 									  }))
@@ -129,11 +127,11 @@ export default function AdminDashboard() {
 							<TopPerformers
 								dateRange={dateRange}
 								data={
-									Array.isArray(topBottom?.bottom_agents)
-										? topBottom.bottom_agents.map((agent) => ({
-												id: agent.agentName,
-												name: agent.agentName,
-												revenue: agent.totalMCO,
+									Array.isArray(summary?.bottomPerformers)
+										? summary.bottomPerformers.map((agent) => ({
+												id: agent.agent_id,
+												name: agent.agent_name,
+												revenue: agent.totalRevenue,
 												bookings: agent.totalBookings,
 												badge: "Bottom Performer",
 										  }))

@@ -33,7 +33,7 @@ export const activeCurrencyListApi = async () => {
 			errorMsg = errorMsg || "Failed to fetch active currencies";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Get active currencies error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -59,7 +59,7 @@ export const addCurrencyApi = async (currency) => {
 			errorMsg = errorMsg || "Failed to add currency";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Add currency error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -85,7 +85,7 @@ export const updateCurrencyApi = async ({ id, currency }) => {
 			errorMsg = errorMsg || "Failed to update currency";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Update currency error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -111,7 +111,7 @@ export const deleteCurrencyApi = async (id) => {
 			errorMsg = errorMsg || "Failed to delete currency";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Delete currency error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -137,7 +137,7 @@ export const getCurrencyApi = async (id) => {
 			errorMsg = errorMsg || "Failed to fetch currency";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Get currency error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -163,7 +163,7 @@ export const toggleCurrencyStatusApi = async (id) => {
 			errorMsg = errorMsg || "Failed to toggle currency status";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Toggle currency status error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -189,6 +189,6 @@ export const getCurrencyListApi = async () => {
 			errorMsg = errorMsg || "Failed to fetch currency list";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Get currency list error: " + err.message);
+		throw new Error(err.message);
 	}
 };

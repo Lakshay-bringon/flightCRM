@@ -33,7 +33,7 @@ export const activeCardsApi = async () => {
 			errorMsg = errorMsg || "Failed to fetch active cards";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Get active cards error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -61,7 +61,7 @@ export const addCardApi = async ({ card, shortName }, email, token) => {
 			errorMsg = errorMsg || "Failed to add card";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Add card error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -86,7 +86,7 @@ export const getCardListApi = async (email, token) => {
 			errorMsg = errorMsg || "Failed to fetch cards";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Get card list error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -115,7 +115,7 @@ export const updateCardApi = async ({ id, card, shortName }, email, token) => {
 			errorMsg = errorMsg || "Failed to update card";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Update card error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -143,7 +143,7 @@ export const toggleCardStatusApi = async (id) => {
 			errorMsg = errorMsg || "Failed to toggle card status";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Toggle card status error: " + err.message);
+		throw new Error(err.message);
 	}
 };
 
@@ -170,6 +170,6 @@ export const deleteCardApi = async (id, email, token) => {
 			errorMsg = errorMsg || "Failed to delete card";
 			throw new Error(errorMsg);
 		}
-		throw new Error("Delete card error: " + err.message);
+		throw new Error(err.message);
 	}
 };

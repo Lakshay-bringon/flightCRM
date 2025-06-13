@@ -17,6 +17,8 @@ export default function EmailPreviewPage() {
 	const [isGenerating, setIsGenerating] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+	const [attachments, setAttachments] = useState([]);
+	const [showAttachmentInput, setShowAttachmentInput] = useState(false);
 
 	const formData = location.state?.formData;
 	const emailType = location.state?.emailType;
@@ -49,6 +51,7 @@ export default function EmailPreviewPage() {
 			setIsGenerating(false);
 		}
 	}, [transactionType, formData, emailType]);
+
 	const handleSendEmail = async () => {
 		if (!emailHTML) {
 			alert("No email content to send");
@@ -67,7 +70,6 @@ export default function EmailPreviewPage() {
 
 		setShowConfirmationModal(true);
 	};
-
 	const confirmSendEmail = async () => {
 		setShowConfirmationModal(false);
 		setIsSending(true);
@@ -81,12 +83,43 @@ export default function EmailPreviewPage() {
 			emailType
 		);
 
+		// Prepare attachments for API if they exist
+		let attachmentData = [];
+		if (emailType === "e-ticket" && attachments.length > 0) {
+			try {
+				attachmentData = await Promise.all(
+					attachments.map(async (attachment) => {
+						const base64 = await new Promise((resolve, reject) => {
+							const reader = new FileReader();
+							reader.onload = () => {
+								const base64String = reader.result.split(",")[1]; // Remove data:type;base64, prefix
+								resolve(base64String);
+							};
+							reader.onerror = reject;
+							reader.readAsDataURL(attachment.file);
+						});
+
+						return {
+							name: attachment.name,
+							content: base64,
+							type: attachment.type,
+						};
+					})
+				);
+			} catch (error) {
+				console.error("Error processing attachments:", error);
+				setIsSending(false);
+				return;
+			}
+		}
+
 		// Prepare API payload
 		const emailPayload = {
 			bid: bid,
 			subject: subject,
 			htmlContentBase64: htmlContentBase64,
 			providerId: providerId,
+			...(attachmentData.length > 0 && { attachments: attachmentData }),
 		};
 
 		// Use showPromiseToast to handle the API call
@@ -115,9 +148,34 @@ export default function EmailPreviewPage() {
 		setEmailHTML(editedHTML);
 		setIsEditing(false);
 	};
-
 	const handleCancelEdit = () => {
 		setIsEditing(false);
+	};
+
+	const handleFileSelect = (event) => {
+		const files = Array.from(event.target.files);
+		const newAttachments = files.map((file) => ({
+			name: file.name,
+			size: file.size,
+			type: file.type,
+			file: file,
+		}));
+		setAttachments((prev) => [...prev, ...newAttachments]);
+		setShowAttachmentInput(false);
+		// Reset the input
+		event.target.value = "";
+	};
+
+	const removeAttachment = (index) => {
+		setAttachments((prev) => prev.filter((_, i) => i !== index));
+	};
+
+	const formatFileSize = (bytes) => {
+		if (bytes === 0) return "0 Bytes";
+		const k = 1024;
+		const sizes = ["Bytes", "KB", "MB", "GB"];
+		const i = Math.floor(Math.log(bytes) / Math.log(k));
+		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 	};
 	if (isGenerating) {
 		return (
@@ -214,8 +272,34 @@ export default function EmailPreviewPage() {
 							<h1 className="text-lg font-semibold text-white text-center">
 								{subject}
 							</h1>
-						</div>
+						</div>{" "}
 						<div className="flex justify-end gap-3">
+							{emailType === "e-ticket" && (
+								<>
+									<input
+										type="file"
+										id="attachment-input"
+										className="hidden"
+										multiple
+										accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+										onChange={handleFileSelect}
+									/>
+									<button
+										onClick={() =>
+											document.getElementById("attachment-input").click()
+										}
+										disabled={isGenerating}
+										className={`px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition ${
+											isGenerating
+												? "bg-gray-600 text-gray-400 cursor-not-allowed"
+												: ""
+										}`}
+										title="Add attachments"
+									>
+										📎 Add Attachment
+									</button>
+								</>
+							)}
 							<button
 								onClick={handleEditEmail}
 								disabled={isGenerating || !emailHTML}
@@ -258,8 +342,36 @@ export default function EmailPreviewPage() {
 									? "Generating..."
 									: "Send Email"}
 							</button>
-						</div>
+						</div>{" "}
 					</header>
+					{/* Attachments section for e-ticket emails */}
+					{emailType === "e-ticket" && attachments.length > 0 && (
+						<div className="bg-gray-800 border-b border-gray-600 p-4">
+							<h3 className="text-white font-medium mb-2">
+								Attachments ({attachments.length})
+							</h3>
+							<div className="flex flex-wrap gap-2">
+								{attachments.map((attachment, index) => (
+									<div
+										key={index}
+										className="bg-gray-700 rounded-lg p-2 flex items-center gap-2 text-sm"
+									>
+										<span className="text-gray-300">{attachment.name}</span>
+										<span className="text-gray-400">
+											({formatFileSize(attachment.size)})
+										</span>
+										<button
+											onClick={() => removeAttachment(index)}
+											className="text-red-400 hover:text-red-300 ml-1"
+											title="Remove attachment"
+										>
+											×
+										</button>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
 					{/* Email preview fills the rest of the space */}
 					<div className="flex-1 min-h-0">
 						<iframe

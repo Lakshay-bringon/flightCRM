@@ -8,6 +8,7 @@ import {
 	Section,
 	Img,
 } from "@react-email/components";
+import { getESTDateForEmails } from "../../../../utils/formatters";
 
 export const EmailUpgrade = ({ bookingData }) => {
 	const {
@@ -141,12 +142,10 @@ export const EmailUpgrade = ({ bookingData }) => {
 							<tr>
 								<td style={td}>Method of Payment</td>
 								<td style={td}>{payment_method || "Not provided"}</td>
-							</tr>
+							</tr>{" "}
 							<tr>
 								<td style={td}>Date of Purchase</td>
-								<td style={td}>
-									{purchase_date || new Date().toLocaleDateString()}
-								</td>
+								<td style={td}>{purchase_date || getESTDateForEmails()}</td>
 							</tr>
 						</tbody>
 					</table>
