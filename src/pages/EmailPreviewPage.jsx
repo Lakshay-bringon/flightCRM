@@ -95,7 +95,7 @@ export default function EmailPreviewPage() {
 						const base64 = await new Promise((resolve, reject) => {
 							const reader = new FileReader();
 							reader.onload = () => {
-								const base64String = reader.result.split(",")[1]; // Remove data:type;base64, prefix
+								const base64String = reader.result; // Remove data:type;base64, prefix
 								resolve(base64String);
 							};
 							reader.onerror = reject;
