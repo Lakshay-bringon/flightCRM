@@ -6,6 +6,7 @@ import PurchaseSummary from "./PurchaseSummary.jsx";
 import AttachmentsSection from "./AttachmentsSection.jsx";
 import AuthorizeSection from "./AuthorizeSection.jsx";
 import cancelForRefundSchema from "../schemas/cancelForRefundSchema.js";
+import PassengerDetails from "./PassengerDetails.jsx";
 
 function CancelForRefund({ bookingData, onBack, onRefresh }) {
 	const RefundForm = ({
@@ -30,6 +31,8 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 		setPreviewImage,
 		attachments,
 		setAttachments,
+		addPassenger,
+		removePassenger,
 		addCharge,
 		removeCharge,
 		onBack,
@@ -39,6 +42,7 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 		// Watch values for dynamic updates - using the correct field names
 		const pnr = watch("pnr");
 		const airline = watch("airline_name");
+		const passengers = watch("passenger_data");
 		const cardNumber = watch("card_number");
 
 		return (
