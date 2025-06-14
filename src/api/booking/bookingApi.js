@@ -630,3 +630,93 @@ export const getRecentBookingsApi = async () => {
 		throw new Error(err.message);
 	}
 };
+
+export const dispatchEticketApi = async (eticketData) => {
+	try {
+		// Determine if we're sending FormData or JSON
+
+		console.log("Dispatching e-ticket with data:", eticketData);
+
+		const res = await API.post("/dispatchEticket", eticketData);
+		const { status, msg, data } = res.data;
+		if (status !== 200 && status !== 201) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to dispatch e-ticket");
+		}
+		return data;
+	} catch (err) {
+		// Handle API errors
+		console.log("Error dispatching e-ticket:", err);
+		console.log("Error response:", err.response);
+		console.log("Error response data:", err.response?.data);
+
+		if (err.response) {
+			// Get status code and status text
+			const status = err.response.status;
+			const statusText = err.response.statusText;
+
+			// Try to extract error message from response data
+			let errorMsg =
+				err.response.data?.msg ||
+				err.response.data?.message ||
+				err.response.data?.error;
+
+			// If errorMsg is an object, flatten it
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+
+			// If no specific error message, use status-based message
+			if (!errorMsg) {
+				switch (status) {
+					case 400:
+						errorMsg = "Bad request - Invalid data provided";
+						break;
+					case 401:
+						errorMsg = "Unauthorized - Please check your credentials";
+						break;
+					case 403:
+						errorMsg =
+							"Forbidden - You don't have permission to perform this action";
+						break;
+					case 404:
+						errorMsg = "Not found - The requested resource was not found";
+						break;
+					case 500:
+						errorMsg =
+							"Internal server error - Please try again later or contact support";
+						break;
+					default:
+						errorMsg = `Server error (${status}): ${statusText}`;
+				}
+			}
+
+			// Handle validation errors
+			const errorDetails = err.response.data?.errors;
+			if (errorDetails && typeof errorDetails === "object") {
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(", ") : messages
+							}`
+					)
+					.join("; ");
+				throw new Error(`${errorMsg}. Validation errors: ${validationErrors}`);
+			}
+
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
+		// Handle other errors
+		throw new Error(err.message || "An unexpected error occurred");
+	}
+};

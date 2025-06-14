@@ -24,6 +24,7 @@ import {
 	formatESTDateForInput,
 	getCurrentESTDate,
 } from "../../utils/formatters";
+import toast from "react-hot-toast";
 
 function Revenue() {
 	const navigate = useNavigate();
@@ -82,8 +83,8 @@ function Revenue() {
 		e.preventDefault();
 		const payload = {
 			userId: user?.id,
-			agentId: filters.agent || undefined,
-			providerId: filters.provider || undefined,
+			agent_id: filters.agent || undefined,
+			provider_id: filters.provider || undefined,
 			show_refund: filters.includeRefund ? true : undefined,
 			show_chargeback: filters.includeChargeback ? true : undefined,
 			date_from: formatESTDateForInput(dateRange.start),
@@ -96,14 +97,19 @@ function Revenue() {
 				success: "Revenue data loaded!",
 				error: "Failed to fetch detailed revenue",
 			});
-			if (Array.isArray(data.records) && data.records.length > 0) {
+			console.log("Detailed Revenue Data:", data);
+			// Check if records exist and navigate to details page
+			if (Array.isArray(data["records"]) && data["records"].length > 0) {
 				navigate("/revenue/details", {
 					state: {
 						searchParams: payload,
-						results: data.records,
+						results: data,
 					},
 					replace: true,
 				});
+			}
+			if (data["records"].length === 0) {
+				toast.error("No records found.");
 			}
 		} catch (err) {
 			console.error("Failed to fetch detailed revenue:", err);

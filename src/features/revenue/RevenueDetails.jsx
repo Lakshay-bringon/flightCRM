@@ -55,6 +55,7 @@ function RevenueDetails() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const searchParams = location.state?.searchParams || {};
+	const initialResults = location.state?.results || null;
 
 	// State for server-side data
 	const [data, setData] = useState({
@@ -84,13 +85,14 @@ function RevenueDetails() {
 				page,
 				limit,
 			};
-
 			const response = await getRevenueListApi(payload);
 			setData({
 				records: response.records || [],
 				total: response.total || 0,
 				page: response.page || 1,
 				limit: response.limit || limit,
+				total_revenue: response.total_revenue || 0,
+				total_chargeback_refund: response.total_chargeback_refund || 0,
 			});
 		} catch (error) {
 			console.error("Failed to fetch revenue details:", error);
@@ -102,10 +104,24 @@ function RevenueDetails() {
 		} finally {
 			setLoading(false);
 		}
-	};
-	// Initial data fetch
+	}; // Initial data initialization
 	useEffect(() => {
-		fetchData(currentPage, itemsPerPage);
+		if (initialResults) {
+			// Use data passed from Revenue component
+			setData({
+				records: initialResults.records || [],
+				total: initialResults.total || 0,
+				page: initialResults.page || 1,
+				limit: initialResults.limit || 10,
+				total_revenue: initialResults.total_revenue || 0,
+				total_chargeback_refund: initialResults.total_chargeback_refund || 0,
+			});
+			setCurrentPage(initialResults.page || 1);
+			setItemsPerPage(initialResults.limit || 10);
+		} else {
+			// Fallback to API call if no data passed
+			fetchData(currentPage, itemsPerPage);
+		}
 	}, []); // Only run on component mount
 
 	// Local sorting function
@@ -236,12 +252,7 @@ function RevenueDetails() {
 						<div>
 							<div className="text-xs text-gray-400">Total Revenue</div>
 							<div className="text-sm font-medium text-blue-400">
-								{currencyFormatter.format(
-									sortedRecords.reduce(
-										(sum, r) => sum + (Number(r.revenue) || 0),
-										0
-									)
-								)}
+								{currencyFormatter.format(Number(data.total_revenue) || 0)}
 							</div>
 						</div>
 					</div>
@@ -250,22 +261,18 @@ function RevenueDetails() {
 						<div>
 							<div className="text-xs text-gray-400">Total Bookings</div>
 							<div className="text-sm font-medium text-green-400">
-								{data.total}
+								{Number(data.total) || 0}
 							</div>
 						</div>
 					</div>
 					<div className="flex items-center gap-2">
 						<DollarSign className="w-5 h-5 text-purple-400" />
 						<div>
-							<div className="text-xs text-gray-400">Avg. Booking Value</div>
+							<div className="text-xs text-gray-400">Net Revenue</div>
 							<div className="text-sm font-medium text-purple-400">
 								{currencyFormatter.format(
-									sortedRecords.length > 0
-										? sortedRecords.reduce(
-												(sum, r) => sum + (Number(r.revenue) || 0),
-												0
-										  ) / sortedRecords.length
-										: 0
+									(Number(data.total_revenue) || 0) * 0.95 -
+										(Number(data.total_chargeback_refund) || 0)
 								)}
 							</div>
 						</div>
@@ -276,13 +283,7 @@ function RevenueDetails() {
 							<div className="text-xs text-gray-400">Refunds + Chargebacks</div>
 							<div className="text-sm font-medium text-red-400">
 								{currencyFormatter.format(
-									sortedRecords.reduce(
-										(sum, r) =>
-											sum +
-											(Number(r.refund) || 0) +
-											(Number(r.chargeback) || 0),
-										0
-									)
+									Number(data.total_chargeback_refund) || 0
 								)}
 							</div>
 						</div>
@@ -350,7 +351,7 @@ function RevenueDetails() {
 											/>
 										</th>
 									</tr>
-								</thead>{" "}
+								</thead>
 								<tbody className="text-sm">
 									{loading ? (
 										<tr>

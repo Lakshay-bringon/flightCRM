@@ -129,8 +129,8 @@ export const getRevenueListApi = async (params) => {
 			page: params.page || 1,
 			limit: params.limit || 10,
 			// Add optional filters
-			agentId: params.agentId,
-			providerId: params.providerId,
+			agent_id: params.agent_id,
+			provider_id: params.provider_id,
 		};
 
 		const res = await API.get("/revenueList", { params: queryParams });

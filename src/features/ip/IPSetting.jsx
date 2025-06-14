@@ -133,14 +133,12 @@ function IPSetting() {
 		}, 100);
 	};
 	const handleDelete = async (ipObj) => {
-		if (window.confirm(`Are you sure you want to delete IP: ${ipObj.ip}?`)) {
-			await showPromiseToast(deleteIpApi(ipObj.id), {
-				loading: "Deleting IP...",
-				success: "IP deleted successfully!",
-				error: "Failed to delete IP",
-			});
-			await refreshData();
-		}
+		await showPromiseToast(deleteIpApi(ipObj.id), {
+			loading: "Deleting IP...",
+			success: "IP deleted successfully!",
+			error: "Failed to delete IP",
+		});
+		await refreshData();
 	};
 
 	const handleToggleStatus = async (ipObj) => {
