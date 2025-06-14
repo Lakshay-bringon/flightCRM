@@ -1,14 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { StatsCard } from "../../features/dashboard/widgets/StatsCard";
 import { TopPerformers } from "../../features/dashboard/widgets/TopPerformers";
 import { Plane, Users, TrendingUp, AlertTriangle } from "lucide-react";
 import { TimelineSelector } from "../common";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useHasRole } from "../../auth/hooks/useRole";
-import {
-	dashboardOverviewApi,
-	topBottomAgentReportApi,
-} from "../../api/dashboard/dashboardApi";
+import { dashboardOverviewApi } from "../../api/dashboard/dashboardApi";
 import { showPromiseToast } from "../../utils/showPromiseToast";
 import {
 	formatESTDateForInput,
@@ -20,55 +17,48 @@ export default function AdminDashboard() {
 	const formatLocalDate = (d) => {
 		return formatESTDateForInput(d);
 	};
-	const [dateRange, setDateRange] = useState({
-		start: getCurrentESTDate(),
-		end: getCurrentESTDate(),
-	});
+	const [dateRange, setDateRange] = useState(null); // Start with null, let TimelineSelector initialize it
 	const [summary, setSummary] = useState(null);
-	const [topBottom, setTopBottom] = useState(null);
+	// const [topBottom, setTopBottom] = useState(null);
 	const { user } = useAuth();
 	const isAgent = useHasRole("agent");
 
-	const fetchDashboardData = async (range) => {
-		const payload = {
-			userId: user?.id,
-			date_to: formatLocalDate(range.end),
-			date_from: formatLocalDate(range.start),
-			dateFilter: "custom",
-			startDate: formatLocalDate(range.start),
-			endDate: formatLocalDate(range.end),
-		};
-		try {
-			const [summaryRes, topBottomRes] = await showPromiseToast(
-				Promise.all([
-					dashboardOverviewApi(payload),
-					topBottomAgentReportApi(payload),
-				]),
-				{
-					loading: "Loading dashboard...",
-					success: "Dashboard loaded!",
-					error: "Failed to load dashboard",
-				}
-			);
-			const summaryData = summaryRes;
-			const topBottomData = topBottomRes;
-			console.log("Dashboard Summary:", summaryData);
-			console.log("Top/Bottom Agents:", topBottomData);
-			setSummary(summaryData);
-			setTopBottom(topBottomData);
-		} catch (err) {
-			setSummary(null);
-			setTopBottom(null);
-		}
-	};
+	// Memoize the date range change handler to prevent unnecessary re-renders
+	const handleDateRangeChange = useCallback((range) => {
+		console.log("Date range changed:", range);
+		setDateRange(range);
+	}, []);
 
 	useEffect(() => {
-		fetchDashboardData(dateRange);
-	}, [dateRange]);
+		// Only fetch data if dateRange is set (not null)
+		if (!dateRange) return;
 
-	const handleDateRangeChange = (range) => {
-		setDateRange(range);
-	};
+		const fetchDashboardData = async (range) => {
+			const payload = {
+				userId: user?.id,
+				date_to: formatLocalDate(range.end),
+				date_from: formatLocalDate(range.start),
+				dateFilter: "custom",
+				startDate: formatLocalDate(range.start),
+				endDate: formatLocalDate(range.end),
+			};
+			try {
+				const summaryRes = await showPromiseToast(
+					dashboardOverviewApi(payload),
+					{
+						loading: "Loading dashboard...",
+						success: "Dashboard loaded!",
+						error: "Failed to load dashboard",
+					}
+				);
+				console.log("Dashboard Summary:", summaryRes);
+				setSummary(summaryRes);
+			} catch (err) {
+				setSummary(null);
+			}
+		};
+		fetchDashboardData(dateRange);
+	}, [dateRange, user?.id]);
 
 	return (
 		<div className="max-w-7xl mx-auto">

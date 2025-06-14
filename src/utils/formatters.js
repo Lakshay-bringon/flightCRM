@@ -45,12 +45,12 @@ export const getCurrentESTDate = () => {
 	});
 
 	const parts = estFormatter.formatToParts(now);
-	const year = parts.find((part) => part.type === "year").value;
-	const month = parts.find((part) => part.type === "month").value;
-	const day = parts.find((part) => part.type === "day").value;
+	const year = parseInt(parts.find((part) => part.type === "year").value);
+	const month = parseInt(parts.find((part) => part.type === "month").value);
+	const day = parseInt(parts.find((part) => part.type === "day").value);
 
-	// Create a new date with EST date components
-	return new Date(year, month - 1, day);
+	// Create a new date with EST date components at noon to avoid timezone issues
+	return new Date(year, month - 1, day, 12, 0, 0, 0);
 };
 
 /**
@@ -72,12 +72,12 @@ export const convertToEST = (date) => {
 	});
 
 	const parts = estFormatter.formatToParts(inputDate);
-	const year = parts.find((part) => part.type === "year").value;
-	const month = parts.find((part) => part.type === "month").value;
-	const day = parts.find((part) => part.type === "day").value;
+	const year = parseInt(parts.find((part) => part.type === "year").value);
+	const month = parseInt(parts.find((part) => part.type === "month").value);
+	const day = parseInt(parts.find((part) => part.type === "day").value);
 
-	// Create a new date with EST date components
-	return new Date(year, month - 1, day);
+	// Create a new date with EST date components at noon to avoid timezone issues
+	return new Date(year, month - 1, day, 12, 0, 0, 0);
 };
 
 /**

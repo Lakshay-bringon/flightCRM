@@ -26,30 +26,29 @@ const timeRanges = [
 ];
 
 export function TimelineSelector({ onRangeChange }) {
-	// Initialize with proper EST dates for "today"
-	const today = getCurrentESTDate();
-	console.log("TimelineSelector - today:", today);
-	console.log(
-		"TimelineSelector - today formatted:",
-		formatESTDateForInput(today)
-	);
+	// Initialize with proper EST dates for "today" - memoize to prevent recreating on every render
+	const today = React.useMemo(() => getCurrentESTDate(), []);
+	// console.log("TimelineSelector - today:", today);
+	// console.log(
+	// 	"TimelineSelector - today formatted:",
+	// 	formatESTDateForInput(today)
+	// );
 
 	const [date, setDate] = React.useState({
 		from: today,
 		to: today,
 	});
-
 	const [selectedRange, setSelectedRange] = React.useState(timeRanges[0]);
 	const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
-	// Call onRangeChange with initial values on mount
-	React.useEffect(() => {
-		console.log("TimelineSelector - useEffect - sending range:", {
-			start: today,
-			end: today,
-		});
-		onRangeChange({ start: today, end: today });
-	}, []); // Empty dependency array to run only once on mount
+	const [hasInitialized, setHasInitialized] = React.useState(false);
 
+	// Call onRangeChange with initial values on mount - only once
+	React.useEffect(() => {
+		if (!hasInitialized) {
+			onRangeChange({ start: today, end: today });
+			setHasInitialized(true);
+		}
+	}, [today, onRangeChange, hasInitialized]);
 	const handleRangeSelect = (range) => {
 		setSelectedRange(range);
 		setIsDatePickerOpen(false);
@@ -79,7 +78,6 @@ export function TimelineSelector({ onRangeChange }) {
 			default:
 				return;
 		}
-
 		setDate({ from: start, to: end });
 		onRangeChange({ start, end });
 	};
@@ -98,7 +96,6 @@ export function TimelineSelector({ onRangeChange }) {
 		};
 
 		setDate(newDateRange);
-
 		if (newDateRange.from && newDateRange.to) {
 			onRangeChange({
 				start: newDateRange.from,
