@@ -1,11 +1,23 @@
-import { z } from 'zod';
-import { bookingSchema } from './bookingSchema';
+import { z } from "zod";
+import { baseBookingSchema } from "./bookingSchema";
 
 // Create a seat assignment schema
-// For seat assignments, we need passenger data but can omit certain other fields
-export const seatAssignmentSchema = bookingSchema.omit({
-	// Fields not needed for seat assignment
-	charge_data: true,
-});
+// For seat assignments, we need passenger data and charge data (for seat fees)
+// We can omit other fields that might not be needed
+export const seatAssignmentSchema = baseBookingSchema.refine(
+	(data) => {
+		// Custom validation: sum of charges must equal total amount
+		const totalAmount = parseFloat(data.amount) || 0;
+		const chargesSum = data.charge_data.reduce((sum, charge) => {
+			return sum + (parseFloat(charge.amount) || 0);
+		}, 0);
+
+		return Math.abs(totalAmount - chargesSum) < 0.01; // Allow small floating point differences
+	},
+	{
+		message: "The sum of all charges must equal the total amount",
+		path: ["amount"], // This will show the error on the amount field
+	}
+);
 
 export default seatAssignmentSchema;

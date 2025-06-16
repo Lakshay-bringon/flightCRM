@@ -210,3 +210,38 @@ export const deleteIpApi = async (id) => {
 		throw new Error(err.message || "Delete IP error");
 	}
 };
+
+// Toggle IP status for admin by userId
+export const toggleIpStatusAdminApi = async (userId, status) => {
+	try {
+		const res = await API.get("/toggleIpStatusAdmin", {
+			params: { userId, status },
+		});
+		const { status: responseStatus, msg, data } = res.data;
+		if (responseStatus !== 200) {
+			let errorMsg = msg;
+			if (msg && typeof msg === "object") {
+				errorMsg = flattenErrorMessages(msg).join(" ");
+			}
+			throw new Error(errorMsg || "Failed to toggle IP status");
+		}
+		return data;
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to toggle IP status";
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
+		throw new Error(err.message);
+	}
+};

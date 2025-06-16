@@ -45,6 +45,16 @@ function Upgrade({ bookingData, onBack, onRefresh }) {
 		const airline = watch("airline_name");
 		const passengers = watch("passenger_data");
 		const charges = watch("charge_data");
+		const amount = watch("amount");
+		// Calculate sum of charges for validation display
+		const chargesSum =
+			charges?.reduce((sum, charge) => {
+				return sum + (parseFloat(charge?.amount) || 0);
+			}, 0) || 0;
+
+		// Calculate amount matching for indicator
+		const totalAmount = parseFloat(amount) || 0;
+		const amountsMatch = Math.abs(totalAmount - chargesSum) < 0.01;
 
 		return (
 			<>
@@ -89,21 +99,25 @@ function Upgrade({ bookingData, onBack, onRefresh }) {
 				>
 					<div className="space-y-6">
 						<div className="p-3 border border-gray-700 rounded-lg">
+							{" "}
 							<div className="leading-loose">
 								Dear
 								<input
 									{...register("customer_name")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 60 }}
+									style={{ minWidth: 60, textTransform: "uppercase" }}
 									placeholder="Customer Name"
 								/>
 								,
 							</div>
+							<br />
 							<div className="leading-loose">Thank you for contacting us!</div>
+							<br />
 							<div className="leading-loose">
 								You can contact us on this number +1-877-413-0030 for any
 								related request.
 							</div>
+							<br />
 							<div className="leading-loose">
 								As per our conversation and as agreed, we have upgraded your
 								seats from
@@ -160,6 +174,7 @@ function Upgrade({ bookingData, onBack, onRefresh }) {
 									value={currency}
 									onChange={(e) => setCurrency(e.target.value)}
 								>
+									{" "}
 									{currencies && currencies.length > 0 ? (
 										currencies.map((currency) => (
 											<option key={currency.id} value={currency.Currency}>
@@ -168,11 +183,37 @@ function Upgrade({ bookingData, onBack, onRefresh }) {
 										))
 									) : (
 										<option value="">Select Currency</option>
-									)}
+									)}{" "}
 								</select>{" "}
 								(Including all taxes and fees) as per the below description.
 							</div>
-						</div>{" "}
+							<br />
+						</div>
+						{/* Amount Matching Indicator */}
+						<div
+							className={`p-3 border rounded-lg ${
+								amountsMatch
+									? "border-green-600 bg-green-900/20"
+									: "border-yellow-600 bg-yellow-900/20"
+							}`}
+						>
+							<div className="flex items-center gap-2 text-sm">
+								<div
+									className={`w-3 h-3 rounded-full ${
+										amountsMatch ? "bg-green-500" : "bg-yellow-500"
+									}`}
+								></div>
+								<span
+									className={
+										amountsMatch ? "text-green-400" : "text-yellow-400"
+									}
+								>
+									Amount Status: Total ({currency} {totalAmount.toFixed(2)}){" "}
+									{amountsMatch ? "matches" : "does not match"} sum of charges (
+									{currency} {chargesSum.toFixed(2)})
+								</span>
+							</div>
+						</div>
 						{/* Charges Description Section */}
 						<ChargesDescription
 							charges={charges}
@@ -180,6 +221,7 @@ function Upgrade({ bookingData, onBack, onRefresh }) {
 							currency={currency}
 							addCharge={addCharge}
 							removeCharge={removeCharge}
+							watch={watch}
 						/>{" "}
 						{/* Itinerary Details Section */}
 						<ItineraryDetailsInput
@@ -212,14 +254,14 @@ function Upgrade({ bookingData, onBack, onRefresh }) {
 								setPreviewImage(img);
 								setShowPreview(true);
 							}}
-						/>
+						/>{" "}
 						<div className="p-3 border border-gray-700 rounded-lg leading-loose">
-							<div className="flex flex-wrap items-center gap-2">
+							<p className="flex flex-wrap items-center gap-2">
 								Make sure that the displayed flight information is as you
 								planned. Please review the Names, Dates, Cities, and Departure –
 								Arrival times properly
-							</div>
-						</div>{" "}
+							</p>
+						</div>
 						{/* Authorization Section */}
 						<AuthorizeSection
 							cardholderName={watch("card_holder")}

@@ -177,3 +177,89 @@ export const getRevenueListApi = async (params) => {
 		throw new Error(err.message);
 	}
 };
+
+export const downloadReportApi = async (params) => {
+	try {
+		// Validate required parameters
+		if (!params?.userId) throw new Error("userId is required");
+		if (!params?.date_from) throw new Error("date_from is required");
+		if (!params?.date_to) throw new Error("date_to is required");
+
+		// Prepare query parameters
+		const queryParams = {
+			userId: params.userId,
+			date_from: params.date_from,
+			date_to: params.date_to,
+			show_refund: params.show_refund ?? false,
+			show_chargeback: params.show_chargeback ?? false,
+			agent_id: params.agent_id,
+			provider_id: params.provider_id,
+		};
+
+		// Configure for blob response (file download)
+		const res = await API.get("/downloadReport", {
+			params: queryParams,
+			responseType: "blob", // Important: Handle binary data
+		});
+
+		// For blob responses, we get the blob directly
+		// Extract filename from Content-Disposition header if available
+		const contentDisposition = res.headers["content-disposition"];
+		let filename = "revenue_report.csv";
+
+		if (contentDisposition) {
+			const fileNameMatch = contentDisposition.match(
+				/filename[^;=\n]*=([^;]*)/
+			);
+			if (fileNameMatch && fileNameMatch[1]) {
+				filename = fileNameMatch[1].replace(/['"]/g, "");
+			}
+		}
+
+		// Create download link
+		const blob = new Blob([res.data], {
+			type: res.headers["content-type"] || "text/csv",
+		});
+		const url = window.URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = filename;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		window.URL.revokeObjectURL(url);
+
+		return { success: true, filename };
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg || err.response.data?.message;
+			if (typeof errorMsg === "object") {
+				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			}
+			errorMsg = errorMsg || "Failed to download Revenue Report";
+
+			const errorDetails = err.response.data?.errors;
+			if (errorDetails && typeof errorDetails === "object") {
+				// Handle validation errors from server
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(", ") : messages
+							}`
+					)
+					.join("; ");
+				throw new Error(validationErrors);
+			}
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error("Network error: Unable to connect to server");
+		}
+
+		throw new Error(err.message);
+	}
+};

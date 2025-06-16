@@ -8,13 +8,16 @@ import {
 	toggleIpStatusApi,
 	getIpInfoApi,
 	deleteIpApi,
+	toggleIpStatusAdminApi,
 } from "../../api";
+import { useAuth } from "../../auth/hooks/useAuth";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 
 function IPSetting() {
+	const { user } = useAuth();
 	const [ipList, setIpList] = useState([]);
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState("all");
@@ -33,6 +36,39 @@ function IPSetting() {
 		last_update: null,
 	});
 	const ipInputRef = useRef(null);
+
+	// Handle IP protection toggle
+	const handleIpProtectionToggle = async (activate = true) => {
+		if (!user?.id) {
+			console.error("User ID not available");
+			return;
+		}
+
+		try {
+			// 1 for active, 2 for inactive
+			const status = activate ? 1 : 2;
+			const response = await showPromiseToast(
+				toggleIpStatusAdminApi(user.id, status),
+				{
+					loading: activate
+						? "Activating IP protection..."
+						: "Deactivating IP protection...",
+					success: activate
+						? "IP protection activated successfully!"
+						: "IP protection deactivated successfully!",
+					error: "Failed to toggle IP protection status",
+				}
+			);
+
+			// Use the actual status returned from the server
+			// "1" means active, "2" or anything else means inactive
+			const newStatus = response?.new_ipStatus === "1";
+			setIpProtectionActive(newStatus);
+			setShowDeactivateConfirm(false);
+		} catch (error) {
+			console.error("Error toggling IP protection:", error);
+		}
+	};
 
 	// Normalize API data for UI
 	const normalizeIp = (ipObj) => ({
@@ -63,7 +99,6 @@ function IPSetting() {
 		allowed_status: form.allowed_status === "allowed" ? 1 : 0, // 1: allowed, 2: blocked
 		description: form.description,
 	});
-
 	// Utility to refresh both IP list and IP info
 	const refreshData = async () => {
 		const [list, info] = await Promise.all([
@@ -71,7 +106,15 @@ function IPSetting() {
 			getIpInfoApi().catch(() => ({})),
 		]);
 		setIpList(Array.isArray(list) ? list.map(normalizeIp) : []);
-		if (info && typeof info === "object") setIpInfo(info);
+		if (info && typeof info === "object") {
+			setIpInfo(info);
+			// Sync IP protection status based on securityStatus from API
+			if (info.securityStatus !== undefined) {
+				setIpProtectionActive(
+					info.securityStatus === "1" || info.securityStatus === 1
+				);
+			}
+		}
 	};
 
 	// Fetch IP list and IP info on mount
@@ -84,11 +127,18 @@ function IPSetting() {
 			.then((data) =>
 				setIpList(Array.isArray(data) ? data.map(normalizeIp) : [])
 			)
-			.catch(() => {});
-		// Fetch IP info
+			.catch(() => {}); // Fetch IP info
 		getIpInfoApi()
 			.then((res) => {
-				if (res && typeof res === "object") setIpInfo(res);
+				if (res && typeof res === "object") {
+					setIpInfo(res);
+					// Sync IP protection status based on securityStatus from API
+					if (res.securityStatus !== undefined) {
+						setIpProtectionActive(
+							res.securityStatus === "1" || res.securityStatus === 1
+						);
+					}
+				}
 			})
 			.catch(() => {});
 	}, []);
@@ -277,6 +327,7 @@ function IPSetting() {
 								Security Status
 							</h3>
 							<div className="relative">
+								{" "}
 								<button
 									className={`px-2 py-1 rounded flex items-center gap-1 text-xs font-semibold transition-all duration-200 ${
 										ipProtectionActive
@@ -288,7 +339,7 @@ function IPSetting() {
 											setShowDeactivateTooltip(false);
 											setShowDeactivateConfirm(true);
 										} else {
-											setIpProtectionActive(true);
+											handleIpProtectionToggle(true);
 										}
 									}}
 									onMouseEnter={() =>
@@ -466,13 +517,10 @@ function IPSetting() {
 								onClick={() => setShowDeactivateConfirm(false)}
 							>
 								Cancel
-							</button>
+							</button>{" "}
 							<button
 								className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 font-semibold text-sm"
-								onClick={() => {
-									setIpProtectionActive(false);
-									setShowDeactivateConfirm(false);
-								}}
+								onClick={() => handleIpProtectionToggle(false)}
 							>
 								Deactivate
 							</button>

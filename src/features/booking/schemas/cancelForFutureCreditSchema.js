@@ -1,11 +1,25 @@
-import { z } from 'zod';
-import { bookingSchema } from './bookingSchema';
+import { z } from "zod";
+import { baseBookingSchema } from "./bookingSchema";
 
-// Create a future credit schema
-// Similar to refund but might have different requirements
-export const cancelForFutureCreditSchema = bookingSchema.omit({
-	passenger_data: true,
-	// Other fields that might not be needed for future credit
-});
+// Create a future credit schema with specific validation
+export const cancelForFutureCreditSchema = baseBookingSchema
+	.extend({
+		future_credit_amount: z.string().min(1, "Future credit amount is required"),
+		rebooking_penalty: z.string().optional(), // Optional rebooking penalty field
+	})
+	.refine(
+		(data) => {
+			// Amount matching validation
+			const totalAmount = parseFloat(data.amount) || 0;
+			const chargesSum = (data.charge_data || []).reduce((sum, charge) => {
+				return sum + (parseFloat(charge.amount) || 0);
+			}, 0);
+			return Math.abs(totalAmount - chargesSum) < 0.01; // Allow for small floating point differences
+		},
+		{
+			message: "Total amount must match the sum of charges",
+			path: ["amount"],
+		}
+	);
 
 export default cancelForFutureCreditSchema;

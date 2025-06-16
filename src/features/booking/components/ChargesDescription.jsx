@@ -7,7 +7,15 @@ function ChargesDescription({
 	register,
 	addCharge,
 	removeCharge,
+	watch, // Add watch prop to monitor charge values
 }) {
+	// Calculate sum of charges
+	const chargeValues = watch ? watch("charge_data") : charges;
+	const chargesSum =
+		chargeValues?.reduce((sum, charge) => {
+			return sum + (parseFloat(charge?.amount) || 0);
+		}, 0) || 0;
+
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg">
 			<div className="flex items-center justify-between mb-2">
@@ -31,6 +39,7 @@ function ChargesDescription({
 					</tr>
 				</thead>
 				<tbody>
+					{" "}
 					{charges.map((_, index) => (
 						<tr key={index}>
 							<td className="px-2 py-2">{index + 1}</td>
@@ -64,6 +73,16 @@ function ChargesDescription({
 					))}
 				</tbody>
 			</table>
+
+			{/* Total charges display below the table */}
+			<div className="mt-3 p-2 bg-gray-700 rounded border">
+				<div className="text-sm text-gray-300 flex justify-between items-center">
+					<span className="font-medium">Total Sum of Charges:</span>
+					<span className="font-bold text-white">
+						{chargesSum.toFixed(2)} {currency}
+					</span>
+				</div>
+			</div>
 		</div>
 	);
 }

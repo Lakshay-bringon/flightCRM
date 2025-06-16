@@ -43,7 +43,18 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 		const pnr = watch("pnr");
 		const airline = watch("airline_name");
 		const passengers = watch("passenger_data");
-		const cardNumber = watch("card_number");
+		const charges = watch("charge_data");
+		const amount = watch("amount");
+		const cancellationRefundAmount = watch("cancellation_refund_amount");
+		// Calculate sum of charges for validation display
+		const chargesSum =
+			charges?.reduce((sum, charge) => {
+				return sum + (parseFloat(charge?.amount) || 0);
+			}, 0) || 0;
+
+		// Calculate amount matching for indicator
+		const totalAmount = parseFloat(amount) || 0;
+		const amountsMatch = Math.abs(totalAmount - chargesSum) < 0.01;
 
 		return (
 			<>
@@ -87,21 +98,25 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 				>
 					<div className="space-y-6">
 						<div className="p-3 border border-gray-700 rounded-lg">
+							{" "}
 							<div className="leading-loose">
 								Dear
 								<input
 									{...register("customer_name")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 60 }}
+									style={{ minWidth: 60, textTransform: "uppercase" }}
 									placeholder="Customer Name"
 								/>
 								,
 							</div>
+							<br />
 							<div className="leading-loose">Thank you for contacting us!</div>
+							<br />
 							<div className="leading-loose">
 								You can contact us on this number +1-877-413-0030 for any
 								related request.
 							</div>
+							<br />
 							<div className="leading-loose">
 								As per our conversation and as agreed, We have cancelled your
 								reservation under Confirmation number
@@ -113,7 +128,7 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 									onChange={(e) => setValue("pnr", e.target.value)}
 									placeholder="PNR"
 								/>
-								on{" "}
+								booked on{" "}
 								<input
 									{...register("airline_name")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
@@ -125,15 +140,16 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 								and will now submit the request to the airlines/consolidator to
 								refund your ticket.
 							</div>
+							<br />
 							<div className="leading-loose">
 								Upon the airline's approval and after deducting all
 								non-refundable amounts (base fare, penalties, taxes, and fees)
 								as per fare rules, you will receive a total refund of
 								<input
-									{...register("amount")}
+									{...register("cancellation_refund_amount")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 40 }}
-									placeholder="Amount"
+									placeholder="Refund Amount"
 								/>{" "}
 								<select
 									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
@@ -148,17 +164,71 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 										))
 									) : (
 										<option value="">Select Currency</option>
-									)}
+									)}{" "}
 								</select>{" "}
-								(Including all taxes and fees) as per the below description.
+								to your original form of payment used.
+							</div>
+							<br />
+							<div className="leading-loose">
+								To process cancellation of your flights for a refund, there will
+								be a new charge of
+								<input
+									{...register("amount")}
+									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
+									style={{ minWidth: 40 }}
+									placeholder="Total Amount"
+								/>{" "}
+								<select
+									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
+									value={currency}
+									onChange={(e) => setCurrency(e.target.value)}
+								>
+									{currencies && currencies.length > 0 ? (
+										currencies.map((currency) => (
+											<option key={currency.id} value={currency.Currency}>
+												{currency.Currency}
+											</option>
+										))
+									) : (
+										<option value="">Select Currency</option>
+									)}{" "}
+								</select>
+								.
+							</div>
+							<br />
+						</div>
+						{/* Amount Matching Indicator */}
+						<div
+							className={`p-3 border rounded-lg ${
+								amountsMatch
+									? "border-green-600 bg-green-900/20"
+									: "border-yellow-600 bg-yellow-900/20"
+							}`}
+						>
+							<div className="flex items-center gap-2 text-sm">
+								<div
+									className={`w-3 h-3 rounded-full ${
+										amountsMatch ? "bg-green-500" : "bg-yellow-500"
+									}`}
+								></div>
+								<span
+									className={
+										amountsMatch ? "text-green-400" : "text-yellow-400"
+									}
+								>
+									Amount Status: Total ({currency} {totalAmount.toFixed(2)}){" "}
+									{amountsMatch ? "matches" : "does not match"} sum of charges (
+									{currency} {chargesSum.toFixed(2)})
+								</span>{" "}
 							</div>
 						</div>
 						<ChargesDescription
-							charges={watch("charge_data")}
+							charges={charges}
 							register={register}
 							currency={currency}
 							addCharge={addCharge}
 							removeCharge={removeCharge}
+							watch={watch}
 						/>
 						<ItineraryDetailsInput
 							heading="Refund Details"
@@ -189,14 +259,14 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 								setPreviewImage(img);
 								setShowPreview(true);
 							}}
-						/>
+						/>{" "}
 						<div className="p-3 border border-gray-700 rounded-lg leading-loose">
-							<div className="flex flex-wrap items-center gap-2">
+							<p className="flex flex-wrap items-center gap-2">
 								Make sure that the displayed flight information is as you
 								planned. Please review the Names, Dates, Cities, and Departure –
 								Arrival times properly
-							</div>
-						</div>{" "}
+							</p>
+						</div>
 						<AuthorizeSection
 							cardholderName={watch("card_holder")}
 							cardType={watch("payment_method")}

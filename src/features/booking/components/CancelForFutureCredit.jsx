@@ -2,6 +2,7 @@ import React from "react";
 import BookingComponent from "./BookingComponent.jsx";
 import ChargesDescription from "./ChargesDescription.jsx";
 import ItineraryDetailsInput from "./ItineraryDetailsInput.jsx";
+import PassengerDetails from "./PassengerDetails.jsx";
 import PurchaseSummary from "./PurchaseSummary.jsx";
 import AttachmentsSection from "./AttachmentsSection.jsx";
 import AuthorizeSection from "./AuthorizeSection.jsx";
@@ -36,10 +37,22 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 		isEditMode,
 		type,
 	}) => {
-		// Watch values for dynamic updates - using the correct field names
+		// Watch values for dynamic updates
 		const pnr = watch("pnr");
 		const airline = watch("airline_name");
 		const cardNumber = watch("card_number");
+		const amount = watch("amount");
+		const futureCreditAmount = watch("future_credit_amount");
+		const rebookingPenalty = watch("rebooking_penalty");
+		const charges = watch("charge_data") || [];
+
+		// Calculate charges sum for amount matching indicator
+		const chargesSum = charges.reduce((sum, charge) => {
+			return sum + (parseFloat(charge.amount) || 0);
+		}, 0);
+
+		const totalAmount = parseFloat(amount) || 0;
+		const amountsMatch = Math.abs(totalAmount - chargesSum) < 0.01;
 
 		return (
 			<>
@@ -55,7 +68,9 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 							style={{ textTransform: "uppercase" }}
 							placeholder="Airline Name"
 							value={airline}
-							onChange={(e) => setValue("airline_name", e.target.value)}
+							onChange={(e) =>
+								setValue("airline_name", e.target.value.toUpperCase())
+							}
 						/>
 						FUTURE CREDIT CONFIRMATION –
 						<input
@@ -89,16 +104,22 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 								<input
 									{...register("customer_name")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 60 }}
+									style={{ minWidth: 60, textTransform: "uppercase" }}
 									placeholder="Customer Name"
+									onChange={(e) =>
+										setValue("customer_name", e.target.value.toUpperCase())
+									}
 								/>
 								,
 							</div>
+							<br />
 							<div className="leading-loose">Thank you for contacting us!</div>
+							<br />
 							<div className="leading-loose">
 								You can contact us on this number +1-877-413-0030 for any
 								related request.
 							</div>
+							<br />
 							<div className="leading-loose">
 								As per our conversation and as agreed, We got your reservation
 								cancelled directly by the
@@ -108,7 +129,9 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 									style={{ minWidth: 60, textTransform: "uppercase" }}
 									placeholder="Airline Name"
 									value={airline}
-									onChange={(e) => setValue("airline_name", e.target.value)}
+									onChange={(e) =>
+										setValue("airline_name", e.target.value.toUpperCase())
+									}
 								/>{" "}
 								under Confirmation number
 								<input
@@ -120,6 +143,72 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 									onChange={(e) => setValue("pnr", e.target.value)}
 								/>
 								for a future credit of
+								<input
+									{...register("future_credit_amount")}
+									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
+									style={{ minWidth: 40 }}
+									placeholder="Credit Amount"
+								/>{" "}
+								<select
+									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
+									value={currency}
+									onChange={(e) => setCurrency(e.target.value)}
+								>
+									{currencies && currencies.length > 0 ? (
+										currencies.map((currency) => (
+											<option key={currency.id} value={currency.Currency}>
+												{currency.Currency}
+											</option>
+										))
+									) : (
+										<option value="">Select Currency</option>
+									)}
+								</select>{" "}
+								per passenger.
+							</div>
+							<br />
+							<div className="leading-loose">
+								This Credit is valid to Travel on
+								<input
+									{...register("airline_name")}
+									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
+									style={{ minWidth: 60, textTransform: "uppercase" }}
+									placeholder="Airline Name"
+									value={airline}
+									onChange={(e) =>
+										setValue("airline_name", e.target.value.toUpperCase())
+									}
+								/>{" "}
+								and is non-transferable to any other airline or person. At the
+								time of rebooking, you may have to pay the airline penalty of
+								{/* New input for rebooking penalty */}
+								<input
+									{...register("rebooking_penalty")}
+									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
+									style={{ minWidth: 40 }}
+									placeholder="Penalty Amount"
+								/>
+								<select
+									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
+									value={currency}
+									onChange={(e) => setCurrency(e.target.value)}
+								>
+									{currencies && currencies.length > 0 ? (
+										currencies.map((currency) => (
+											<option key={currency.id} value={currency.Currency}>
+												{currency.Currency}
+											</option>
+										))
+									) : (
+										<option value="">Select Currency</option>
+									)}
+								</select>
+								plus the applicable fare difference.
+							</div>
+							<br />
+							<div className="leading-loose">
+								To process cancellation of your flights with a future credit,
+								there will be a new charge of
 								<input
 									{...register("amount")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
@@ -143,54 +232,45 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 								</select>{" "}
 								per passenger.
 							</div>
-							<div className="leading-loose">
-								This Credit is valid to Travel on
-								<input
-									{...register("airline_name")}
-									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 60, textTransform: "uppercase" }}
-									placeholder="Airline Name"
-									value={airline}
-									onChange={(e) => setValue("airline_name", e.target.value)}
-								/>{" "}
-								and is non-transferable to any other airline or person. At the
-								time of rebooking, you may have to pay the airline penalty plus
-								the applicable fare difference.
-							</div>
-							<div className="leading-loose">
-								To process cancellation of your flights with a future credit,
-								there will be a charge of
-								<input
-									{...register("amount")}
-									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 40 }}
-									placeholder="Amount"
-								/>{" "}
-								<select
-									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
-									value={currency}
-									onChange={(e) => setCurrency(e.target.value)}
+
+							<br />
+						</div>
+
+						{/* Amount Matching Indicator */}
+						<div
+							className={`p-3 border rounded-lg ${
+								amountsMatch
+									? "border-green-600 bg-green-900/20"
+									: "border-yellow-600 bg-yellow-900/20"
+							}`}
+						>
+							<div className="flex items-center gap-2 text-sm">
+								<div
+									className={`w-3 h-3 rounded-full ${
+										amountsMatch ? "bg-green-500" : "bg-yellow-500"
+									}`}
+								></div>
+								<span
+									className={
+										amountsMatch ? "text-green-400" : "text-yellow-400"
+									}
 								>
-									{currencies && currencies.length > 0 ? (
-										currencies.map((currency) => (
-											<option key={currency.id} value={currency.Currency}>
-												{currency.Currency}
-											</option>
-										))
-									) : (
-										<option value="">Select Currency</option>
-									)}
-								</select>{" "}
-								(Including all taxes and fees) as per the below description.
+									Amount Status: Total ({currency} {totalAmount.toFixed(2)}){" "}
+									{amountsMatch ? "matches" : "does not match"} sum of charges (
+									{currency} {chargesSum.toFixed(2)})
+								</span>
 							</div>
 						</div>
+
 						<ChargesDescription
-							charges={watch("charge_data")}
+							charges={charges}
 							register={register}
 							currency={currency}
 							addCharge={addCharge}
 							removeCharge={removeCharge}
+							watch={watch}
 						/>
+
 						<ItineraryDetailsInput
 							heading="E-Credit Details"
 							image={itineraryImage}
@@ -200,12 +280,21 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 								setShowPreview(true);
 							}}
 						/>
+
+						<PassengerDetails
+							register={register}
+							watch={watch}
+							setValue={setValue}
+							errors={errors}
+						/>
+
 						<PurchaseSummary
 							register={register}
 							watch={watch}
 							setValue={setValue}
 							errors={errors}
 						/>
+
 						<AttachmentsSection
 							images={attachments}
 							setImages={setAttachments}
@@ -214,19 +303,22 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 								setShowPreview(true);
 							}}
 						/>
+
 						<div className="p-3 border border-gray-700 rounded-lg leading-loose">
 							<div className="flex flex-wrap items-center gap-2">
 								Make sure that the displayed flight information is as you
 								planned. Please review the Names, Dates, Cities, and Departure –
 								Arrival times properly
 							</div>
-						</div>{" "}
+						</div>
+
 						<AuthorizeSection
 							cardholderName={watch("card_holder")}
 							cardType={watch("payment_method")}
-							cardNumber={watch("card_number")}
+							cardNumber={cardNumber}
 						/>
-					</div>{" "}
+					</div>
+
 					<button
 						type="submit"
 						disabled={isSubmitting}

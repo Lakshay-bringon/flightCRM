@@ -11,7 +11,10 @@ import {
 } from "lucide-react";
 import { currencyFormatter, formatESTDateTime } from "../../utils/formatters";
 import { BOOKING_STATUS } from "../../constants";
-import { getRevenueListApi } from "../../api/revenue/revenueApi";
+import {
+	getRevenueListApi,
+	downloadReportApi,
+} from "../../api/revenue/revenueApi";
 import { showPromiseToast } from "../../utils/showPromiseToast";
 
 function BookingDetailRow({ data }) {
@@ -65,6 +68,7 @@ function RevenueDetails() {
 		limit: 10,
 	});
 	const [loading, setLoading] = useState(false);
+	const [exportLoading, setExportLoading] = useState(false);
 
 	// Sorting state
 	const [sortBy, setSortBy] = useState("datetime");
@@ -172,7 +176,6 @@ function RevenueDetails() {
 		setCurrentPage(1);
 		fetchData(1, newLimit);
 	};
-
 	function SortIcon({ active, dir }) {
 		if (!active) return <span className="inline-block w-3" />;
 		return dir === "asc" ? (
@@ -181,6 +184,40 @@ function RevenueDetails() {
 			<ChevronDown className="inline w-3 h-3 ml-1" />
 		);
 	}
+
+	// Export function using server-side API
+	const handleExportData = async () => {
+		setExportLoading(true);
+		try {
+			const exportParams = {
+				userId: searchParams.userId,
+				date_from: searchParams.date_from,
+				date_to: searchParams.date_to,
+				show_refund: searchParams.show_refund || false,
+				show_chargeback: searchParams.show_chargeback || false,
+				agent_id: searchParams.agent_id || null,
+				provider_id: searchParams.provider_id || null,
+			};
+
+			// API handles the download directly with content disposition
+			const result = await downloadReportApi(exportParams);
+
+			showPromiseToast(Promise.resolve(), {
+				loading: "Generating report...",
+				success: `Report "${result.filename}" downloaded successfully!`,
+				error: "Failed to download report",
+			});
+		} catch (error) {
+			console.error("Failed to export data:", error);
+			showPromiseToast(Promise.reject(error), {
+				loading: "Generating report...",
+				success: "Report downloaded successfully!",
+				error: "Failed to download report",
+			});
+		} finally {
+			setExportLoading(false);
+		}
+	};
 
 	return (
 		<div className="max-w-7xl mx-auto flex flex-col h-full">
@@ -196,55 +233,17 @@ function RevenueDetails() {
 						</button>
 						<h2 className="text-lg font-semibold text-white">
 							Revenue Details
-						</h2>
-					</div>{" "}
+						</h2>{" "}
+					</div>
 					<button
-						onClick={() => {
-							// Export logic using sorted records
-							const headers = [
-								"Booking ID",
-								"MCO",
-								"Refund",
-								"Chargeback",
-								"Booking Status",
-								"Date",
-								"Agent",
-							];
-							const csvContent = [
-								headers.join(","),
-								...sortedRecords.map((row) =>
-									[
-										row.bid,
-										currencyFormatter
-											.format(row.revenue || 0)
-											.replace(/,/g, ""),
-										currencyFormatter.format(row.refund || 0).replace(/,/g, ""),
-										currencyFormatter
-											.format(row.chargeback || 0)
-											.replace(/,/g, ""),
-										`"${BOOKING_STATUS[row.bid_status] || "-"}"`,
-										row.datetime,
-										`"${row.agent_name || "-"}"`,
-									].join(",")
-								),
-							].join("\n");
-							const blob = new Blob([csvContent], {
-								type: "text/csv;charset=utf-8;",
-							});
-							const link = document.createElement("a");
-							const fileName = `revenue_details_export.csv`;
-							link.href = URL.createObjectURL(blob);
-							link.download = fileName;
-							document.body.appendChild(link);
-							link.click();
-							document.body.removeChild(link);
-						}}
-						className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex items-center gap-2 text-sm"
+						onClick={handleExportData}
+						disabled={exportLoading}
+						className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-lg flex items-center gap-2 text-sm transition-colors"
 					>
 						<Download className="w-4 h-4" />
-						Export Data
+						{exportLoading ? "Generating..." : "Export CSV"}
 					</button>
-				</div>{" "}
+				</div>
 				{/* Summary Bar */}
 				<div className="px-4 py-3 border-b border-gray-700 bg-gray-800/40 grid grid-cols-4 gap-4">
 					<div className="flex items-center gap-2">

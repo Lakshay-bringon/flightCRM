@@ -61,6 +61,9 @@ function BookingComponent({
 			pnr: "",
 			customer_name: "",
 			amount: "",
+			cancellation_refund_amount: "", // Add the new field for refund components
+			future_credit_amount: "", // Add the new field for future credit components
+			rebooking_penalty: "", // Add the new field for future credit rebooking penalty
 			cardNumber: "",
 			airline_name: "",
 			purchase_date: formatESTDateForInput(),
