@@ -31,6 +31,8 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 		setPreviewImage,
 		attachments,
 		setAttachments,
+		addPassenger,
+		removePassenger,
 		addCharge,
 		removeCharge,
 		onBack,
@@ -44,6 +46,8 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 		const amount = watch("amount");
 		const futureCreditAmount = watch("future_credit_amount");
 		const rebookingPenalty = watch("rebooking_penalty");
+		const passengers = watch("passenger_data");
+
 		const charges = watch("charge_data") || [];
 
 		// Calculate charges sum for amount matching indicator
@@ -235,7 +239,6 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 
 							<br />
 						</div>
-
 						{/* Amount Matching Indicator */}
 						<div
 							className={`p-3 border rounded-lg ${
@@ -261,7 +264,6 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 								</span>
 							</div>
 						</div>
-
 						<ChargesDescription
 							charges={charges}
 							register={register}
@@ -269,9 +271,10 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 							addCharge={addCharge}
 							removeCharge={removeCharge}
 							watch={watch}
-						/>
-
+						/>{" "}
 						<ItineraryDetailsInput
+							register={register}
+							setValue={setValue}
 							heading="E-Credit Details"
 							image={itineraryImage}
 							setImage={setItineraryImage}
@@ -280,21 +283,18 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 								setShowPreview(true);
 							}}
 						/>
-
 						<PassengerDetails
+							passengers={passengers}
 							register={register}
-							watch={watch}
-							setValue={setValue}
-							errors={errors}
+							addPassenger={addPassenger}
+							removePassenger={removePassenger}
 						/>
-
 						<PurchaseSummary
 							register={register}
 							watch={watch}
 							setValue={setValue}
 							errors={errors}
 						/>
-
 						<AttachmentsSection
 							images={attachments}
 							setImages={setAttachments}
@@ -303,7 +303,6 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 								setShowPreview(true);
 							}}
 						/>
-
 						<div className="p-3 border border-gray-700 rounded-lg leading-loose">
 							<div className="flex flex-wrap items-center gap-2">
 								Make sure that the displayed flight information is as you
@@ -311,7 +310,6 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 								Arrival times properly
 							</div>
 						</div>
-
 						<AuthorizeSection
 							cardholderName={watch("card_holder")}
 							cardType={watch("payment_method")}

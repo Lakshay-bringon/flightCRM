@@ -146,7 +146,9 @@ function BookingDetailsContent() {
 		} catch (err) {
 			console.error("Error updating chargeback details:", err);
 		}
-	}; // Save charging details function
+	};
+
+	// Save charging details function
 	const saveChargingDetails = async (updateData) => {
 		try {
 			console.log("BookingDetails - Received updateData:", updateData);
@@ -179,7 +181,7 @@ function BookingDetailsContent() {
 		return {
 			transaction_type: apiData?.transaction_type,
 			...apiData?.bookingData,
-			itinerary_details: apiData?.itinerary_details || "",
+			image_itinerary: apiData?.itinerary_details || "",
 			attachments: apiData?.attachments || [],
 			bid: apiData?.bid,
 			agent_name: apiData?.userName,

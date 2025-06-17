@@ -34,8 +34,7 @@ function BookingComponent({
 	React.useEffect(() => {
 		fetchCards();
 		fetchCurrencies();
-	}, []);
-	// Use defaultValues directly without transformation since they already have the correct field names
+	}, []); // Transform backend data to match frontend form field names
 	const formDefaultValues = React.useMemo(() => {
 		if (!defaultValues) return null;
 
@@ -64,7 +63,7 @@ function BookingComponent({
 			cancellation_refund_amount: "", // Add the new field for refund components
 			future_credit_amount: "", // Add the new field for future credit components
 			rebooking_penalty: "", // Add the new field for future credit rebooking penalty
-			cardNumber: "",
+			card_number: "", // Fixed: was cardNumber
 			airline_name: "",
 			purchase_date: formatESTDateForInput(),
 			email: "",
@@ -95,19 +94,26 @@ function BookingComponent({
 					description: "",
 				},
 			],
-			itinerary_details: "",
+			image_itinerary: "", // Fixed: was itinerary_details
 			attachments: [],
 		},
-	}); // Initialize state from form default values when available
+	});
+	// Initialize state from form default values when available
 	React.useEffect(() => {
 		if (formDefaultValues) {
 			reset(formDefaultValues);
 			setAttachments(formDefaultValues.attachments || []);
-			if (formDefaultValues.itinerary_details) {
-				setItineraryImage(formDefaultValues.itinerary_details);
+
+			// Handle itinerary image - check both possible field names
+			const itineraryData =
+				formDefaultValues.image_itinerary ||
+				formDefaultValues.itinerary_details;
+			if (itineraryData) {
+				setItineraryImage(itineraryData);
 			} else {
 				setItineraryImage(null);
 			}
+
 			if (formDefaultValues.currency) {
 				setCurrency(formDefaultValues.currency);
 			}
@@ -116,7 +122,7 @@ function BookingComponent({
 				pnr: "",
 				customer_name: "",
 				amount: "",
-				cardNumber: "",
+				card_number: "", // Fixed: was cardNumber
 				airline_name: "",
 				purchase_date: formatESTDateForInput(),
 				email: "",
@@ -135,7 +141,7 @@ function BookingComponent({
 					{ amount: "", description: "" },
 					{ amount: "", description: "" },
 				],
-				itinerary_details: "",
+				image_itinerary: "", // Fixed: was itinerary_details
 				attachments: [],
 			});
 			setItineraryImage(null);
@@ -296,22 +302,105 @@ function BookingComponent({
 		}
 	};
 
-	// Show validation errors using toast (recursive for nested errors)
-	const showAllErrors = (formErrors) => {
-		const show = (errObj) => {
-			Object.values(errObj).forEach((err) => {
-				if (err?.message) {
-					toast.error(err.message);
+	// Show only the first error and focus on that field
+	const showAllErrors = (errors) => {
+		// Helper function to flatten nested errors and get the first one
+		const getFirstError = (errorsObj, parentPath = "") => {
+			for (const [key, value] of Object.entries(errorsObj)) {
+				const currentPath = parentPath ? `${parentPath}.${key}` : key;
+
+				// If this is a direct error with message
+				if (value?.message) {
+					return {
+						fieldName: currentPath,
+						message: value.message,
+						ref: value.ref,
+					};
 				}
-				if (err?.types) {
-					Object.values(err.types).forEach((msg) => toast.error(msg));
+
+				// If this is an array of errors
+				if (Array.isArray(value)) {
+					for (let i = 0; i < value.length; i++) {
+						const arrayItem = value[i];
+						if (arrayItem && typeof arrayItem === "object") {
+							const arrayPath = `${currentPath}.${i}`;
+							const nestedError = getFirstError(arrayItem, arrayPath);
+							if (nestedError) {
+								return nestedError;
+							}
+						}
+					}
 				}
-				if (err?.ref === undefined && typeof err === "object") {
-					show(err);
+
+				// If this is a nested object
+				if (value && typeof value === "object" && !value.message) {
+					const nestedError = getFirstError(value, currentPath);
+					if (nestedError) {
+						return nestedError;
+					}
 				}
-			});
+			}
+			return null;
 		};
-		show(formErrors);
+
+		const firstError = getFirstError(errors);
+
+		if (!firstError) return;
+
+		// Show the first error as toast
+		toast.error(firstError.message);
+
+		// Scroll to and focus the field with error
+		setTimeout(() => {
+			let field = null;
+
+			// Try different strategies to find the field
+			if (firstError.ref) {
+				// Use the ref if available
+				field = firstError.ref;
+			} else {
+				// Try to find by name attribute (for array fields like charge_data.0.amount)
+				field = document.querySelector(`[name="${firstError.fieldName}"]`);
+
+				if (!field) {
+					// Try simpler name patterns
+					const simpleName = firstError.fieldName.replace(/\.\d+\./g, ".");
+					field = document.querySelector(`[name="${simpleName}"]`);
+				}
+
+				if (!field) {
+					// Try to find the first field that contains part of the field name
+					const fieldNameParts = firstError.fieldName.split(".");
+					for (const part of fieldNameParts) {
+						field = document.querySelector(`[name*="${part}"]`);
+						if (field) break;
+					}
+				}
+			}
+
+			if (field) {
+				// Scroll the field into view
+				field.scrollIntoView({
+					behavior: "smooth",
+					block: "center",
+				});
+
+				// Focus the field
+				field.focus();
+
+				// Add a temporary highlight effect
+				field.style.outline = "2px solid #ef4444";
+				field.style.outlineOffset = "2px";
+
+				// Remove highlight after 3 seconds
+				setTimeout(() => {
+					field.style.outline = "";
+					field.style.outlineOffset = "";
+				}, 3000);
+			} else {
+				console.log(`Could not find field for: ${firstError.fieldName}`);
+			}
+		}, 100); // Small delay to ensure DOM is ready
 	};
 
 	const onInvalid = (formErrors) => {

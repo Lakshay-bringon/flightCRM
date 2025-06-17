@@ -19,13 +19,14 @@ const chargeSchema = z.object({
 // Base schema without refinement for reuse
 const baseBookingSchema = z.object({
 	// Basic booking info
-	airline_name: z.string().min(1, "Airline name is required"),
-	customer_name: z.string().min(1, "Customer name is required"),
-	amount: z.string().min(1, "Total amount is required"),
-	pnr: z.string().min(1, "PNR is required"),
 
-	// Charges array
+	airline_name: z.string().min(1, "Airline name is required"),
+	pnr: z.string().min(1, "PNR is required"),
+	customer_name: z.string().min(1, "Customer name is required"),
+	amount: z.string().min(1, "Total amount is required"), // Charges array
 	charge_data: z.array(chargeSchema).min(1, "At least one charge is required"),
+
+	// NOTE: image_itinerary is defined in individual component schemas with custom error messages
 
 	// Passengers array
 	passenger_data: z
@@ -48,7 +49,6 @@ const baseBookingSchema = z.object({
 	country: z.string().min(1, "Country is required"),
 
 	// Optional fields
-	image_itinerary: z.string().optional(), // base64 string
 	attachments: z.array(z.string()).optional(), // array of base64 strings
 	// Required fields from previous flow
 	transactionType: z.string().optional(),

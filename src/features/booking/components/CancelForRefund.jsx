@@ -229,8 +229,10 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 							addCharge={addCharge}
 							removeCharge={removeCharge}
 							watch={watch}
-						/>
+						/>{" "}
 						<ItineraryDetailsInput
+							register={register}
+							setValue={setValue}
 							heading="Refund Details"
 							image={itineraryImage}
 							setImage={setItineraryImage}

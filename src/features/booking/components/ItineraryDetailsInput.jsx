@@ -6,10 +6,12 @@ export default function ItineraryDetailsInput({
 	setImage,
 	onImageClick,
 	heading = "Itinerary Details",
+	register,
+	setValue, // Add setValue prop
 }) {
 	const fileInputRef = useRef(null);
 	const [preview, setPreview] = useState(null);
-
+	const errorMessage = `${heading} image is required.`;
 	useEffect(() => {
 		const baseRoute = import.meta.env.VITE_UPLOADS_BASE_URL || "";
 		let imgSrc = null;
@@ -22,7 +24,6 @@ export default function ItineraryDetailsInput({
 		}
 		setPreview(imgSrc);
 	}, [image]);
-
 	const handleImageUpload = (e) => {
 		const file = e.target.files[0];
 		if (file) {
@@ -34,6 +35,13 @@ export default function ItineraryDetailsInput({
 				) {
 					setPreview(reader.result);
 					setImage && setImage(reader.result);
+					// Update the form value for validation
+					if (setValue) {
+						setValue("image_itinerary", reader.result);
+						console.log(
+							"ItineraryDetailsInput: Updated form value with image data"
+						);
+					}
 				} else {
 					console.warn("Invalid base64 image string:", reader.result);
 				}
@@ -41,10 +49,11 @@ export default function ItineraryDetailsInput({
 			reader.readAsDataURL(file);
 		}
 	};
-
 	const handleImageRemove = () => {
 		setPreview(null);
 		setImage && setImage(null);
+		// Update the form value for validation
+		setValue && setValue("image_itinerary", "");
 		if (fileInputRef.current) fileInputRef.current.value = "";
 	};
 
@@ -92,6 +101,13 @@ export default function ItineraryDetailsInput({
 					) {
 						setPreview(reader.result);
 						setImage && setImage(reader.result);
+						// Update the form value for validation
+						if (setValue) {
+							setValue("image_itinerary", reader.result);
+							console.log(
+								"ItineraryDetailsInput: Updated form value with drag/drop image"
+							);
+						}
 					}
 				};
 				reader.readAsDataURL(file);
@@ -132,7 +148,7 @@ export default function ItineraryDetailsInput({
 							alt="Itinerary"
 							className="w-12 h-12 object-cover rounded"
 						/>
-						<p className="truncate">Itinerary Image</p>
+						<p className="truncate">{heading.split(" ")[0]} Image</p>
 					</div>
 					<button onClick={handleImageRemove} className="ml-4">
 						<Trash className="w-5 h-5 text-red-500 hover:text-red-700" />
@@ -150,13 +166,19 @@ export default function ItineraryDetailsInput({
 					<p className="text-gray-400 flex flex-col items-center justify-center">
 						<CloudUpload className="w-10 h-10 mb-2" />
 						Drag and drop, click to select, or paste an image here
-					</p>
+					</p>{" "}
 					<input
 						ref={fileInputRef}
 						type="file"
 						accept="image/*"
 						onChange={handleImageUpload}
 						className="hidden"
+					/>
+					{/* Hidden input for form registration */}
+					<input
+						{...register("image_itinerary")}
+						type="hidden"
+						value={image || ""}
 					/>
 				</div>
 			)}

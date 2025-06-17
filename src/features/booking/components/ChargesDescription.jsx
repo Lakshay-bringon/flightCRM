@@ -39,7 +39,6 @@ function ChargesDescription({
 					</tr>
 				</thead>
 				<tbody>
-					{" "}
 					{charges.map((_, index) => (
 						<tr key={index}>
 							<td className="px-2 py-2">{index + 1}</td>

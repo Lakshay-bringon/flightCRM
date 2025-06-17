@@ -192,6 +192,8 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 							watch={watch}
 						/>{" "}
 						<ItineraryDetailsInput
+							register={register}
+							setValue={setValue}
 							image={itineraryImage}
 							setImage={setItineraryImage}
 							onImageClick={() => {

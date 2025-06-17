@@ -204,8 +204,10 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 							removeCharge={removeCharge}
 							watch={watch}
 						/>{" "}
-						{/* Itinerary Details Section */}
+						{/* Itinerary Details Section */}{" "}
 						<ItineraryDetailsInput
+							register={register}
+							setValue={setValue}
 							image={itineraryImage}
 							setImage={setItineraryImage}
 							onImageClick={() => {

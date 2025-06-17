@@ -6,6 +6,8 @@ import { baseBookingSchema } from "./bookingSchema";
 // But might want to modify certain validation requirements
 export const upgradeSchema = baseBookingSchema
 	.extend({
+		// Override image_itinerary with custom error message
+		image_itinerary: z.string().min(1, "Upgrade Details image is required"),
 		// We could add upgrade-specific fields or modify existing validation rules if needed
 		// For example, making fare_class required for upgrades:
 		initial_class: z.string().min(1, "initial class is required for upgrades"),
