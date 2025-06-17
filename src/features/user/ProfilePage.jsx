@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useDataContext } from "../../context/DataContext";
-import { getRevenueDashboardApi } from "../../api/revenue/revenueApi";
+import { dashboardOverviewApi } from "../../api/dashboard/dashboardApi";
 import { currencyFormatter } from "../../utils/formatters";
 
 function ProfilePage() {
@@ -28,16 +28,37 @@ function ProfilePage() {
 
 	// State for dashboard data
 	const [dashboard, setDashboard] = useState(null);
-	const [loading, setLoading] = useState(true);
-
-	// Fetch dashboard data
+	const [loading, setLoading] = useState(true); // Fetch dashboard data
 	useEffect(() => {
 		async function fetchDashboardData() {
 			if (!user?.id) return;
-
 			try {
 				setLoading(true);
-				const dashboardData = await getRevenueDashboardApi(user.id);
+
+				// Set default date range to current month in EST timezone
+				const now = new Date();
+				// Convert to EST timezone (UTC-5, or UTC-4 during daylight saving time)
+				const estNow = new Date(
+					now.toLocaleString("en-US", { timeZone: "America/New_York" })
+				);
+				const currentYear = estNow.getFullYear();
+				const currentMonth = String(estNow.getMonth() + 1).padStart(2, "0"); // getMonth() returns 0-11, so add 1
+				const firstDay = `${currentYear}-${currentMonth}-01`;
+				const lastDay = new Date(
+					currentYear,
+					estNow.getMonth() + 1,
+					0
+				).getDate(); // Get last day of current month
+				const date_from = firstDay;
+				const date_to = `${currentYear}-${currentMonth}-${String(
+					lastDay
+				).padStart(2, "0")}`;
+
+				const dashboardData = await dashboardOverviewApi({
+					userId: user.id,
+					date_from,
+					date_to,
+				});
 				setDashboard(dashboardData || null);
 			} catch (err) {
 				console.error("Failed to fetch dashboard data:", err);
@@ -79,10 +100,9 @@ function ProfilePage() {
 		email: user?.email || "N/A",
 		phone: user?.phone || "N/A",
 		// Use real dashboard data if available, otherwise fallback to 0
-		monthlyMCO: dashboard?.totalRevenue || 0,
+		monthlyMCO: dashboard?.revenue || 0,
 		totalBookings: dashboard?.totalBookings || 0,
-		monthlyChargeback:
-			Number(dashboard?.chargeBack || 0) + Number(dashboard?.totalRefund || 0),
+		monthlyChargeback: Number(dashboard?.chargeback_refund || 0),
 		alias: user?.id || "N/A",
 		team,
 		joinedDate,
@@ -115,17 +135,6 @@ function ProfilePage() {
 			</div>
 		</div>
 	);
-
-	const getTeamDisplay = () => {
-		if (userData.role === "Leader") {
-			return `${userData.name}'s Team`;
-		}
-		if (userData.team) {
-			// If the user has a team, show their leader's name
-			return `${userData.team}`;
-		}
-		return "Not Assigned";
-	};
 
 	// Find leader name from leaders context if leader_id exists
 	let leaderDisplay = null;
@@ -230,56 +239,6 @@ function ProfilePage() {
 					)}
 				</div>
 			</div>
-			{/* Detailed Information */}
-			{/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-4"> */}
-			{/* Personal Information */}
-			{/* <div className="rounded-lg bg-gray-800 bg-opacity-70 backdrop-blur-lg border border-gray-700">
-					<div className="p-4 border-b border-gray-700">
-						<h3 className="text-base font-semibold text-white">
-							Personal Information
-						</h3>
-					</div>
-					<div className="p-4 space-y-3">
-						<div className="flex justify-between items-center text-xs">
-							<div className="text-gray-400">Employee ID</div>
-							<div className="text-white">{userData.alias}</div>
-						</div>
-						<div className="flex justify-between items-center text-xs">
-							<div className="text-gray-400">Team</div>
-							<div className="flex items-center text-white">
-								<Users className="w-3 h-3 mr-1 text-blue-400" />
-								{getTeamDisplay()}
-							</div>
-						</div>
-						<div className="flex justify-between items-center text-xs">
-							<div className="text-gray-400">Joined Date</div>
-							<div className="text-white">{userData.joinedDate}</div>
-						</div>
-					</div>
-				</div> */}
-
-			{/* Permissions */}
-			{/* <div className="rounded-lg bg-gray-800 bg-opacity-70 backdrop-blur-lg border border-gray-700">
-					<div className="p-4 border-b border-gray-700">
-						<h3 className="text-base font-semibold text-white">
-							Access & Permissions
-						</h3>
-					</div>
-					<div className="p-4">
-						<div className="space-y-2">
-							{userData?.permissions?.map((permission, index) => (
-								<div
-									key={index}
-									className="flex items-center space-x-2 text-xs"
-								>
-									<Shield className="w-3 h-3 text-blue-400" />
-									<span className="text-white">{permission}</span>
-								</div>
-							))}
-						</div>
-					</div>
-				</div> */}
-			{/* </div> */}
 		</div>
 	);
 }
