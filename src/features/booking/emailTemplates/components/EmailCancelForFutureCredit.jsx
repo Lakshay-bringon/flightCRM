@@ -89,12 +89,16 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 						))}
 					</table>
 
-					{/* {ecredit_image && (
+					{image_itinerary && (
 						<>
 							<Text style={subheading}>E-Credit Details:</Text>
-							<Img src={ecredit_image} alt="E-Credit Info" style={imgStyle} />
-						</>	
-					)} */}
+							<Img
+								src={baseUploadUrl + image_itinerary}
+								alt="E-Credit Info"
+								style={imgStyle}
+							/>
+						</>
+					)}
 
 					<Text style={subheading}>Passenger Details:</Text>
 					<table style={table}>

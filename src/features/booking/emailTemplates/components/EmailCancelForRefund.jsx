@@ -17,7 +17,7 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 		refund_amount = "",
 		new_charge_amount = "",
 		charge_data = [],
-		itinerary_details = "",
+		image_itinerary = "",
 		passenger_data = [],
 		card_holder = "",
 		email = "",
@@ -99,9 +99,9 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 					</table>
 
 					<Text style={subheading}>Refund Details:</Text>
-					{itinerary_details && (
+					{image_itinerary && (
 						<Img
-							src={baseUploadUrl + itinerary_details}
+							src={baseUploadUrl + image_itinerary}
 							alt="Refund Details"
 							style={imgStyle}
 						/>

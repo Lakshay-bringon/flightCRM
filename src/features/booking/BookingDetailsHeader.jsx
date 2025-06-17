@@ -28,6 +28,7 @@ export default function BookingDetailsHeader({
 	formData,
 	onRefresh,
 	providerId,
+	bid_status,
 }) {
 	const [showComments, setShowComments] = useState(false);
 	const [showActivity, setShowActivity] = useState(false);
@@ -135,18 +136,20 @@ export default function BookingDetailsHeader({
 						{/* <button
 							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
 							type="button"
-							onClick={() => handleEmailAction("declined")}
-						>
+							onClick={() => handleEmailAction("declined")}						>
 							Card Declined
 						</button> */}
 
-						<button
-							className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
-							type="button"
-							onClick={() => handleEmailAction("e-ticket")}
-						>
-							E-Ticket
-						</button>
+						{/* Only show E-Ticket button when bid_status is 3 (Ticketed & MCO Charged) */}
+						{bid_status === 3 && (
+							<button
+								className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
+								type="button"
+								onClick={() => handleEmailAction("e-ticket")}
+							>
+								E-Ticket
+							</button>
+						)}
 					</PopoverContent>
 				</Popover>{" "}
 				<Button

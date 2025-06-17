@@ -169,14 +169,6 @@ const ProviderDetailsSection = React.memo(
 													</option>
 												))}
 											</select>
-											{!canShowAdvancedBidStatus && totalBookingAmount > 0 && (
-												<div className="mt-1 text-xs text-amber-400">
-													Note: "Ticketed & MCO Charged" will be available when
-													charging details sum (${chargingDetailsSum.toFixed(2)}
-													) meets or exceeds the total booking amount ($
-													{totalBookingAmount.toFixed(2)})
-												</div>
-											)}
 										</>
 									) : (
 										<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-sm">

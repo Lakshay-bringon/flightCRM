@@ -314,6 +314,7 @@ function BookingDetailsContent() {
 				formData={bookingDataForForm}
 				onRefresh={handleRefresh}
 				providerId={apiData?.provider_id}
+				bid_status={apiData?.bid_status}
 			/>
 			{!apiData ? (
 				<div className="flex items-center justify-center min-h-[200px]">

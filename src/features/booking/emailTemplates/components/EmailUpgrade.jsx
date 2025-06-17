@@ -30,7 +30,7 @@ export const EmailUpgrade = ({ bookingData }) => {
 		currency = "USD",
 		passenger_data = [],
 		charge_data = [],
-		itinerary_details = "",
+		image_itinerary = "",
 		initial_class = "",
 		upgraded_class = "",
 		charge_1_amount = "",
@@ -85,11 +85,11 @@ export const EmailUpgrade = ({ bookingData }) => {
 							</tr>
 						))}
 					</table>
-					{itinerary_details && (
+					{image_itinerary && (
 						<Section>
 							<Text style={subheading}>**** ITINERARY DETAILS ****</Text>
 							<Img
-								src={baseUploadUrl + itinerary_details}
+								src={baseUploadUrl + image_itinerary}
 								alt="Class Upgrade Details"
 								style={imgStyle}
 							/>

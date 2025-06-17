@@ -5,9 +5,9 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { RefreshCw } from "lucide-react";
 
 const columns = [
-	{ key: "date", label: "Date-Time" },
+	{ key: "datetime", label: "Date-Time" },
 	{ key: "activity", label: "Activity" },
-	{ key: "user", label: "User Name" },
+	{ key: "name", label: "Done by" },
 ];
 
 export default function Activity({ bid = "", open = false, onClose }) {

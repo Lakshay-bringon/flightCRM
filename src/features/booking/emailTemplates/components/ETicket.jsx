@@ -70,23 +70,16 @@ export const ETicket = ({ bookingData }) => {
 								<th style={th}>First Name</th>
 								<th style={th}>Last Name</th>
 							</tr>
-							{passenger_data && passenger_data.length > 0 ? (
-								passenger_data.map((passenger, index) => (
-									<tr key={index}>
-										<td style={td}>{index + 1}</td>
-										<td style={td}>{passenger.type}</td>
-										<td style={td}>{passenger.firstName}</td>
-										<td style={td}>{passenger.lastName}</td>
-									</tr>
-								))
-							) : (
-								<tr>
-									<td style={td}>1</td>
-									<td style={td}>ADT</td>
-									<td style={td}>JOHN</td>
-									<td style={td}>SULLIVAN</td>
-								</tr>
-							)}
+							{passenger_data && passenger_data.length > 0
+								? passenger_data.map((passenger, index) => (
+										<tr key={index}>
+											<td style={td}>{index + 1}</td>
+											<td style={td}>{passenger.type}</td>
+											<td style={td}>{passenger.firstName}</td>
+											<td style={td}>{passenger.lastName}</td>
+										</tr>
+								  ))
+								: null}
 						</tbody>
 					</table>
 

@@ -29,7 +29,7 @@ export const EmailExchange = ({ bookingData }) => {
 		currency = "",
 		passenger_data = [],
 		charge_data = [],
-		itinerary_details = "",
+		image_itinerary = "",
 		charge_1_amount = "",
 		charge_2_amount = "",
 		bid = "",
@@ -82,11 +82,11 @@ export const EmailExchange = ({ bookingData }) => {
 							</tr>
 						))}
 					</table>
-					{itinerary_details && (
+					{image_itinerary && (
 						<Section>
 							<Text style={subheading}>**** ITINERARY IMAGES ****</Text>
 							<Img
-								src={baseUploadUrl + itinerary_details}
+								src={baseUploadUrl + image_itinerary}
 								alt="Itinerary Details"
 								style={imgStyle}
 							/>

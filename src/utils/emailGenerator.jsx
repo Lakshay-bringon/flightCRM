@@ -1,4 +1,3 @@
-import { renderToStaticMarkup } from "react-dom/server";
 import { DynamicEmailTemplate } from "../features/booking/emailTemplates";
 import { render } from "@react-email/render";
 

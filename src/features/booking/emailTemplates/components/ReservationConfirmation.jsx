@@ -26,10 +26,10 @@ export const ReservationConfirmation = ({ bookingData }) => {
 		city = "",
 		state = "",
 		zip = "",
-		country = "US",
+		country = "",
 		passenger_data = [],
 		charge_data = [],
-		itinerary_details = "",
+		image_itinerary = "",
 		currency = "",
 		bid = "",
 	} = bookingData;
@@ -81,9 +81,9 @@ export const ReservationConfirmation = ({ bookingData }) => {
 					</table>
 
 					<Text style={subheading}>Flight Details:</Text>
-					{itinerary_details && (
+					{image_itinerary && (
 						<Img
-							src={baseUploadUrl + itinerary_details}
+							src={baseUploadUrl + image_itinerary}
 							alt="Itinerary"
 							style={imgStyle}
 						/>

@@ -30,7 +30,7 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 		currency = "USD",
 		passenger_data = [],
 		charge_data = [],
-		itinerary_details = "",
+		image_itinerary = "",
 		seat_numbers = "",
 		flight_details = [],
 		charge_1_amount = "",
@@ -149,10 +149,10 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						</table>
 					)}
 
-					{itinerary_details && (
+					{image_itinerary && (
 						<Section>
 							<Img
-								src={baseUploadUrl + itinerary_details}
+								src={baseUploadUrl + image_itinerary}
 								alt="Flight Itinerary"
 								style={imgStyle}
 							/>
