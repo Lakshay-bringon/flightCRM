@@ -141,7 +141,7 @@ export default function BookingDetailsHeader({
 						</button> */}
 
 						{/* Only show E-Ticket button when bid_status is 3 (Ticketed & MCO Charged) */}
-						{bid_status === 3 && (
+						{bid_status === "3" && (
 							<button
 								className="w-full text-left px-4 py-2 rounded hover:bg-gray-800 text-gray-200 transition-colors cursor-pointer"
 								type="button"
