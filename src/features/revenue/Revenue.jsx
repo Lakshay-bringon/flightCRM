@@ -119,6 +119,9 @@ function Revenue() {
 	return (
 		<div className="max-w-7xl mx-auto space-y-6">
 			{/* Quick Stats Section */}
+			<h2 className="text-xl font-semibold text-gray-200 mb-2 ml-2">
+				Monthly Stats
+			</h2>
 			<div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 					<StatsCard
@@ -142,7 +145,12 @@ function Revenue() {
 					<StatsCard
 						title="Net Revenue"
 						value={
-							dashboard ? (dashboard.totalRevenue * 0.95).toFixed(2) : "$0"
+							dashboard
+								? (
+										dashboard.totalRevenue * 0.95 -
+										(dashboard.totalRefund + dashboard.chargeBack)
+								  ).toFixed(2)
+								: "$0"
 						}
 						icon={FileText}
 						color="green"
