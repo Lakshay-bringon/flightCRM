@@ -111,7 +111,7 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 								<input
 									{...register("customer_name")}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 60, textTransform: "uppercase" }}
+									style={{ minWidth: 60 }}
 									placeholder="Customer Name"
 								/>
 								,
