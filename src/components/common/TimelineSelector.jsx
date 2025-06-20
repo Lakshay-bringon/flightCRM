@@ -82,12 +82,13 @@ export function TimelineSelector({ onRangeChange }) {
 		onRangeChange({ start, end });
 	};
 	const handleDateChange = (field, value) => {
-		// Convert the input date string to EST timezone properly
+		// Handle date input properly for EST timezone
 		let newDate = null;
 		if (value) {
-			// Create a date from the input value and convert to EST
-			const inputDate = new Date(value + "T00:00:00"); // Add time to avoid timezone issues
-			newDate = convertToEST(inputDate);
+			// Parse the date string (YYYY-MM-DD) and create EST date properly
+			const [year, month, day] = value.split("-").map(Number);
+			// Create date in EST timezone directly at noon to avoid timezone conversion issues
+			newDate = new Date(year, month - 1, day, 12, 0, 0, 0);
 		}
 
 		const newDateRange = {

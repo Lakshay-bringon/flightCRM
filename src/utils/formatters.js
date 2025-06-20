@@ -1,11 +1,3 @@
-// Currency formatter for monetary values
-export const currencyFormatter = new Intl.NumberFormat("en-US", {
-	style: "currency",
-	currency: "USD",
-	minimumFractionDigits: 0,
-	maximumFractionDigits: 0,
-});
-
 // Number formatter for quantities
 export const numberFormatter = new Intl.NumberFormat("en-US", {
 	minimumFractionDigits: 0,

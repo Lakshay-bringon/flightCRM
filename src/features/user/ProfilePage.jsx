@@ -17,7 +17,10 @@ import {
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useDataContext } from "../../context/DataContext";
 import { dashboardOverviewApi } from "../../api/dashboard/dashboardApi";
-import { currencyFormatter } from "../../utils/formatters";
+import {
+	getCurrentESTDate,
+	formatESTDateForInput,
+} from "../../utils/formatters";
 
 function ProfilePage() {
 	const location = useLocation();
@@ -218,21 +221,22 @@ function ProfilePage() {
 						</div>
 					) : (
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+							{" "}
 							<StatCard
 								icon={DollarSign}
 								label="MCO"
-								value={currencyFormatter.format(userData.monthlyMCO)}
+								value={`${userData.monthlyMCO || 0}`}
 								valueColor="text-green-400"
 							/>
 							<StatCard
 								icon={Ticket}
 								label="Total Bookings"
 								value={userData.totalBookings}
-							/>
+							/>{" "}
 							<StatCard
 								icon={AlertCircle}
 								label="Chargeback + Refund"
-								value={currencyFormatter.format(userData.monthlyChargeback)}
+								value={`${userData.monthlyChargeback || 0}`}
 								valueColor="text-red-400"
 							/>
 						</div>

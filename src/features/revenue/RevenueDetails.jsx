@@ -9,7 +9,6 @@ import {
 	ChevronUp,
 	FileText,
 } from "lucide-react";
-import { currencyFormatter, formatESTDateTime } from "../../utils/formatters";
 import { BOOKING_STATUS } from "../../constants";
 import {
 	getRevenueListApi,
@@ -33,19 +32,19 @@ function BookingDetailRow({ data }) {
 				{data.bid}
 			</td>
 			<td className="w-[12%] py-3 px-4 text-green-400 truncate border-r border-gray-700/50 text-center">
-				{currencyFormatter.format(data.revenue || 0)}
+				{data.revenue || 0}
 			</td>
 			<td className="w-[12%] py-3 px-4 text-orange-400 truncate border-r border-gray-700/50 text-center">
-				{currencyFormatter.format(data.refund || 0)}
+				{data.refund || 0}
 			</td>
 			<td className="w-[12%] py-3 px-4 text-red-400 truncate border-r border-gray-700/50 text-center">
-				{currencyFormatter.format(data.chargeback || 0)}
+				{data.chargeback || 0}
 			</td>
 			<td className="w-[15%] py-3 px-4 text-gray-300 truncate border-r border-gray-700/50 text-center">
 				{BOOKING_STATUS[data.bid_status] || "-"}
 			</td>
 			<td className="w-[18%] py-3 px-4 text-gray-300 truncate border-r border-gray-700/50 text-center">
-				{formatESTDateTime(data.datetime)}
+				{data.datetime}
 			</td>
 			<td className="w-[16%] py-3 px-4 text-gray-300 truncate text-center">
 				{data.agent_name || "-"}
@@ -233,7 +232,7 @@ function RevenueDetails() {
 						</button>
 						<h2 className="text-lg font-semibold text-white">
 							Revenue Details
-						</h2>{" "}
+						</h2>
 					</div>
 					<button
 						onClick={handleExportData}
@@ -251,7 +250,7 @@ function RevenueDetails() {
 						<div>
 							<div className="text-xs text-gray-400">Total Revenue</div>
 							<div className="text-sm font-medium text-blue-400">
-								{currencyFormatter.format(Number(data.total_revenue) || 0)}
+								{Number(data.total_revenue) || 0}
 							</div>
 						</div>
 					</div>
@@ -269,10 +268,8 @@ function RevenueDetails() {
 						<div>
 							<div className="text-xs text-gray-400">Net Revenue</div>
 							<div className="text-sm font-medium text-purple-400">
-								{currencyFormatter.format(
-									(Number(data.total_revenue) || 0) * 0.95 -
-										(Number(data.total_chargeback_refund) || 0)
-								)}
+								{(Number(data.total_revenue) || 0) * 0.95 -
+									(Number(data.total_chargeback_refund) || 0)}
 							</div>
 						</div>
 					</div>
@@ -281,9 +278,7 @@ function RevenueDetails() {
 						<div>
 							<div className="text-xs text-gray-400">Refunds + Chargebacks</div>
 							<div className="text-sm font-medium text-red-400">
-								{currencyFormatter.format(
-									Number(data.total_chargeback_refund) || 0
-								)}
+								{Number(data.total_chargeback_refund) || 0}
 							</div>
 						</div>
 					</div>
@@ -302,21 +297,21 @@ function RevenueDetails() {
 											className="w-[12%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
 											onClick={() => handleSort("revenue")}
 										>
-											MCO{" "}
+											MCO
 											<SortIcon active={sortBy === "revenue"} dir={sortDir} />
 										</th>
 										<th
 											className="w-[12%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
 											onClick={() => handleSort("refund")}
 										>
-											Refund{" "}
+											Refund
 											<SortIcon active={sortBy === "refund"} dir={sortDir} />
 										</th>
 										<th
 											className="w-[12%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
 											onClick={() => handleSort("chargeback")}
 										>
-											Chargeback{" "}
+											Chargeback
 											<SortIcon
 												active={sortBy === "chargeback"}
 												dir={sortDir}
@@ -326,7 +321,7 @@ function RevenueDetails() {
 											className="w-[15%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
 											onClick={() => handleSort("bid_status")}
 										>
-											Booking status{" "}
+											Booking status
 											<SortIcon
 												active={sortBy === "bid_status"}
 												dir={sortDir}
@@ -336,14 +331,14 @@ function RevenueDetails() {
 											className="w-[18%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
 											onClick={() => handleSort("datetime")}
 										>
-											Date{" "}
+											Date
 											<SortIcon active={sortBy === "datetime"} dir={sortDir} />
 										</th>
 										<th
 											className="w-[16%] pb-3 px-4 font-medium cursor-pointer select-none text-center hover:text-white transition-colors"
 											onClick={() => handleSort("agent_name")}
 										>
-											Agent{" "}
+											Agent
 											<SortIcon
 												active={sortBy === "agent_name"}
 												dir={sortDir}
@@ -384,9 +379,9 @@ function RevenueDetails() {
 						{totalPages > 0 && (
 							<div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3 border-t border-gray-700 bg-gray-800/60 gap-2">
 								<div className="text-sm text-gray-400 mb-2 md:mb-0">
-									Showing{" "}
-									{data.total === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}{" "}
-									to {Math.min(currentPage * itemsPerPage, data.total)} of{" "}
+									Showing
+									{data.total === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}
+									to {Math.min(currentPage * itemsPerPage, data.total)} of
 									{data.total} records
 								</div>
 								<div className="flex items-center gap-4">

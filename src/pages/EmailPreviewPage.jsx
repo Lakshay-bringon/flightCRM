@@ -11,6 +11,7 @@ import {
 } from "../utils/emailGenerator";
 import EmailEditor from "../components/common/EmailEditor.jsx";
 import Modal from "../components/common/Modal";
+import { useAuth } from "../auth/hooks/useAuth";
 
 export default function EmailPreviewPage() {
 	const location = useLocation();
@@ -22,6 +23,7 @@ export default function EmailPreviewPage() {
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const [attachments, setAttachments] = useState([]);
 	const [showAttachmentInput, setShowAttachmentInput] = useState(false);
+	const { user } = useAuth();
 
 	const formData = location.state?.formData;
 	const emailType = location.state?.emailType;
@@ -123,6 +125,7 @@ export default function EmailPreviewPage() {
 				subject: subject,
 				htmlContentBase64: htmlContentBase64,
 				providerId: providerId,
+				userId: user?.id, // Optional user ID if available
 				// Send processed attachments with base64 content
 				attachments: processedAttachments,
 			};
@@ -130,6 +133,7 @@ export default function EmailPreviewPage() {
 				bid: eticketPayload.bid,
 				subject: eticketPayload.subject,
 				providerId: eticketPayload.providerId,
+				userId: user?.id, // Optional user ID if available
 				attachments: `${eticketPayload.attachments.length} base64 strings`,
 			});
 			emailPromise = dispatchEticketApi(eticketPayload);
@@ -140,6 +144,7 @@ export default function EmailPreviewPage() {
 				subject: subject,
 				htmlContentBase64: htmlContentBase64,
 				providerId: providerId,
+				userId: user?.id, // Optional user ID if available
 				// No attachments for non-e-ticket emails
 			};
 			emailPromise = dispatchEmailApi(emailPayload);
