@@ -11,26 +11,45 @@ function PassengerDetails({
 	watch,
 }) {
 	const handleDateChange = (date, index) => {
-		setValue(`passenger_data.${index}.dob`, date);
+		if (date instanceof Date && !isNaN(date.getTime())) {
+			// Convert Date object to MM/DD/YYYY string format for validation
+			const formattedDate = date.toLocaleDateString("en-US");
+			setValue(`passenger_data.${index}.dob`, formattedDate);
+		} else {
+			setValue(`passenger_data.${index}.dob`, "");
+		}
 	};
 	const handleManualDateInput = (event, index) => {
 		const inputValue = event.target.value;
-		// Store the raw input value temporarily to preserve partial inputs
+
+		// Always store as string for validation
 		setValue(`passenger_data.${index}.dob`, inputValue);
 
-		// Try to parse the input as a valid date
+		// Try to parse the input as a valid date for validation
 		const parsedDate = new Date(inputValue);
 		if (!isNaN(parsedDate.getTime()) && inputValue.length >= 8) {
-			// If it's a valid date and reasonably complete, use the Date object
-			setValue(`passenger_data.${index}.dob`, parsedDate);
+			// Convert to MM/DD/YYYY format if it's a valid date
+			const formattedDate = parsedDate.toLocaleDateString("en-US");
+			setValue(`passenger_data.${index}.dob`, formattedDate);
 		}
 	};
-
 	// Helper function to ensure we only pass valid Date objects or null to ReactDatePicker
 	const getValidDateForPicker = (value) => {
+		if (!value) return null;
+
+		// If it's already a Date object, use it
 		if (value instanceof Date && !isNaN(value.getTime())) {
 			return value;
 		}
+
+		// If it's a string, try to parse it as a date
+		if (typeof value === "string") {
+			const parsedDate = new Date(value);
+			if (!isNaN(parsedDate.getTime())) {
+				return parsedDate;
+			}
+		}
+
 		return null;
 	};
 	return (
