@@ -228,11 +228,13 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 								setPreviewImage(imgSrc);
 								setShowPreview(true);
 							}}
-						/>
+						/>{" "}
 						{/* Passenger Details Section */}
 						<PassengerDetails
 							passengers={passengers}
 							register={register}
+							setValue={setValue}
+							watch={watch}
 							addPassenger={addPassenger}
 							removePassenger={removePassenger}
 						/>

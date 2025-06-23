@@ -1,8 +1,18 @@
 import React from "react";
 import { useDataContext } from "../../../context/DataContext";
 
-function PurchaseSummary({ register }) {
-	const { cards, fetchCards } = useDataContext();
+function PurchaseSummary({ register, watch, setValue }) {
+	const { cards, fetchCards } = useDataContext(); // Function to format date from YYYY-MM-DD to MM/DD/YYYY (US format)
+	const formatDate = (dateString) => {
+		if (!dateString) return "";
+		const date = new Date(dateString);
+		if (isNaN(date.getTime())) return dateString; // Return original if invalid
+		return date.toLocaleDateString("en-US"); // Always MM/DD/YYYY format
+	};
+
+	// Watch the purchase_date value
+	const purchaseDate = watch("purchase_date");
+
 	React.useEffect(() => {
 		fetchCards();
 	}, []);
@@ -53,12 +63,12 @@ function PurchaseSummary({ register }) {
 							</option>
 						))}
 					</select>
-				</div>
+				</div>{" "}
 				<div>
 					<label className="inline-block w-32">Purchase Date:</label>
 					<input
-						type="date"
 						{...register("purchase_date")}
+						value={formatDate(purchaseDate)}
 						className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full md:w-60"
 						readOnly
 					/>

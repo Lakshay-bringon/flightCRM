@@ -241,10 +241,12 @@ function CancelForRefund({ bookingData, onBack, onRefresh }) {
 								setShowPreview(true);
 							}}
 						/>
-						{/* Passenger Details Section */}
+						{/* Passenger Details Section */}{" "}
 						<PassengerDetails
 							passengers={passengers}
 							register={register}
+							setValue={setValue}
+							watch={watch}
 							addPassenger={addPassenger}
 							removePassenger={removePassenger}
 						/>

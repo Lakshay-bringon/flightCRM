@@ -282,10 +282,12 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 								setPreviewImage(itineraryImage);
 								setShowPreview(true);
 							}}
-						/>
+						/>{" "}
 						<PassengerDetails
 							passengers={passengers}
 							register={register}
+							setValue={setValue}
+							watch={watch}
 							addPassenger={addPassenger}
 							removePassenger={removePassenger}
 						/>

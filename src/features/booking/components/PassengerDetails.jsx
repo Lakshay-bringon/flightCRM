@@ -1,12 +1,38 @@
-import React from "react";
 import { Plus, X } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function PassengerDetails({
 	passengers,
 	register,
 	addPassenger,
 	removePassenger,
+	setValue,
+	watch,
 }) {
+	const handleDateChange = (date, index) => {
+		setValue(`passenger_data.${index}.dob`, date);
+	};
+	const handleManualDateInput = (event, index) => {
+		const inputValue = event.target.value;
+		// Store the raw input value temporarily to preserve partial inputs
+		setValue(`passenger_data.${index}.dob`, inputValue);
+
+		// Try to parse the input as a valid date
+		const parsedDate = new Date(inputValue);
+		if (!isNaN(parsedDate.getTime()) && inputValue.length >= 8) {
+			// If it's a valid date and reasonably complete, use the Date object
+			setValue(`passenger_data.${index}.dob`, parsedDate);
+		}
+	};
+
+	// Helper function to ensure we only pass valid Date objects or null to ReactDatePicker
+	const getValidDateForPicker = (value) => {
+		if (value instanceof Date && !isNaN(value.getTime())) {
+			return value;
+		}
+		return null;
+	};
 	return (
 		<div className="p-3 border border-gray-700 rounded-lg">
 			<div className="flex items-center justify-between mb-2">
@@ -20,7 +46,7 @@ function PassengerDetails({
 					Add Passenger
 				</button>
 			</div>
-			<div className="overflow-x-auto">
+			<div className="overflow-x-auto datepicker-container">
 				<table className="w-full border-separate border-spacing-y-2">
 					<thead>
 						<tr className="text-left border-b border-gray-700 bg-gray-800">
@@ -75,11 +101,21 @@ function PassengerDetails({
 								</td>
 								<td className="py-2 px-2">
 									<div className="relative">
-										<input
-											type="date"
-											{...register(`passenger_data.${index}.dob`)}
+										<DatePicker
+											selected={getValidDateForPicker(
+												watch(`passenger_data.${index}.dob`)
+											)}
+											onChange={(date) => handleDateChange(date, index)}
+											onChangeRaw={(event) =>
+												handleManualDateInput(event, index)
+											}
+											dateFormat="MM/dd/yyyy"
+											placeholderText="MM/DD/YYYY"
 											className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full cursor-pointer"
-											onClick={(e) => e.stopPropagation()}
+											showYearDropdown
+											showMonthDropdown
+											dropdownMode="select"
+											autoComplete="off"
 										/>
 									</div>
 								</td>
@@ -99,6 +135,117 @@ function PassengerDetails({
 					</tbody>
 				</table>
 			</div>
+			{/* Custom styles for DatePicker visibility */}
+			<style>{`
+				/* Custom container to handle overflow and datepicker */
+				.datepicker-container {
+					position: relative;
+				}
+				
+				/* Allow datepicker to escape overflow container */
+				.datepicker-container .react-datepicker-popper {
+					position: fixed !important;
+					z-index: 9999 !important;
+				}
+				
+				.react-datepicker-popper {
+					z-index: 9999 !important;
+				}
+				.react-datepicker {
+					background-color: #374151 !important;
+					border: 1px solid #4b5563 !important;
+					color: white !important;
+					box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+						0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+				}
+				.react-datepicker__header {
+					background-color: #1f2937 !important;
+					border-bottom: 1px solid #4b5563 !important;
+				}
+				.react-datepicker__current-month,
+				.react-datepicker__day-name {
+					color: white !important;
+				}
+				/* Popper triangle styling */
+				.react-datepicker-popper[data-placement^="bottom"]
+					.react-datepicker__triangle {
+					fill: #1f2937 !important;
+					color: #1f2937 !important;
+				}
+				.react-datepicker-popper[data-placement^="top"]
+					.react-datepicker__triangle {
+					fill: #374151 !important;
+					color: #374151 !important;
+				}
+				.react-datepicker-popper[data-placement^="bottom"]
+					.react-datepicker__triangle::before {
+					border-bottom-color: #4b5563 !important;
+				}
+				.react-datepicker-popper[data-placement^="top"]
+					.react-datepicker__triangle::before {
+					border-top-color: #4b5563 !important;
+				}
+				.react-datepicker-popper[data-placement^="bottom"]
+					.react-datepicker__triangle::after {
+					border-bottom-color: #1f2937 !important;
+				}
+				.react-datepicker-popper[data-placement^="top"]
+					.react-datepicker__triangle::after {
+					border-top-color: #374151 !important;
+				}
+
+				.react-datepicker__day {
+					color: white !important;
+				}
+				.react-datepicker__day:hover {
+					background-color: #3b82f6 !important;
+					color: white !important;
+				}
+				.react-datepicker__day--selected {
+					background-color: #3b82f6 !important;
+					color: white !important;
+				}
+				.react-datepicker__day--keyboard-selected {
+					background-color: #1d4ed8 !important;
+					color: white !important;
+				}
+				.react-datepicker__day--outside-month {
+					color: #6b7280 !important;
+				}
+				.react-datepicker__year-dropdown,
+				.react-datepicker__month-dropdown {
+					background-color: #374151 !important;
+					border: 1px solid #4b5563 !important;
+					color: white !important;
+				}
+				.react-datepicker__year-dropdown-container--scrollable,
+				.react-datepicker__month-dropdown-container--scrollable {
+					background-color: #374151 !important;
+				}
+				.react-datepicker__year-option,
+				.react-datepicker__month-option {
+					background-color: #374151 !important;
+					color: white !important;
+				}
+				.react-datepicker__month-select,
+				.react-datepicker__year-select {
+					background-color: #374151 !important;
+					color: white !important;
+				}
+				.react-datepicker__year-option:hover,
+				.react-datepicker__month-option:hover {
+					background-color: #3b82f6 !important;
+					color: white !important;
+				}
+				.react-datepicker__year-option--selected,
+				.react-datepicker__month-option--selected {
+					background-color: #3b82f6 !important;
+					color: white !important;
+				}
+				.react-datepicker__dropdown-container {
+					background-color: #374151 !important;
+				}
+			`}</style>
 		</div>
 	);
 }
