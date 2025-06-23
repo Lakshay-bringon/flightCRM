@@ -22,9 +22,8 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 		currency,
 		setCurrency,
 		itineraryDetails,
-		setItineraryDetails,
-		itineraryImage,
-		setItineraryImage,
+		setItineraryDetails,		itineraryImages,
+		setItineraryImages,
 		showPreview,
 		setShowPreview,
 		previewImage,
@@ -271,15 +270,14 @@ function CancelForFutureCredit({ bookingData, onBack, onRefresh }) {
 							addCharge={addCharge}
 							removeCharge={removeCharge}
 							watch={watch}
-						/>{" "}
-						<ItineraryDetailsInput
+						/>{" "}						<ItineraryDetailsInput
 							register={register}
 							setValue={setValue}
 							heading="E-Credit Details"
-							image={itineraryImage}
-							setImage={setItineraryImage}
-							onImageClick={() => {
-								setPreviewImage(itineraryImage);
+							images={itineraryImages}
+							setImages={setItineraryImages}
+							onImageClick={(imageUrl) => {
+								setPreviewImage(imageUrl);
 								setShowPreview(true);
 							}}
 						/>{" "}

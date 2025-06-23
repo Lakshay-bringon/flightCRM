@@ -84,15 +84,25 @@ export const EmailUpgrade = ({ bookingData }) => {
 								<td style={td}>{item.description}</td>
 							</tr>
 						))}
-					</table>
-					{image_itinerary && (
+					</table>					{image_itinerary && (
 						<Section>
 							<Text style={subheading}>**** ITINERARY DETAILS ****</Text>
-							<Img
-								src={baseUploadUrl + image_itinerary}
-								alt="Class Upgrade Details"
-								style={imgStyle}
-							/>
+							{Array.isArray(image_itinerary) ? (
+								image_itinerary.map((img, index) => (
+									<Img
+										key={index}
+										src={baseUploadUrl + img}
+										alt={`Class Upgrade Details ${index + 1}`}
+										style={imgStyle}
+									/>
+								))
+							) : (
+								<Img
+									src={baseUploadUrl + image_itinerary}
+									alt="Class Upgrade Details"
+									style={imgStyle}
+								/>
+							)}
 						</Section>
 					)}{" "}
 					<Text style={subheading}>Passengers Details:</Text>

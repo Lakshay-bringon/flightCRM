@@ -147,15 +147,24 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 								</tr>
 							</tbody>
 						</table>
-					)}
-
-					{image_itinerary && (
+					)}					{image_itinerary && (
 						<Section>
-							<Img
-								src={baseUploadUrl + image_itinerary}
-								alt="Flight Itinerary"
-								style={imgStyle}
-							/>
+							{Array.isArray(image_itinerary) ? (
+								image_itinerary.map((img, index) => (
+									<Img
+										key={index}
+										src={baseUploadUrl + img}
+										alt={`Flight Itinerary ${index + 1}`}
+										style={imgStyle}
+									/>
+								))
+							) : (
+								<Img
+									src={baseUploadUrl + image_itinerary}
+									alt="Flight Itinerary"
+									style={imgStyle}
+								/>
+							)}
 						</Section>
 					)}
 

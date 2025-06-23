@@ -23,9 +23,8 @@ function Upgrade({ bookingData, onBack, onRefresh }) {
 		currency,
 		setCurrency,
 		itineraryDetails,
-		setItineraryDetails,
-		itineraryImage,
-		setItineraryImage,
+		setItineraryDetails,		itineraryImages,
+		setItineraryImages,
 		showPreview,
 		setShowPreview,
 		previewImage,
@@ -223,14 +222,13 @@ function Upgrade({ bookingData, onBack, onRefresh }) {
 							removeCharge={removeCharge}
 							watch={watch}
 						/>{" "}
-						{/* Itinerary Details Section */}{" "}
-						<ItineraryDetailsInput
+						{/* Itinerary Details Section */}{" "}						<ItineraryDetailsInput
 							register={register}
 							setValue={setValue}
-							image={itineraryImage}
-							setImage={setItineraryImage}
-							onImageClick={() => {
-								setPreviewImage(itineraryImage);
+							images={itineraryImages}
+							setImages={setItineraryImages}
+							onImageClick={(imageUrl) => {
+								setPreviewImage(imageUrl);
 								setShowPreview(true);
 							}}
 						/>

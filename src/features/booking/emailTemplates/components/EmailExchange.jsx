@@ -81,15 +81,25 @@ export const EmailExchange = ({ bookingData }) => {
 								<td style={td}>{charge.description || "No Description"}</td>
 							</tr>
 						))}
-					</table>
-					{image_itinerary && (
+					</table>					{image_itinerary && (
 						<Section>
 							<Text style={subheading}>**** ITINERARY IMAGES ****</Text>
-							<Img
-								src={baseUploadUrl + image_itinerary}
-								alt="Itinerary Details"
-								style={imgStyle}
-							/>
+							{Array.isArray(image_itinerary) ? (
+								image_itinerary.map((img, index) => (
+									<Img
+										key={index}
+										src={baseUploadUrl + img}
+										alt={`Itinerary Details ${index + 1}`}
+										style={imgStyle}
+									/>
+								))
+							) : (
+								<Img
+									src={baseUploadUrl + image_itinerary}
+									alt="Itinerary Details"
+									style={imgStyle}
+								/>
+							)}
 						</Section>
 					)}
 					<Text>

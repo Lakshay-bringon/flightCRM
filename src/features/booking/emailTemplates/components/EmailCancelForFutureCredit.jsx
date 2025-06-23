@@ -87,16 +87,25 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 								<td style={td}>{item.description}</td>
 							</tr>
 						))}
-					</table>
-
-					{image_itinerary && (
+					</table>					{image_itinerary && (
 						<>
 							<Text style={subheading}>E-Credit Details:</Text>
-							<Img
-								src={baseUploadUrl + image_itinerary}
-								alt="E-Credit Info"
-								style={imgStyle}
-							/>
+							{Array.isArray(image_itinerary) ? (
+								image_itinerary.map((img, index) => (
+									<Img
+										key={index}
+										src={baseUploadUrl + img}
+										alt={`E-Credit Info ${index + 1}`}
+										style={imgStyle}
+									/>
+								))
+							) : (
+								<Img
+									src={baseUploadUrl + image_itinerary}
+									alt="E-Credit Info"
+									style={imgStyle}
+								/>
+							)}
 						</>
 					)}
 

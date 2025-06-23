@@ -174,14 +174,28 @@ function BookingDetailsContent() {
 			console.error("Error updating charging details:", err);
 		}
 	};
-
 	// Memoize bookingDataForForm to avoid new object reference on every render
 	const bookingDataForForm = useMemo(() => {
 		if (!apiData) return null;
+		
+		// Handle itinerary_details - can be single string, array, or null
+		let processedItinerary = "";
+		if (apiData?.itinerary_details) {
+			if (Array.isArray(apiData.itinerary_details)) {
+				// If it's already an array, use it as is
+				processedItinerary = apiData.itinerary_details;
+			} else {
+				// If it's a single string, convert to array format for consistency
+				processedItinerary = [apiData.itinerary_details];
+			}
+		} else {
+			processedItinerary = [];
+		}
+		
 		return {
 			transaction_type: apiData?.transaction_type,
 			...apiData?.bookingData,
-			image_itinerary: apiData?.itinerary_details || "",
+			image_itinerary: processedItinerary,
 			attachments: apiData?.attachments || [],
 			bid: apiData?.bid,
 			agent_name: apiData?.userName,

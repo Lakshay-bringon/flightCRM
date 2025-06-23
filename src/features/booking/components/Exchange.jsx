@@ -20,9 +20,8 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 		isSubmitting,
 		currencies,
 		currency,
-		setCurrency,
-		itineraryImage,
-		setItineraryImage,
+		setCurrency,		itineraryImages,
+		setItineraryImages,
 		showPreview,
 		setShowPreview,
 		previewImage,
@@ -190,14 +189,13 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 							addCharge={addCharge}
 							removeCharge={removeCharge}
 							watch={watch}
-						/>{" "}
-						<ItineraryDetailsInput
+						/>{" "}						<ItineraryDetailsInput
 							register={register}
 							setValue={setValue}
-							image={itineraryImage}
-							setImage={setItineraryImage}
-							onImageClick={() => {
-								setPreviewImage(itineraryImage);
+							images={itineraryImages}
+							setImages={setItineraryImages}
+							onImageClick={(imageUrl) => {
+								setPreviewImage(imageUrl);
 								setShowPreview(true);
 							}}
 						/>

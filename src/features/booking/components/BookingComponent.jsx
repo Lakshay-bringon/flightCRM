@@ -41,7 +41,7 @@ function BookingComponent({
 		return defaultValues;
 	}, [defaultValues]);
 	// State management
-	const [itineraryImage, setItineraryImage] = useState(null);
+	const [itineraryImages, setItineraryImages] = useState([]);
 	const [showPreview, setShowPreview] = useState(false);
 	const [previewImage, setPreviewImage] = useState(null);
 	const [attachments, setAttachments] = useState([]);
@@ -102,16 +102,19 @@ function BookingComponent({
 	React.useEffect(() => {
 		if (formDefaultValues) {
 			reset(formDefaultValues);
-			setAttachments(formDefaultValues.attachments || []);
-
-			// Handle itinerary image - check both possible field names
+			setAttachments(formDefaultValues.attachments || []);			// Handle itinerary images - check both possible field names
 			const itineraryData =
 				formDefaultValues.image_itinerary ||
 				formDefaultValues.itinerary_details;
 			if (itineraryData) {
-				setItineraryImage(itineraryData);
+				// Handle both array and single image formats
+				if (Array.isArray(itineraryData)) {
+					setItineraryImages(itineraryData);
+				} else {
+					setItineraryImages([itineraryData]);
+				}
 			} else {
-				setItineraryImage(null);
+				setItineraryImages([]);
 			}
 
 			if (formDefaultValues.currency) {
@@ -144,7 +147,7 @@ function BookingComponent({
 				image_itinerary: "", // Fixed: was itinerary_details
 				attachments: [],
 			});
-			setItineraryImage(null);
+			setItineraryImages([]);
 			setAttachments([]);
 			setCurrency("USD");
 		}
@@ -201,13 +204,10 @@ function BookingComponent({
 		}
 
 		setIsSubmitting(true);
-		try {
-			// For itinerary: if base64, send as is; if filename, send as is (server expects base64 for new, filename for unchanged)
-			const processedItinerary =
-				typeof itineraryImage === "string" &&
-				itineraryImage.startsWith("data:image/")
-					? itineraryImage
-					: itineraryImage || null;
+		try {			// For itinerary: process array of images
+			const processedItinerary = (itineraryImages || []).map(img =>
+				typeof img === "string" && img.startsWith("data:image/") ? img : img
+			);
 
 			// For attachments: map each image to base64 if new, or filename if unchanged
 			const processedAttachments = (attachments || []).map((img) =>
@@ -417,9 +417,8 @@ function BookingComponent({
 		isSubmitting,
 		currencies,
 		currency,
-		setCurrency,
-		itineraryImage,
-		setItineraryImage,
+		setCurrency,		itineraryImages,
+		setItineraryImages,
 		showPreview,
 		setShowPreview,
 		previewImage,

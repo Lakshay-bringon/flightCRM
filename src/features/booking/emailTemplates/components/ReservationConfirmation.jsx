@@ -81,15 +81,24 @@ export const ReservationConfirmation = ({ bookingData }) => {
 								<td style={td}>{item.description}</td>
 							</tr>
 						))}
-					</table>
-
-					<Text style={subheading}>Flight Details:</Text>
+					</table>					<Text style={subheading}>Flight Details:</Text>
 					{image_itinerary && (
-						<Img
-							src={baseUploadUrl + image_itinerary}
-							alt="Itinerary"
-							style={imgStyle}
-						/>
+						Array.isArray(image_itinerary) ? (
+							image_itinerary.map((img, index) => (
+								<Img
+									key={index}
+									src={baseUploadUrl + img}
+									alt={`Itinerary ${index + 1}`}
+									style={imgStyle}
+								/>
+							))
+						) : (
+							<Img
+								src={baseUploadUrl + image_itinerary}
+								alt="Itinerary"
+								style={imgStyle}
+							/>
+						)
 					)}
 
 					<Text style={subheading}>Passenger Details:</Text>

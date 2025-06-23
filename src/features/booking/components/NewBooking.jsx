@@ -21,9 +21,8 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 		isSubmitting,
 		currencies,
 		currency,
-		setCurrency,
-		itineraryImage,
-		setItineraryImage,
+		setCurrency,		itineraryImages,
+		setItineraryImages,
 		showPreview,
 		setShowPreview,
 		previewImage,
@@ -204,28 +203,13 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 							removeCharge={removeCharge}
 							watch={watch}
 						/>{" "}
-						{/* Itinerary Details Section */}{" "}
-						<ItineraryDetailsInput
+						{/* Itinerary Details Section */}{" "}						<ItineraryDetailsInput
 							register={register}
 							setValue={setValue}
-							image={itineraryImage}
-							setImage={setItineraryImage}
-							onImageClick={() => {
-								const baseRoute = import.meta.env.VITE_UPLOADS_BASE_URL || "";
-								let imgSrc = null;
-								if (itineraryImage) {
-									if (
-										typeof itineraryImage === "string" &&
-										itineraryImage.startsWith("data:image/")
-									) {
-										imgSrc = itineraryImage;
-									} else if (typeof itineraryImage === "string") {
-										imgSrc = itineraryImage.startsWith(baseRoute)
-											? itineraryImage
-											: `${baseRoute}${itineraryImage}`;
-									}
-								}
-								setPreviewImage(imgSrc);
+							images={itineraryImages}
+							setImages={setItineraryImages}
+							onImageClick={(imageUrl) => {
+								setPreviewImage(imageUrl);
 								setShowPreview(true);
 							}}
 						/>{" "}

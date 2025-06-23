@@ -96,15 +96,24 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 								<td style={td}>{item.description}</td>
 							</tr>
 						))}
-					</table>
-
-					<Text style={subheading}>Refund Details:</Text>
+					</table>					<Text style={subheading}>Refund Details:</Text>
 					{image_itinerary && (
-						<Img
-							src={baseUploadUrl + image_itinerary}
-							alt="Refund Details"
-							style={imgStyle}
-						/>
+						Array.isArray(image_itinerary) ? (
+							image_itinerary.map((img, index) => (
+								<Img
+									key={index}
+									src={baseUploadUrl + img}
+									alt={`Refund Details ${index + 1}`}
+									style={imgStyle}
+								/>
+							))
+						) : (
+							<Img
+								src={baseUploadUrl + image_itinerary}
+								alt="Refund Details"
+								style={imgStyle}
+							/>
+						)
 					)}
 
 					<Text style={subheading}>Passenger Details:</Text>
