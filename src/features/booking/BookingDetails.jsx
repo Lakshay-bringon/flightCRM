@@ -177,21 +177,26 @@ function BookingDetailsContent() {
 	// Memoize bookingDataForForm to avoid new object reference on every render
 	const bookingDataForForm = useMemo(() => {
 		if (!apiData) return null;
-		
+
 		// Handle itinerary_details - can be single string, array, or null
-		let processedItinerary = "";
+		let processedItinerary = []; // Default to an empty array
 		if (apiData?.itinerary_details) {
 			if (Array.isArray(apiData.itinerary_details)) {
-				// If it's already an array, use it as is
+				// If it's already a JS array, use it directly
 				processedItinerary = apiData.itinerary_details;
-			} else {
-				// If it's a single string, convert to array format for consistency
-				processedItinerary = [apiData.itinerary_details];
+			} else if (typeof apiData.itinerary_details === "string") {
+				try {
+					// Try to parse it as JSON. It could be a JSON array string.
+					const parsed = JSON.parse(apiData.itinerary_details);
+					// Ensure the parsed result is an array
+					processedItinerary = Array.isArray(parsed) ? parsed : [parsed];
+				} catch (e) {
+					// If parsing fails, it's likely a single image URL string (legacy)
+					processedItinerary = [apiData.itinerary_details];
+				}
 			}
-		} else {
-			processedItinerary = [];
 		}
-		
+
 		return {
 			transaction_type: apiData?.transaction_type,
 			...apiData?.bookingData,
