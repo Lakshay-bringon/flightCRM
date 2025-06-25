@@ -7,7 +7,7 @@ import { baseBookingSchema } from "./bookingSchema";
 export const seatAssignmentSchema = baseBookingSchema
 	.extend({
 		// Override image_itinerary with custom error message
-		image_itinerary: z.string().min(1, "Itinerary image is required"),
+		image_itinerary: z.array(z.string()).min(1, "Itinerary image is required"),
 	})
 	.refine(
 		(data) => {

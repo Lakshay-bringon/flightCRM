@@ -5,7 +5,9 @@ import { baseBookingSchema } from "./bookingSchema";
 export const cancelForFutureCreditSchema = baseBookingSchema
 	.extend({
 		// Override image_itinerary with custom error message
-		image_itinerary: z.string().min(1, "E-Credit Details image is required"),
+		image_itinerary: z
+			.array(z.string())
+			.min(1, "E-Credit Details image is required"),
 		future_credit_amount: z.string().min(1, "Future credit amount is required"),
 		rebooking_penalty: z.string().optional(), // Optional rebooking penalty field
 	})

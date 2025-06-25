@@ -10,7 +10,9 @@ export const cancelForRefundSchema = baseBookingSchema
 			.string()
 			.min(1, "Cancellation refund amount is required"),
 		// Override image_itinerary with custom error message
-		image_itinerary: z.string().min(1, "Refund Details image is required"),
+		image_itinerary: z
+			.array(z.string())
+			.min(1, "Refund Details image is required"),
 	})
 	.refine(
 		(data) => {
