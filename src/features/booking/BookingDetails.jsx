@@ -178,7 +178,7 @@ function BookingDetailsContent() {
 	const bookingDataForForm = useMemo(() => {
 		if (!apiData) return null;
 
-		// Handle itinerary_details - can be single string, array, or null
+		// Handle itinerary_details - which is a JSON stringified array
 		let processedItinerary = []; // Default to an empty array
 		if (apiData?.itinerary_details) {
 			if (Array.isArray(apiData.itinerary_details)) {
@@ -186,13 +186,24 @@ function BookingDetailsContent() {
 				processedItinerary = apiData.itinerary_details;
 			} else if (typeof apiData.itinerary_details === "string") {
 				try {
-					// Try to parse it as JSON. It could be a JSON array string.
+					console.log(apiData.itinerary_details);
+					// Parse the JSON string to get the array
 					const parsed = JSON.parse(apiData.itinerary_details);
-					// Ensure the parsed result is an array
+					// We're certain it's an array, but check just to be safe
 					processedItinerary = Array.isArray(parsed) ? parsed : [parsed];
+					console.log(
+						"Successfully parsed itinerary_details:",
+						processedItinerary
+					);
 				} catch (e) {
-					// If parsing fails, it's likely a single image URL string (legacy)
-					processedItinerary = [apiData.itinerary_details];
+					// Log error for debugging
+					console.error(
+						"Failed to parse itinerary_details:",
+						e,
+						apiData.itinerary_details
+					);
+					// Fallback to treating it as a single item
+					// processedItinerary = [apiData.itinerary_details];
 				}
 			}
 		}
