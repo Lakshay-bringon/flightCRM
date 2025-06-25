@@ -635,8 +635,6 @@ export const dispatchEticketApi = async (eticketData) => {
 	try {
 		// Determine if we're sending FormData or JSON
 
-		console.log("Dispatching e-ticket with data:", eticketData);
-
 		const res = await API.post("/dispatchEticket", eticketData);
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {

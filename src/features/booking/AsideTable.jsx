@@ -120,6 +120,11 @@ export default function AsideTable({
 											<th
 												key={col.key}
 												className="py-2 px-4 text-left text-gray-400 font-semibold border-b border-gray-700/50"
+												style={{
+													width: col.width || "auto",
+													minWidth: col.minWidth || "80px",
+													maxWidth: col.maxWidth || "300px",
+												}}
 											>
 												{col.label}
 											</th>
@@ -135,7 +140,12 @@ export default function AsideTable({
 											{columns.map((col) => (
 												<td
 													key={col.key}
-													className="py-3 px-4 text-gray-300 truncate"
+													className="py-3 px-4 text-gray-300 break-words whitespace-normal"
+													style={{
+														width: col.width || "auto",
+														minWidth: col.minWidth || "80px",
+														maxWidth: col.maxWidth || "300px",
+													}}
 												>
 													{row[col.key]}
 												</td>

@@ -32,6 +32,7 @@ export const ReservationConfirmation = ({ bookingData }) => {
 		image_itinerary = "",
 		currency = "",
 		bid = "",
+		agent_name,
 	} = bookingData;
 
 	const fullAddress = [billing_address, city, state, zip, country]
@@ -50,8 +51,14 @@ export const ReservationConfirmation = ({ bookingData }) => {
 					<Text style={heading}>
 						{airline_name} – Reservation Confirmation – {pnr}
 					</Text>
-					<Text>Dear {customer_name},</Text>
+					<Text>
+						Dear <strong>{customer_name}</strong>,
+					</Text>
 					<Text>Thank you for contacting us!</Text>
+					<Text>
+						Your booking has been handled by our travel expert,{" "}
+						<strong>{agent_name}</strong>.
+					</Text>
 					<Text>
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
@@ -65,7 +72,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 						</strong>{" "}
 						(inclusive of taxes and fees) as per the below description:
 					</Text>
-
 					<Text style={subheading}>Charges Description:</Text>
 					<table style={table}>
 						<tr>
@@ -81,9 +87,10 @@ export const ReservationConfirmation = ({ bookingData }) => {
 								<td style={td}>{item.description}</td>
 							</tr>
 						))}
-					</table>					<Text style={subheading}>Flight Details:</Text>
-					{image_itinerary && (
-						Array.isArray(image_itinerary) ? (
+					</table>{" "}
+					<Text style={subheading}>Flight Details:</Text>
+					{image_itinerary &&
+						(Array.isArray(image_itinerary) ? (
 							image_itinerary.map((img, index) => (
 								<Img
 									key={index}
@@ -98,9 +105,7 @@ export const ReservationConfirmation = ({ bookingData }) => {
 								alt="Itinerary"
 								style={imgStyle}
 							/>
-						)
-					)}
-
+						))}
 					<Text style={subheading}>Passenger Details:</Text>
 					<table style={table}>
 						<tr>
@@ -116,7 +121,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 							</tr>
 						))}
 					</table>
-
 					<Text style={subheading}>Purchase Summary:</Text>
 					<table style={table}>
 						<tbody>
@@ -150,37 +154,15 @@ export const ReservationConfirmation = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text>
 						Make sure that the displayed flight information is as you planned.
 						Please review the Names, Dates, Cities, and Departure – Arrival
 						times properly.
 					</Text>
-
-					<Text>
-						I certify that I, <strong>{card_holder}</strong>, am the authorized
-						user of this card and I will not dispute the payment with my
-						credit/debit card company or bank, as this amount is being charged
-						for my personal travel.
-					</Text>
-
-					<Text>
-						Awaiting your acceptance to the declaration{" "}
-						<a
-							href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bid}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							style={ctaLink}
-						>
-							<strong>“I Agree / I Authorize”</strong>
-						</a>
-					</Text>
-
 					<Text style={note}>
 						Baggage fees may apply. Check with the airline for updated baggage
 						rules.
 					</Text>
-
 					<Text style={subheading}>Important:</Text>
 					<Text>
 						Your e-tickets will be sent via email within 24 hours if there is no
@@ -188,19 +170,16 @@ export const ReservationConfirmation = ({ bookingData }) => {
 						post-ticket changes, you are responsible for penalties, fare
 						difference, and applicable fees.
 					</Text>
-
 					<Text>
 						Note: Your card may be billed in split charges not exceeding the
 						total amount. All service fees are non-refundable.
 					</Text>
-
 					<Text style={subheading}>Disclaimer:</Text>
 					<Text>
 						SkylineTravels LLC is an independent travel agency and is not
 						affiliated with any airline. SkylineTravels may appear as a charge
 						on your card. Service fees are non-refundable.
 					</Text>
-
 					<Text>
 						For any changes or discrepancies, please contact us at{" "}
 						<strong>+1-877-413-0030</strong> or{" "}
@@ -209,7 +188,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 						</a>{" "}
 						within 24 hours.
 					</Text>
-
 					<Text style={subheading}>Important Information:</Text>
 					<table style={table}>
 						<tbody>
@@ -235,13 +213,11 @@ export const ReservationConfirmation = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text>
 						If your credit card is declined, call us immediately at{" "}
 						<strong>+1-877-413-0030</strong>. Children 12+ are considered adults
 						for pricing.
 					</Text>
-
 					<Text style={subheading}>For Changes:</Text>
 					<table style={table}>
 						<tbody>
@@ -253,7 +229,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>For Cancellations:</Text>
 					<table style={table}>
 						<tbody>
@@ -265,7 +240,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>Seat Assignments:</Text>
 					<table style={table}>
 						<tbody>
@@ -277,7 +251,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>Baggage Policy:</Text>
 					<table style={table}>
 						<tbody>
@@ -289,7 +262,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>Visa/Travel Documents:</Text>
 					<table style={table}>
 						<tbody>
@@ -301,7 +273,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>Check-In:</Text>
 					<table style={table}>
 						<tbody>
@@ -314,7 +285,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text>
 						Still have questions? Call <strong>+1-877-413-0030</strong> or email
 						us at{" "}
@@ -323,9 +293,25 @@ export const ReservationConfirmation = ({ bookingData }) => {
 						</a>
 						.
 					</Text>
-
 					<Text>
 						We value your business and look forward to serving you again!
+					</Text>
+					<Text>
+						I certify that I, <strong>{card_holder}</strong>, am the authorized
+						user of this card and I will not dispute the payment with my
+						credit/debit card company or bank, as this amount is being charged
+						for my personal travel.
+					</Text>
+					<Text>
+						Awaiting your acceptance to the declaration{" "}
+						<a
+							href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bid}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							style={ctaLink}
+						>
+							<strong>“I Agree / I Authorize”</strong>
+						</a>
 					</Text>
 				</Container>
 			</Body>

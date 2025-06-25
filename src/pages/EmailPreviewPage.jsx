@@ -31,7 +31,6 @@ export default function EmailPreviewPage() {
 		location.state?.transactionType || formData.transaction_type;
 	const bid = location.state?.bid;
 	const providerId = location.state?.providerId;
-	const subject = generateEmailSubject(formData, transactionType, emailType);
 
 	// Generate email HTML in useEffect
 	useEffect(() => {
@@ -88,12 +87,10 @@ export default function EmailPreviewPage() {
 			emailType
 		); // Process attachments as base64 for e-ticket emails
 		let processedAttachments = [];
-		if (emailType === "e-ticket" && attachments.length > 0) {
+		if (attachments.length > 0) {
 			try {
-				console.log("Processing attachments for e-ticket...");
 				processedAttachments = await Promise.all(
 					attachments.map(async (attachment, index) => {
-						console.log(`Processing attachment ${index}:`, attachment.name);
 						const base64 = await new Promise((resolve, reject) => {
 							const reader = new FileReader();
 							reader.onload = () => {
@@ -107,7 +104,6 @@ export default function EmailPreviewPage() {
 						return base64;
 					})
 				);
-				console.log("Processed attachments:", processedAttachments.length);
 			} catch (error) {
 				console.error("Error processing attachments:", error);
 				setIsSending(false);
@@ -118,37 +114,20 @@ export default function EmailPreviewPage() {
 		// Prepare API payload and call appropriate API based on email type
 		let emailPromise;
 
-		if (emailType === "e-ticket") {
-			// For e-ticket emails, send with base64 attachments
-			const eticketPayload = {
-				bid: bid,
-				subject: subject,
-				htmlContentBase64: htmlContentBase64,
-				providerId: providerId,
-				userId: user?.id, // Optional user ID if available
-				// Send processed attachments with base64 content
-				attachments: processedAttachments,
-			};
-			console.log("Dispatching e-ticket with payload:", {
-				bid: eticketPayload.bid,
-				subject: eticketPayload.subject,
-				providerId: eticketPayload.providerId,
-				userId: user?.id, // Optional user ID if available
-				attachments: `${eticketPayload.attachments.length} base64 strings`,
-			});
-			emailPromise = dispatchEticketApi(eticketPayload);
-		} else {
-			// For other email types, use dispatchEmailApi without attachments
-			const emailPayload = {
-				bid: bid,
-				subject: subject,
-				htmlContentBase64: htmlContentBase64,
-				providerId: providerId,
-				userId: user?.id, // Optional user ID if available
-				// No attachments for non-e-ticket emails
-			};
-			emailPromise = dispatchEmailApi(emailPayload);
-		}
+		// For e-ticket emails, send with base64 attachments
+		const eticketPayload = {
+			emailType: emailType, // Include email type for clarity
+			bid: bid,
+			subject: subject,
+			htmlContentBase64: htmlContentBase64,
+			providerId: providerId,
+			userId: user?.id, // Optional user ID if available
+			// Send processed attachments with base64 content
+			attachments: processedAttachments,
+		};
+
+		emailPromise = dispatchEticketApi(eticketPayload);
+
 		showPromiseToast(
 			emailPromise,
 			{
@@ -294,32 +273,29 @@ export default function EmailPreviewPage() {
 							</button>
 						</div>
 						<div className="flex items-center gap-3">
-							{emailType === "e-ticket" && (
-								<>
-									<input
-										type="file"
-										id="attachment-input"
-										className="hidden"
-										multiple
-										accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
-										onChange={handleFileSelect}
-									/>
-									<button
-										onClick={() =>
-											document.getElementById("attachment-input").click()
-										}
-										disabled={isGenerating}
-										className={`px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition ${
-											isGenerating
-												? "bg-gray-600 text-gray-400 cursor-not-allowed"
-												: ""
-										}`}
-										title="Add attachments"
-									>
-										📎 Add Attachment
-									</button>
-								</>
-							)}
+							<input
+								type="file"
+								id="attachment-input"
+								className="hidden"
+								multiple
+								accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+								onChange={handleFileSelect}
+							/>
+							<button
+								onClick={() =>
+									document.getElementById("attachment-input").click()
+								}
+								disabled={isGenerating}
+								className={`px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition ${
+									isGenerating
+										? "bg-gray-600 text-gray-400 cursor-not-allowed"
+										: ""
+								}`}
+								title="Add attachments"
+							>
+								📎 Add Attachment
+							</button>
+
 							<button
 								onClick={handleEditEmail}
 								disabled={isGenerating || !emailHTML}
@@ -365,8 +341,8 @@ export default function EmailPreviewPage() {
 						</div>{" "}
 					</header>
 					{/* Attachments section for e-ticket emails */}
-					{emailType === "e-ticket" && attachments.length > 0 && (
-						<div className="bg-gray-800 border-b border-gray-600 p-4">
+					{attachments.length > 0 && (
+						<div className="bg-gray-800 border-b border-gray-600 p-4 ">
 							<h3 className="text-white font-medium mb-2">
 								Attachments ({attachments.length})
 							</h3>
