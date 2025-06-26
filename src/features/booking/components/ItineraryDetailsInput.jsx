@@ -34,28 +34,27 @@ export default function ItineraryDetailsInput({
 
 	const handleImageUpload = (e) => {
 		const files = Array.from(e.target.files);
-
-		files.forEach((file) => {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				if (
-					typeof reader.result === "string" &&
-					reader.result.startsWith("data:image/")
-				) {
-					const newImages = [...images, reader.result];
-					setImages && setImages(newImages);
-					// Update the form value for validation
-					if (setValue) {
-						setValue("image_itinerary", newImages);
-						console.log(
-							"ItineraryDetailsInput: Updated form value with image data"
-						);
+		const readers = files.map((file) => {
+			return new Promise((resolve) => {
+				const reader = new FileReader();
+				reader.onloadend = () => {
+					if (
+						typeof reader.result === "string" &&
+						reader.result.startsWith("data:image/")
+					) {
+						resolve(reader.result);
+					} else {
+						resolve(null);
 					}
-				} else {
-					console.warn("Invalid base64 image string:", reader.result);
-				}
-			};
-			reader.readAsDataURL(file);
+				};
+				reader.readAsDataURL(file);
+			});
+		});
+		Promise.all(readers).then((results) => {
+			const validImages = results.filter(Boolean);
+			const newImages = [...images, ...validImages];
+			setImages && setImages(newImages);
+			if (setValue) setValue("image_itinerary", newImages);
 		});
 	};
 
@@ -72,25 +71,27 @@ export default function ItineraryDetailsInput({
 		const files = Array.from(e.dataTransfer.files).filter((file) =>
 			file.type.startsWith("image/")
 		);
-
-		files.forEach((file) => {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				if (
-					typeof reader.result === "string" &&
-					reader.result.startsWith("data:image/")
-				) {
-					const newImages = [...images, reader.result];
-					setImages && setImages(newImages);
-					// Update the form value for validation
-					if (setValue) {
-						setValue("image_itinerary", newImages);
+		const readers = files.map((file) => {
+			return new Promise((resolve) => {
+				const reader = new FileReader();
+				reader.onloadend = () => {
+					if (
+						typeof reader.result === "string" &&
+						reader.result.startsWith("data:image/")
+					) {
+						resolve(reader.result);
+					} else {
+						resolve(null);
 					}
-				} else {
-					console.warn("Invalid base64 image string:", reader.result);
-				}
-			};
-			reader.readAsDataURL(file);
+				};
+				reader.readAsDataURL(file);
+			});
+		});
+		Promise.all(readers).then((results) => {
+			const validImages = results.filter(Boolean);
+			const newImages = [...images, ...validImages];
+			setImages && setImages(newImages);
+			if (setValue) setValue("image_itinerary", newImages);
 		});
 	};
 
@@ -101,15 +102,16 @@ export default function ItineraryDetailsInput({
 		const items = e.clipboardData?.items;
 		if (!items) return;
 
-		// Check if clipboard contains an image
-		let hasImage = false;
-		Array.from(items).forEach((item) => {
-			if (item.type.startsWith("image/")) {
-				hasImage = true;
-				// Only prevent default and stop propagation if we're handling an image
-				e.stopPropagation();
-				e.preventDefault();
+		const imageItems = Array.from(items).filter((item) =>
+			item.type.startsWith("image/")
+		);
+		if (imageItems.length === 0) return;
 
+		e.stopPropagation();
+		e.preventDefault();
+
+		const readers = imageItems.map((item) => {
+			return new Promise((resolve) => {
 				const file = item.getAsFile();
 				const reader = new FileReader();
 				reader.onloadend = () => {
@@ -117,23 +119,19 @@ export default function ItineraryDetailsInput({
 						typeof reader.result === "string" &&
 						reader.result.startsWith("data:image/")
 					) {
-						const newImages = [...images, reader.result];
-						setImages && setImages(newImages);
-						// Update the form value for validation
-						if (setValue) {
-							setValue("image_itinerary", newImages);
-							console.log(
-								"ItineraryDetailsInput: Updated form value with pasted image"
-							);
-						}
+						resolve(reader.result);
+					} else {
+						resolve(null);
 					}
 				};
 				reader.readAsDataURL(file);
-			}
+			});
 		});
-
-		// If no image found, let the event continue normally for text inputs
-		// This allows text to be pasted into focused input fields
+		Promise.all(readers).then((results) => {
+			const validImages = results.filter(Boolean);
+			const newImages = [...images, ...validImages];
+			setImages && setImages(newImages);
+		});
 	};
 
 	// Attach global paste listener so paste works even if container isn't focused
@@ -174,8 +172,6 @@ export default function ItineraryDetailsInput({
 									e.stopPropagation();
 									if (preview) {
 										onImageClick(preview);
-									} else {
-										console.warn("No image available for preview");
 									}
 								}}
 								className="flex items-center space-x-4 w-full overflow-hidden cursor-pointer"
