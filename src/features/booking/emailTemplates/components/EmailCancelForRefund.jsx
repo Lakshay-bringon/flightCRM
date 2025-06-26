@@ -31,6 +31,9 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 		payment_method = "",
 		bid = "",
 		currency = "USD",
+		agent_name = "",
+		amount = "",
+		cancellation_refund_amount = "",
 	} = bookingData;
 
 	const fullAddress = [billing_address, city, state, zip, country]
@@ -50,40 +53,41 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 					<Text style={heading}>
 						{airline_name} – Refund Confirmation – {pnr}
 					</Text>
-
-					<Text>Dear {customer_name},</Text>
+					<Text>
+						Dear <strong>{customer_name}</strong>,
+					</Text>
 					<Text>Thank you for contacting us!</Text>
+					<Text>
+						Your booking has been handled by our travel expert,{" "}
+						<strong>{agent_name}</strong>.
+					</Text>
 					<Text>
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
 					</Text>
-
 					<Text>
 						As per our conversation and agreement, we have cancelled your
 						reservation under Confirmation Number <strong>{pnr}</strong> booked
 						on <strong>{airline_name}</strong> and will now submit the request
 						to the airlines/consolidator to refund your ticket.
 					</Text>
-
 					<Text>
 						Upon the airline's approval and after deducting all non-refundable
 						amounts (base fare, penalties, taxes, and fees) as per fare rules,
 						you will receive a total refund of{" "}
 						<strong>
-							{currency} {refund_amount}
+							{currency} {cancellation_refund_amount}
 						</strong>{" "}
 						to your original form of payment used.
 					</Text>
-
 					<Text>
 						To process the cancellation of your flights for a refund, there will
 						be a new charge of{" "}
 						<strong>
-							{currency} {new_charge_amount}
+							{currency} {amount}
 						</strong>
 						.
 					</Text>
-
 					<Text style={subheading}>Charges Description:</Text>
 					<table style={table}>
 						<tr>
@@ -92,13 +96,16 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 						</tr>
 						{charge_data.map((item, index) => (
 							<tr key={index}>
-								<td style={td}>{item.amount}</td>
+								<td style={td}>
+									{item.amount} {currency}
+								</td>
 								<td style={td}>{item.description}</td>
 							</tr>
 						))}
-					</table>					<Text style={subheading}>Refund Details:</Text>
-					{image_itinerary && (
-						Array.isArray(image_itinerary) ? (
+					</table>{" "}
+					<Text style={subheading}>Refund Details:</Text>
+					{image_itinerary &&
+						(Array.isArray(image_itinerary) ? (
 							image_itinerary.map((img, index) => (
 								<Img
 									key={index}
@@ -113,9 +120,7 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 								alt="Refund Details"
 								style={imgStyle}
 							/>
-						)
-					)}
-
+						))}
 					<Text style={subheading}>Passenger Details:</Text>
 					<table style={table}>
 						<tr>
@@ -131,7 +136,6 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 							</tr>
 						))}
 					</table>
-
 					<Text style={subheading}>Purchase Summary:</Text>
 					<table style={table}>
 						<tr>
@@ -159,14 +163,62 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 							<td style={td}>{purchase_date}</td>
 						</tr>
 					</table>
-
+					<Text style={note}>
+						All refund requests submitted are subject to audit and airline
+						approval, and are not guaranteed.
+					</Text>
+					<Text style={subheading}>Disclaimer:</Text>
+					<Text>
+						SkylineTravels LLC is an independent travel agency and is not
+						affiliated with any airline. SkylineTravels may appear as a charge
+						on your card. Sometimes the payment may be split between Skyline and
+						the airline. All service and convenience fees are non-refundable.
+					</Text>
+					<Text>
+						All cancellations must be completed before the departure date. Any
+						ticket refund after 24 hours may take up to two billing cycles.
+						Additional time may be required depending on airline policies and
+						itinerary type.
+					</Text>
+					<Text>
+						Refund eligibility is based on the fare rules of the ticketed fare
+						and cancellation penalties. These may be new charges or adjusted
+						from ticket value based on itinerary type and fare conditions.
+					</Text>
+					<Text style={subheading}>Cancellations:</Text>
+					<Text>
+						Call <strong>+1-877-413-0030</strong>. Refund/cancellation must be
+						requested before flight departure, at least 3 hours in advance. No
+						refund is possible for no-show cases. Cancellations are only
+						accepted via phone.
+					</Text>
+					<Text style={subheading}>Seat Assignments:</Text>
+					<Text>
+						Advance seat selection may be restricted or chargeable depending on
+						the airline. Some allow seat selection only during check-in.
+					</Text>
+					<Text style={subheading}>Baggage Policy:</Text>
+					<Text>
+						Baggage allowances may be limited. Additional baggage fees may
+						apply. Refer to your airline’s rules for the most accurate
+						information.
+					</Text>
+					<Text>
+						Still have questions? Call <strong>+1-877-413-0030</strong> or email{" "}
+						<a href="mailto:booking@skylinetravelsllc.com">
+							booking@skylinetravelsllc.com
+						</a>
+						.
+					</Text>
+					<Text>
+						We value your business and look forward to serving you again.
+					</Text>
 					<Text>
 						I certify that I, <strong>{card_holder}</strong>, am the authorized
 						user of this card and I will not dispute the payment with my
 						credit/debit card company or bank, as this amount is being charged
 						for my personal travel.
 					</Text>
-
 					<Text>
 						Awaiting your acceptance to the declaration{" "}
 						<a
@@ -177,65 +229,6 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 						>
 							<strong>“I Agree / I Authorize”</strong>
 						</a>
-					</Text>
-
-					<Text style={note}>
-						All refund requests submitted are subject to audit and airline
-						approval, and are not guaranteed.
-					</Text>
-
-					<Text style={subheading}>Disclaimer:</Text>
-					<Text>
-						SkylineTravels LLC is an independent travel agency and is not
-						affiliated with any airline. SkylineTravels may appear as a charge
-						on your card. Sometimes the payment may be split between Skyline and
-						the airline. All service and convenience fees are non-refundable.
-					</Text>
-
-					<Text>
-						All cancellations must be completed before the departure date. Any
-						ticket refund after 24 hours may take up to two billing cycles.
-						Additional time may be required depending on airline policies and
-						itinerary type.
-					</Text>
-
-					<Text>
-						Refund eligibility is based on the fare rules of the ticketed fare
-						and cancellation penalties. These may be new charges or adjusted
-						from ticket value based on itinerary type and fare conditions.
-					</Text>
-
-					<Text style={subheading}>Cancellations:</Text>
-					<Text>
-						Call <strong>+1-877-413-0030</strong>. Refund/cancellation must be
-						requested before flight departure, at least 3 hours in advance. No
-						refund is possible for no-show cases. Cancellations are only
-						accepted via phone.
-					</Text>
-
-					<Text style={subheading}>Seat Assignments:</Text>
-					<Text>
-						Advance seat selection may be restricted or chargeable depending on
-						the airline. Some allow seat selection only during check-in.
-					</Text>
-
-					<Text style={subheading}>Baggage Policy:</Text>
-					<Text>
-						Baggage allowances may be limited. Additional baggage fees may
-						apply. Refer to your airline’s rules for the most accurate
-						information.
-					</Text>
-
-					<Text>
-						Still have questions? Call <strong>+1-877-413-0030</strong> or email{" "}
-						<a href="mailto:booking@skylinetravelsllc.com">
-							booking@skylinetravelsllc.com
-						</a>
-						.
-					</Text>
-
-					<Text>
-						We value your business and look forward to serving you again.
 					</Text>
 				</Container>
 			</Body>

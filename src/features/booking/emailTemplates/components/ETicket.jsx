@@ -29,6 +29,7 @@ export const ETicket = ({ bookingData }) => {
 		passenger_data = [],
 		itinerary_details = "",
 		bid = "",
+		agent_name = "",
 	} = bookingData;
 
 	const fullAddress = [billing_address, city, state, zip, country]
@@ -46,9 +47,11 @@ export const ETicket = ({ bookingData }) => {
 			<Body style={main}>
 				<Container style={container}>
 					<Text style={heading}>
-						{airline_name.toUpperCase()} – E-TICKET CONFIRMATION – {pnr}
+						{airline_name} – E-TICKET CONFIRMATION – {pnr}
 					</Text>
-					<Text>Dear {customer_name},</Text>
+					<Text>
+						Dear <strong>{customer_name}</strong>,
+					</Text>
 					<Text>
 						Thank you for choosing <strong>{airline_name}</strong>. I've
 						attached your e-tickets to this email for your upcoming journey.
@@ -212,6 +215,17 @@ const imgStyle = {
 	height: "auto",
 	marginTop: "8px",
 	marginBottom: "16px",
+};
+
+const ctaLink = {
+	display: "inline-block",
+	padding: "8px 12px",
+	backgroundColor: "#007BFF",
+	color: "#fff",
+	textDecoration: "none",
+	borderRadius: "4px",
+	fontWeight: "bold",
+	marginLeft: "6px",
 };
 
 const footerText = {

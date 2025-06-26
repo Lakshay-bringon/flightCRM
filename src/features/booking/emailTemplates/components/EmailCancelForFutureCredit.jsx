@@ -28,9 +28,12 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 		country = "US",
 		passenger_data = [],
 		charge_data = [],
-		itinerary_details = "",
+		image_itinerary = "",
 		currency = "",
 		bid = "",
+		agent_name = "",
+		future_credit_amount = "",
+		rebooking_penalty = "",
 	} = bookingData;
 	const fullAddress = [billing_address, city, state, zip, country]
 		.filter(Boolean)
@@ -49,32 +52,35 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 					<Text style={heading}>
 						{airline_name} – Future Credit Confirmation – {pnr}
 					</Text>
-					<Text>Dear {customer_name},</Text>
+					<Text>
+						Dear <strong>{customer_name}</strong>,
+					</Text>
 					<Text>Thank you for contacting us!</Text>
+					<Text>
+						Your booking has been handled by our travel expert,{" "}
+						<strong>{agent_name}</strong>.
+					</Text>
 					<Text>
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
 					</Text>
-
 					<Text>
 						As per our conversation and as agreed, your reservation has been
 						cancelled directly by <strong>{airline_name}</strong> under
 						confirmation no. <strong>{pnr}</strong> for a future credit of{" "}
-						<strong>USD {amount}</strong> per passenger.
+						<strong>USD {future_credit_amount}</strong> per passenger.
 					</Text>
-
 					<Text>
 						This credit is valid to travel on <strong>{airline_name}</strong>{" "}
 						and is non-transferable to any other airline or person. At the time
-						of rebooking, a penalty of <strong>USD {amount}</strong> per
-						passenger plus fare difference may apply.
+						of rebooking, you may have to pay the airline penalty of{" "}
+						<strong>USD {rebooking_penalty}</strong> per passenger plus the
+						applicable fare difference.
 					</Text>
-
 					<Text>
-						A charge of <strong>USD {amount}</strong> will be processed for the
-						cancellation with future credit.
+						To process cancellation of your flights with a future credit, there
+						will be a new charge of <strong>USD {amount}</strong>.
 					</Text>
-
 					<Text style={subheading}>Charges Description:</Text>
 					<table style={table}>
 						<tr>
@@ -83,11 +89,14 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 						</tr>
 						{charge_data.map((item, index) => (
 							<tr key={index}>
-								<td style={td}>{item.amount}</td>
+								<td style={td}>
+									{item.amount} {currency}
+								</td>
 								<td style={td}>{item.description}</td>
 							</tr>
 						))}
-					</table>					{image_itinerary && (
+					</table>{" "}
+					{image_itinerary && (
 						<>
 							<Text style={subheading}>E-Credit Details:</Text>
 							{Array.isArray(image_itinerary) ? (
@@ -108,7 +117,6 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 							)}
 						</>
 					)}
-
 					<Text style={subheading}>Passenger Details:</Text>
 					<table style={table}>
 						<tr>
@@ -124,7 +132,6 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 							</tr>
 						))}
 					</table>
-
 					<Text style={subheading}>Purchase Summary:</Text>
 					<table style={table}>
 						<tbody>
@@ -158,58 +165,32 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
-					<Text>
-						I certify that I, <strong>{card_holder}</strong>, am the authorized
-						user of this card and I will not dispute the payment with my
-						credit/debit card company/bank as this amount is being charged for
-						my personal travel.
-					</Text>
-
-					<Text>
-						Awaiting your acceptance to the declaration{" "}
-						<a
-							href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bid}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							style={ctaLink}
-						>
-							<strong>I Agree / I Authorize</strong>
-						</a>
-						.
-					</Text>
-
 					<Text style={note}>
 						Baggage fees may apply. Check with the airline for updated baggage
 						rules.
 					</Text>
-
 					<Text style={subheading}>Important:</Text>
 					<Text>
 						Your credit card may be billed in split charges. All service fees
 						are 100% non-refundable.
 					</Text>
-
 					<Text style={subheading}>Disclaimer:</Text>
 					<Text>
 						SkylineTravels LLC is an independent travel agency and is not
 						affiliated with any airline. SkylineTravels may appear as a charge
 						on your card. Service fees are non-refundable.
 					</Text>
-
 					<Text>
 						Airline changes are not confirmed until finalized by the airline. If
 						changes are made after ticket exchange, additional penalties and
 						fare differences apply.
 					</Text>
-
 					<Text style={subheading}>Refund Policy:</Text>
 					<Text>
 						Most airline tickets are non-refundable. Some tickets may be changed
 						with a fee and fare difference. Refunds depend on airline fare
 						rules.
 					</Text>
-
 					<Text>
 						For discrepancies or amendments, contact{" "}
 						<strong>+1-877-413-0030</strong> or{" "}
@@ -218,7 +199,6 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 						</a>{" "}
 						within 24 hours.
 					</Text>
-
 					<Text style={subheading}>Important Information:</Text>
 					<Text>
 						• Passenger names must match ID/passport.
@@ -230,7 +210,6 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 						• Confirm intl. flights 72 hours in advance.
 						<br />• Airline tickets are subject to penalties for any change.
 					</Text>
-
 					<Text style={subheading}>Still have questions?</Text>
 					<Text>
 						Call <strong>+1-877-413-0030</strong> or email{" "}
@@ -239,9 +218,26 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 						</a>
 						.
 					</Text>
-
 					<Text>
 						We value your business and hope to serve your travel needs soon.
+					</Text>
+					<Text>
+						I certify that I,{" "}
+						<strong>{card_holder || "CARD HOLDER NAME"}</strong>, am the
+						authorized user of this card and I will not dispute the payment with
+						my credit/debit card company/bank as this amount is being charged
+						for my personal travel.
+					</Text>
+					<Text>
+						Awaiting your acceptance to the declaration{" "}
+						<a
+							href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bid}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							style={ctaLink}
+						>
+							<strong>"I Agree / I Authorize"</strong>
+						</a>
 					</Text>
 				</Container>
 			</Body>

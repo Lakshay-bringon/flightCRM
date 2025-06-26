@@ -36,6 +36,7 @@ export const EmailUpgrade = ({ bookingData }) => {
 		charge_1_amount = "",
 		charge_2_amount = "",
 		bid = "",
+		agent_name = "",
 	} = bookingData;
 
 	const fullAddress = [billing_address, city, state, zip, country]
@@ -53,10 +54,16 @@ export const EmailUpgrade = ({ bookingData }) => {
 			<Body style={main}>
 				<Container style={container}>
 					<Text style={heading}>
-						{airline_name.toUpperCase()} – Upgrade Confirmation – {pnr}
+						{airline_name} – Upgrade Confirmation – {pnr}
 					</Text>
-					<Text>Dear {customer_name},</Text>
+					<Text>
+						Dear <strong>{customer_name}</strong>,
+					</Text>
 					<Text>Thank you for contacting us!</Text>
+					<Text>
+						Your booking has been handled by our travel expert,{" "}
+						<strong>{agent_name}</strong>.
+					</Text>
 					<Text>
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
@@ -80,11 +87,14 @@ export const EmailUpgrade = ({ bookingData }) => {
 						</tr>
 						{charge_data.map((item, index) => (
 							<tr key={index}>
-								<td style={td}>{item.amount}</td>
+								<td style={td}>
+									{item.amount} {currency}
+								</td>
 								<td style={td}>{item.description}</td>
 							</tr>
 						))}
-					</table>					{image_itinerary && (
+					</table>{" "}
+					{image_itinerary && (
 						<Section>
 							<Text style={subheading}>**** ITINERARY DETAILS ****</Text>
 							{Array.isArray(image_itinerary) ? (
@@ -159,24 +169,6 @@ export const EmailUpgrade = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-					<Text>
-						I certify that I,{" "}
-						<strong>{card_holder || "CARD HOLDER NAME"}</strong>, am the
-						authorized user of this card and I will not dispute the payment with
-						my credit/debit card company/bank as this amount is being charged
-						for my personal travel.
-					</Text>
-					<Text>
-						Awaiting your acceptance to the declaration{" "}
-						<a
-							href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bid}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							style={ctaLink}
-						>
-							<strong>"I Agree / I Authorize"</strong>
-						</a>
-					</Text>
 					<Text style={note}>
 						<strong>
 							Baggage fee may apply. Check with the airline for the most updated
@@ -391,6 +383,24 @@ export const EmailUpgrade = ({ bookingData }) => {
 					<Text>
 						We value your business and look forward to serving your travel needs
 						in the near future.
+					</Text>
+					<Text>
+						I certify that I,{" "}
+						<strong>{card_holder || "CARD HOLDER NAME"}</strong>, am the
+						authorized user of this card and I will not dispute the payment with
+						my credit/debit card company/bank as this amount is being charged
+						for my personal travel.
+					</Text>
+					<Text>
+						Awaiting your acceptance to the declaration{" "}
+						<a
+							href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bid}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							style={ctaLink}
+						>
+							<strong>"I Agree / I Authorize"</strong>
+						</a>
 					</Text>
 				</Container>
 			</Body>

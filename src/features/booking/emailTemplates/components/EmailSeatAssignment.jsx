@@ -33,9 +33,8 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 		image_itinerary = "",
 		seat_numbers = "",
 		flight_details = [],
-		charge_1_amount = "",
-		charge_2_amount = "",
 		bid = "",
+		agent_name = "",
 	} = bookingData;
 	const fullAddress = [billing_address, city, state, zip, country]
 		.filter(Boolean)
@@ -52,10 +51,16 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 			<Body style={main}>
 				<Container style={container}>
 					<Text style={heading}>
-						{airline_name} – Seat Assignment Confirmation – {pnr}
+						{airline_name} – Seat Confirmation – {pnr}
 					</Text>
-					<Text>Dear {customer_name},</Text>
+					<Text>
+						Dear <strong>{customer_name}</strong>,
+					</Text>
 					<Text>Thank you for contacting us!</Text>
+					<Text>
+						Your booking has been handled by our travel expert,{" "}
+						<strong>{agent_name}</strong>.
+					</Text>
 					<Text>
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
@@ -69,30 +74,21 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						</strong>{" "}
 						all inclusive of taxes and fees as per the below description:
 					</Text>
-
 					<Text style={subheading}>Charges Description:</Text>
 					<table style={table}>
-						<tbody>
-							<tr>
+						<tr>
+							<th style={th}>Amount</th>
+							<th style={th}>Description</th>
+						</tr>
+						{charge_data.map((item, index) => (
+							<tr key={index}>
 								<td style={td}>
-									<strong>Charge 1:</strong>
+									{item.amount} {currency}
 								</td>
-								<td style={td}>
-									{charge_1_amount || "XXX"} {currency} (Amount paid to airline)
-								</td>
+								<td style={td}>{item.description}</td>
 							</tr>
-							<tr>
-								<td style={td}>
-									<strong>Charge 2:</strong>
-								</td>
-								<td style={td}>
-									{charge_2_amount || "XXX"} {currency} (Amount charged on our
-									merchant)
-								</td>
-							</tr>
-						</tbody>
-					</table>
-
+						))}
+					</table>{" "}
 					<Text style={subheading}>Passengers Details:</Text>
 					{passenger_data && passenger_data.length > 0 ? (
 						<table style={table}>
@@ -116,38 +112,8 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							{customer_name || "Passenger information not available"}
 						</Text>
 					)}
-
 					<Text style={subheading}>Flight Details & Seat Numbers:</Text>
-					{flight_details && flight_details.length > 0 ? (
-						<table style={table}>
-							<tbody>
-								{flight_details.map((flight, index) => (
-									<tr key={index}>
-										<td style={td}>
-											<strong>Flight {index + 1}:</strong>
-											<br />
-											{flight.flight_number || "N/A"} - {flight.route || "N/A"}
-											<br />
-											Seat:{" "}
-											{flight.seat_number || seat_numbers || "Not assigned"}
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					) : (
-						<table style={table}>
-							<tbody>
-								<tr>
-									<td style={td}>
-										<strong>Seat Numbers:</strong>
-										<br />
-										{seat_numbers || "Will be assigned"}
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					)}					{image_itinerary && (
+					{image_itinerary && (
 						<Section>
 							{Array.isArray(image_itinerary) ? (
 								image_itinerary.map((img, index) => (
@@ -167,7 +133,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							)}
 						</Section>
 					)}
-
 					<Text style={subheading}>Purchase Summary:</Text>
 					<table style={table}>
 						<tbody>
@@ -197,40 +162,17 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
-					<Text>
-						I certify that I,{" "}
-						<strong>{card_holder || "CARD HOLDER NAME"}</strong>, am the
-						authorized user of this card and I will not dispute the payment with
-						my credit/debit card company/bank as this amount is being charged
-						for my personal travel.
-					</Text>
-
-					<Text>
-						Awaiting your acceptance to the declaration{" "}
-						<a
-							href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bid}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							style={ctaLink}
-						>
-							<strong>"I Agree / I Authorize"</strong>
-						</a>
-					</Text>
-
 					<Text style={note}>
 						<strong>
 							Baggage fee may apply. Check with the airline for the most updated
 							baggage rules.
 						</strong>
 					</Text>
-
 					<Text style={note}>
 						<strong>Note:</strong> Your credit card may be billed in split
 						charges not exceeding the total amount. All transaction service fees
 						are 100% non-refundable.
 					</Text>
-
 					<Text style={subheading}>Disclaimer:</Text>
 					<Text>
 						SkylineTravels LLC is an independent travel Agency with no
@@ -242,7 +184,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						organization both will appear as recipients on your account. All the
 						service fee and convenience fee is non-refundable.
 					</Text>
-
 					<Text style={subheading}>Important:</Text>
 					<Text>
 						Above changes are not confirmed until finalized by the airline. If
@@ -252,7 +193,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						exchanged, you will be responsible for the additional penalties,
 						fare difference, and fees.
 					</Text>
-
 					<Text style={subheading}>Refund Policy:</Text>
 					<Text>
 						The booked air tickets are non-refundable, non-transferable, and
@@ -265,7 +205,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						ticket value based on the type of itinerary booked and fare rules
 						involved.
 					</Text>
-
 					<Text>
 						In case of any discrepancy and if an amendment is required, please
 						feel free to contact us at <strong>+1-877-413-0030</strong> or email
@@ -275,7 +214,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						</a>{" "}
 						within 24 hours and we will be happy to assist you.
 					</Text>
-
 					<Text style={subheading}>Important Information:</Text>
 					<Text>
 						Please review your itinerary carefully to ensure that the following
@@ -325,18 +263,15 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text>
 						In case you get notified that your credit card was declined, please
 						call us right away at <strong>+1-877-413-0030</strong>
 					</Text>
-
 					<Text>
 						Airline tickets are non-refundable, non-changeable, and
 						non-cancellable in most cases, an airline may allow a ticket to be
 						changed for a fee, plus the increased cost of the new ticket.
 					</Text>
-
 					<Text>
 						Please note that fares are not guaranteed until paid and ticketed.
 						If there will be any restrictions, updates, or concerns from the
@@ -345,7 +280,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						issued, you will be responsible for the additional penalties, fare
 						difference, and fees.
 					</Text>
-
 					<Text style={subheading}>For Changes Query:</Text>
 					<table style={table}>
 						<tbody>
@@ -359,7 +293,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>For Cancellations:</Text>
 					<table style={table}>
 						<tbody>
@@ -373,7 +306,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>Seat Assignments:</Text>
 					<table style={table}>
 						<tbody>
@@ -389,7 +321,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>Baggage Policy:</Text>
 					<table style={table}>
 						<tbody>
@@ -404,7 +335,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>Visa/Travel Documents:</Text>
 					<table style={table}>
 						<tbody>
@@ -422,7 +352,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text style={subheading}>Check-In:</Text>
 					<table style={table}>
 						<tbody>
@@ -436,7 +365,6 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							</tr>
 						</tbody>
 					</table>
-
 					<Text>
 						Still, have questions? Call us at <strong>+1-877-413-0030</strong>.
 						Our agents are available 24 hours a day, 7 days a week to assist
@@ -445,10 +373,26 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 							booking@skylinetravelsllc.com
 						</a>
 					</Text>
-
 					<Text>
 						We value your business and look forward to serving your travel needs
 						in the near future.
+					</Text>
+					<Text>
+						I certify that I, <strong>{card_holder}</strong>, am the authorized
+						user of this card and I will not dispute the payment with my
+						credit/debit card company or bank, as this amount is being charged
+						for my personal travel.
+					</Text>
+					<Text>
+						Awaiting your acceptance to the declaration{" "}
+						<a
+							href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bid}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							style={ctaLink}
+						>
+							<strong>“I Agree / I Authorize”</strong>
+						</a>
 					</Text>
 				</Container>
 			</Body>

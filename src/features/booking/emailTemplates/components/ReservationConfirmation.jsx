@@ -81,8 +81,7 @@ export const ReservationConfirmation = ({ bookingData }) => {
 						{charge_data.map((item, index) => (
 							<tr key={index}>
 								<td style={td}>
-									{item.amount}
-									{" " + currency}
+									{item.amount} {currency}
 								</td>
 								<td style={td}>{item.description}</td>
 							</tr>
