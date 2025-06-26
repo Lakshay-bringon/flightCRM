@@ -7,16 +7,8 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import { useHasRole } from "../../auth/hooks/useRole";
 import { dashboardOverviewApi } from "../../api/dashboard/dashboardApi";
 import { showPromiseToast } from "../../utils/showPromiseToast";
-import {
-	formatESTDateForInput,
-	getCurrentESTDate,
-} from "../../utils/formatters";
 
 export default function AdminDashboard() {
-	// Helper: format a Date to local YYYY-MM-DD (avoids UTC shift) - DEPRECATED: Use formatESTDateForInput instead
-	const formatLocalDate = (d) => {
-		return formatESTDateForInput(d);
-	};
 	const [dateRange, setDateRange] = useState(null); // Start with null, let TimelineSelector initialize it
 	const [summary, setSummary] = useState(null);
 	// const [topBottom, setTopBottom] = useState(null);
@@ -34,13 +26,22 @@ export default function AdminDashboard() {
 		if (!dateRange) return;
 
 		const fetchDashboardData = async (range) => {
+			// Format dates to YYYY-MM-DD format to avoid timezone issues
+			const formatDateForAPI = (date) => {
+				if (!date) return null;
+				const year = date.getFullYear();
+				const month = String(date.getMonth() + 1).padStart(2, "0");
+				const day = String(date.getDate()).padStart(2, "0");
+				return `${year}-${month}-${day}`;
+			};
+
 			const payload = {
 				userId: user?.id,
-				date_to: formatLocalDate(range.end),
-				date_from: formatLocalDate(range.start),
+				date_to: formatDateForAPI(range.end),
+				date_from: formatDateForAPI(range.start),
 				dateFilter: "custom",
-				startDate: formatLocalDate(range.start),
-				endDate: formatLocalDate(range.end),
+				startDate: formatDateForAPI(range.start),
+				endDate: formatDateForAPI(range.end),
 			};
 			try {
 				const summaryRes = await showPromiseToast(

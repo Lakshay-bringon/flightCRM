@@ -89,6 +89,7 @@ export default function EmailEditor({
 	const editorConfiguration = {
 		licenseKey: "GPL",
 
+		removePlugins: ["ClassicHTMLFeatures"],
 		plugins: [
 			SimpleUploadAdapter,
 			Image,
@@ -233,6 +234,7 @@ export default function EmailEditor({
 			options: [10, 12, 14, "default", 18, 20, 22],
 			supportAllValues: true,
 		},
+
 		htmlSupport: {
 			allow: [
 				{
@@ -280,6 +282,10 @@ export default function EmailEditor({
 			// 	"tableProperties",
 			// 	"tableCellProperties",
 			// ],
+		},
+		stylesConverter: {
+			toItem: (style) => style,
+			toStyle: (item) => item,
 		},
 	};
 

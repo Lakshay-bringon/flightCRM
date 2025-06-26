@@ -81,14 +81,23 @@ function Revenue() {
 
 	const handleSearch = async (e) => {
 		e.preventDefault();
+		// Format dates to YYYY-MM-DD format to avoid timezone issues
+		const formatDateForAPI = (date) => {
+			if (!date) return null;
+			const year = date.getFullYear();
+			const month = String(date.getMonth() + 1).padStart(2, "0");
+			const day = String(date.getDate()).padStart(2, "0");
+			return `${year}-${month}-${day}`;
+		};
+
 		const payload = {
 			userId: user?.id,
 			agent_id: filters.agent || undefined,
 			provider_id: filters.provider || undefined,
 			show_refund: filters.includeRefund ? true : undefined,
 			show_chargeback: filters.includeChargeback ? true : undefined,
-			date_from: formatESTDateForInput(dateRange.start),
-			date_to: formatESTDateForInput(dateRange.end),
+			date_from: formatDateForAPI(dateRange.start),
+			date_to: formatDateForAPI(dateRange.end),
 		};
 
 		try {

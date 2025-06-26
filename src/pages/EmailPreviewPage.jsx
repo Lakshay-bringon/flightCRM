@@ -13,6 +13,34 @@ import EmailEditor from "../components/common/EmailEditor.jsx";
 import Modal from "../components/common/Modal";
 import { useAuth } from "../auth/hooks/useAuth";
 
+// Utility function to extract body content from HTML
+const extractBodyContent = (htmlString) => {
+	const bodyMatch = htmlString.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+	if (bodyMatch && bodyMatch[1]) {
+		return bodyMatch[1].trim();
+	}
+	return htmlString;
+};
+
+// Utility function to replace body content in HTML while preserving structure
+const replaceBodyContent = (originalHtml, newBodyContent) => {
+	if (originalHtml.includes("<body")) {
+		return originalHtml.replace(
+			/<body[^>]*>[\s\S]*<\/body>/i,
+			`<body>${newBodyContent}</body>`
+		);
+	}
+
+	if (originalHtml.includes("<html")) {
+		return originalHtml.replace(
+			/<html[^>]*>([\s\S]*)<\/html>/i,
+			`<html$1><body>${newBodyContent}</body></html>`
+		);
+	}
+
+	return `<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>${newBodyContent}</body></html>`;
+};
+
 export default function EmailPreviewPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -150,11 +178,19 @@ export default function EmailPreviewPage() {
 	};
 
 	const handleEditEmail = () => {
+		// We just need to set isEditing to true here
+		// The body extraction happens in the EmailEditor component rendering
 		setIsEditing(true);
 	};
 
 	const handleSaveEditedEmail = (editedHTML) => {
-		setEmailHTML(editedHTML);
+		const originalHTML = emailHTML;
+
+		const updatedHTML = replaceBodyContent(originalHTML, editedHTML);
+
+		// Update the email HTML with the edited version - preserve original structure
+
+		setEmailHTML(updatedHTML);
 		setIsEditing(false);
 	};
 
@@ -254,7 +290,7 @@ export default function EmailPreviewPage() {
 			{/* Show Email Editor when in editing mode */}
 			{isEditing ? (
 				<EmailEditor
-					initialHtml={emailHTML}
+					initialHtml={extractBodyContent(emailHTML)}
 					onSave={handleSaveEditedEmail}
 					onCancel={handleCancelEdit}
 					isSaving={false}

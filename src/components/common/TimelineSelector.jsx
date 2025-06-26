@@ -11,11 +11,7 @@ import { CalendarSearch } from "lucide-react";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../../lib/utils";
-import {
-	getCurrentESTDate,
-	convertToEST,
-	formatESTDateForInput,
-} from "../../utils/formatters";
+// Removed EST utilities to prevent timezone offset issues
 
 const timeRanges = [
 	{ id: "today", label: "Today" },
@@ -26,8 +22,11 @@ const timeRanges = [
 ];
 
 export function TimelineSelector({ onRangeChange }) {
-	// Initialize with proper EST dates for "today" - memoize to prevent recreating on every render
-	const today = React.useMemo(() => getCurrentESTDate(), []);
+	// Initialize with current date - use standard Date to avoid timezone offset
+	const today = React.useMemo(() => {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	}, []);
 	// console.log("TimelineSelector - today:", today);
 	// console.log(
 	// 	"TimelineSelector - today formatted:",
@@ -53,27 +52,34 @@ export function TimelineSelector({ onRangeChange }) {
 		setSelectedRange(range);
 		setIsDatePickerOpen(false);
 
-		const now = getCurrentESTDate();
-		let start = now;
-		let end = now;
+		const now = new Date();
+		const currentDate = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			now.getDate()
+		);
+		let start = currentDate;
+		let end = currentDate;
 
 		switch (range.id) {
 			case "today":
 				// For "today", both start and end should be the same date
-				start = now;
-				end = now;
+				start = currentDate;
+				end = currentDate;
 				break;
 			case "30d":
-				start = subDays(now, 30);
+				start = subDays(currentDate, 30);
 				break;
 			case "thisMonth":
-				start = startOfMonth(now);
+				// Use standard date functions without EST conversion
+				start = startOfMonth(currentDate);
 				break;
 			case "12m":
-				start = subMonths(now, 12);
+				start = subMonths(currentDate, 12);
 				break;
 			case "thisYear":
-				start = startOfYear(now);
+				// Use standard date functions without EST conversion
+				start = startOfYear(currentDate);
 				break;
 			default:
 				return;
@@ -82,13 +88,13 @@ export function TimelineSelector({ onRangeChange }) {
 		onRangeChange({ start, end });
 	};
 	const handleDateChange = (field, value) => {
-		// Handle date input properly for EST timezone
+		// Handle date input using standard Date parsing
 		let newDate = null;
 		if (value) {
-			// Parse the date string (YYYY-MM-DD) and create EST date properly
+			// Parse the date string (YYYY-MM-DD) and create date object
 			const [year, month, day] = value.split("-").map(Number);
-			// Create date in EST timezone directly at noon to avoid timezone conversion issues
-			newDate = new Date(year, month - 1, day, 12, 0, 0, 0);
+			// Create date without timezone issues
+			newDate = new Date(year, month - 1, day);
 		}
 
 		const newDateRange = {
@@ -178,7 +184,15 @@ export function TimelineSelector({ onRangeChange }) {
 								<input
 									id="start-date"
 									type="date"
-									value={date.from ? formatESTDateForInput(date.from) : ""}
+									value={
+										date.from
+											? `${date.from.getFullYear()}-${String(
+													date.from.getMonth() + 1
+											  ).padStart(2, "0")}-${String(
+													date.from.getDate()
+											  ).padStart(2, "0")}`
+											: ""
+									}
 									onChange={(e) => handleDateChange("from", e.target.value)}
 									className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
 								/>
@@ -197,7 +211,15 @@ export function TimelineSelector({ onRangeChange }) {
 								<input
 									id="end-date"
 									type="date"
-									value={date.to ? formatESTDateForInput(date.to) : ""}
+									value={
+										date.to
+											? `${date.to.getFullYear()}-${String(
+													date.to.getMonth() + 1
+											  ).padStart(2, "0")}-${String(
+													date.to.getDate()
+											  ).padStart(2, "0")}`
+											: ""
+									}
 									onChange={(e) => handleDateChange("to", e.target.value)}
 									className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
 								/>
