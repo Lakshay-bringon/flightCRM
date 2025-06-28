@@ -66,14 +66,14 @@ export const EmailUpgrade = ({ bookingData }) => {
 					</Text>
 					<Text>
 						As per our conversation and as agreed, we have upgraded your seats
-						from {initial_class || "(Initial booking class)"} to{" "}
-						{upgraded_class || "(Upgraded Class)"} in your reservation booked
-						with {airline_name} under confirmation code <strong>{pnr}</strong>{" "}
-						with a charge of{" "}
+						from <strong>{initial_class}</strong> to{" "}
+						<strong>{upgraded_class}</strong> in your reservation booked with{" "}
+						<strong>{airline_name}</strong> under confirmation code{" "}
+						<strong>{pnr}</strong> with a charge of{" "}
 						<strong>
 							{currency} {amount}
 						</strong>{" "}
-						all inclusive of taxes and fees as mentioned below:
+						all inclusive of taxes and fees as mentioned below.
 					</Text>{" "}
 					<Text style={subheading}>Charges Description:</Text>
 					<table style={table}>
@@ -92,7 +92,9 @@ export const EmailUpgrade = ({ bookingData }) => {
 					</table>{" "}
 					{image_itinerary && (
 						<Section>
-							<Text style={subheading}>**** ITINERARY DETAILS ****</Text>
+							<Text style={subheading}>
+								ITINERARY and CLASS UPGRADE DETAILS
+							</Text>
 							{Array.isArray(image_itinerary) ? (
 								image_itinerary.map((img, index) => (
 									<Img

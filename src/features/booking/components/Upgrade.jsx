@@ -194,6 +194,7 @@ function Upgrade({ bookingData, onBack, onRefresh }) {
 							register={register}
 							setValue={setValue}
 							images={itineraryImages}
+							heading="Itinerary and Upgrade Details"
 							setImages={setItineraryImages}
 							onImageClick={(imageUrl) => {
 								setPreviewImage(imageUrl);
