@@ -187,10 +187,10 @@ export const ReservationConfirmation = ({ bookingData }) => {
 					<Text>
 						In case of any discrepancy and if an amendment is required, please
 						feel free to contact us at <strong>+1-877-413-0030</strong> or email
-						us at 
+						us at{" "}
 						<a href="mailto:booking@skylinetravelsllc.com">
 							booking@skylinetravelsllc.com
-						</a>
+						</a>{" "}
 						 within 24 hours and we will be happy to assist you. or within 24
 						hours.
 					</Text>
@@ -220,13 +220,13 @@ export const ReservationConfirmation = ({ bookingData }) => {
 					</Text>
 					<Text>
 						In case you get notified that your credit card was declined, please
-						call us right away at <strong>+1-877-413-0030</strong>. At least one
+						call us right away at <strong>+1-877-413-0030</strong>. At least one
 						adult must accompany children below the age of 18 years. Children 12
 						years & above are considered adults for pricing purposes.
 					</Text>
 					<Text style={subheading}>For Changes Query:</Text>
 					<Text>
-						Call us at <strong>+1-877-413-0030</strong> to make any kind of
+						Call us at <strong>+1-877-413-0030</strong> to make any kind of
 						changes to the itinerary. Fees will apply due to airline penalties,
 						fare differences, and other factors to change the itinerary.
 					</Text>
@@ -243,15 +243,15 @@ export const ReservationConfirmation = ({ bookingData }) => {
 						Most airlines have restricted rules for advance seat assignment and
 						can only be done with a fee. Some fare restrictions only allow seat
 						assignment at the airport during the time of check-in. Please refer
-						to each operating airline for the most restricted rules. Call us at 
-						<strong>+1-877-413-0030</strong> for seat assignment, if applicable.
+						to each operating airline for the most restricted rules. Call us at
+						<strong>+1-877-413-0030</strong> for seat assignment, if applicable.
 					</Text>
 					<Text style={subheading}>Baggage Policy:</Text>
 					<Text>
 						Your reservation may have a restricted baggage allowance and some
 						airlines may charge an additional fee for each allowed checked-in or
 						carry-on bag. Please refer to each operating airline for the most
-						restricted rules. Call us at <strong>+1-877-413-0030</strong> for
+						restricted rules. Call us at <strong>+1-877-413-0030</strong> for
 						baggage, if applicable.
 					</Text>
 					<Text style={subheading}>Visa/Travel Documents:</Text>
