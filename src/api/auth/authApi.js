@@ -148,7 +148,6 @@ export const verifyOTPApi = async (email, otp) => {
 				email: userEmail,
 				id,
 				leader_id,
-				phone,
 				role_id,
 				status: userStatus,
 			} = data;
@@ -160,7 +159,6 @@ export const verifyOTPApi = async (email, otp) => {
 				email: userEmail,
 				id,
 				leader_id,
-				phone,
 				role_id,
 				status: userStatus,
 			};

@@ -102,7 +102,7 @@ function BookingComponent({
 	React.useEffect(() => {
 		if (formDefaultValues) {
 			reset(formDefaultValues);
-			setAttachments(formDefaultValues.attachments || []);			// Handle itinerary images - check both possible field names
+			setAttachments(formDefaultValues.attachments || []); // Handle itinerary images - check both possible field names
 			const itineraryData =
 				formDefaultValues.image_itinerary ||
 				formDefaultValues.itinerary_details;
@@ -183,6 +183,7 @@ function BookingComponent({
 			...currentCharges,
 			{
 				amount: "",
+				currency: "",
 				description: "",
 			},
 		]);
@@ -204,8 +205,9 @@ function BookingComponent({
 		}
 
 		setIsSubmitting(true);
-		try {			// For itinerary: process array of images
-			const processedItinerary = (itineraryImages || []).map(img =>
+		try {
+			// For itinerary: process array of images
+			const processedItinerary = (itineraryImages || []).map((img) =>
 				typeof img === "string" && img.startsWith("data:image/") ? img : img
 			);
 
@@ -417,7 +419,8 @@ function BookingComponent({
 		isSubmitting,
 		currencies,
 		currency,
-		setCurrency,		itineraryImages,
+		setCurrency,
+		itineraryImages,
 		setItineraryImages,
 		showPreview,
 		setShowPreview,

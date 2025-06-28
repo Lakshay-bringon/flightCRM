@@ -6,11 +6,11 @@ import { AUTH_STATUS, BOOKING_STATUS } from "../../../constants";
 import { useAuth } from "../../../auth/hooks/useAuth";
 const SECTION_ID = "provider-details";
 
-const ProviderDetailsSection = React.memo(({ apiData, bid, onSave }) => {
+const ProviderDetailsSection = React.memo(({ apiData, onSave }) => {
 	const { startEditing, stopEditing } = useEditingContext();
 	const { user } = useAuth();
 	const [providerDetails, setProviderDetails] = useState({
-		bid: bid || "N/A",
+		bid: "N/A",
 		provider: "N/A",
 		transactionType: "N/A",
 		dateCreated: getESTTimestamp(),
@@ -23,7 +23,7 @@ const ProviderDetailsSection = React.memo(({ apiData, bid, onSave }) => {
 	useEffect(() => {
 		if (apiData) {
 			setProviderDetails({
-				bid: apiData.bid || bid || "",
+				bid: apiData.bid || "",
 				provider: apiData.providerName || "",
 				transactionType: apiData.transaction_type || "",
 				dateCreated: apiData.created_at || new Date().toISOString(),
@@ -32,7 +32,7 @@ const ProviderDetailsSection = React.memo(({ apiData, bid, onSave }) => {
 				agent: apiData.agent || apiData.userName || "",
 			});
 		}
-	}, [apiData, bid]);
+	}, [apiData]);
 
 	const handleSave = useCallback(async () => {
 		if (onSave) {
@@ -55,8 +55,6 @@ const ProviderDetailsSection = React.memo(({ apiData, bid, onSave }) => {
 	const handleEditSave = useCallback(() => {
 		stopEditing(SECTION_ID);
 	}, [stopEditing]);
-	// All booking status options are always available
-	const availableBookingStatus = BOOKING_STATUS;
 
 	// Get all available status indices for the select options
 	const availableStatusIndices = [0, 1, 2, 3]; // All options including Ticketed & MCO Charged

@@ -218,46 +218,6 @@ function BookingDetailsContent() {
 		};
 	}, [apiData]);
 
-	// Calculate charging details sum for bid status filtering
-	const chargingDetailsSum = useMemo(() => {
-		if (!apiData?.chargingDetailsData) return 0;
-
-		try {
-			const chargingDetailsData = JSON.parse(apiData.chargingDetailsData);
-			let sum = 0;
-
-			// Sum MCO charges
-			if (Array.isArray(chargingDetailsData?.MCO)) {
-				sum += chargingDetailsData.MCO.reduce((total, charge) => {
-					return total + (parseFloat(charge.amount) || 0);
-				}, 0);
-			}
-
-			// Sum Airline charges
-			if (Array.isArray(chargingDetailsData?.airlineCharge)) {
-				sum += chargingDetailsData.airlineCharge.reduce((total, charge) => {
-					return total + (parseFloat(charge.amount) || 0);
-				}, 0);
-			}
-
-			return sum;
-		} catch (error) {
-			console.error("Error calculating charging details sum:", error);
-			return 0;
-		}
-	}, [apiData?.chargingDetailsData]);
-
-	// Get total booking amount
-	const totalBookingAmount = useMemo(() => {
-		if (!apiData?.bookingData?.amount) return 0;
-		return parseFloat(apiData.bookingData.amount) || 0;
-	}, [apiData?.bookingData?.amount]);
-
-	// Check if charging sum meets or exceeds total amount
-	const canShowAdvancedBidStatus = useMemo(() => {
-		return chargingDetailsSum >= totalBookingAmount && totalBookingAmount > 0;
-	}, [chargingDetailsSum, totalBookingAmount]);
-
 	const renderFormComponent = useCallback(() => {
 		// Only render if bookingData is available
 		if (apiData === null || apiData === undefined) {
@@ -356,9 +316,6 @@ function BookingDetailsContent() {
 					<ProviderDetailsSection
 						apiData={apiData}
 						onSave={saveProviderDetails}
-						canShowAdvancedBidStatus={canShowAdvancedBidStatus}
-						chargingDetailsSum={chargingDetailsSum}
-						totalBookingAmount={totalBookingAmount}
 					/>
 					{/* Charging Details Section */}
 					<ChargingDetailsSection

@@ -3,6 +3,8 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Modal } from "../../components/common";
+import { Eye, EyeOff } from "lucide-react";
+
 import {
 	Form,
 	FormField,
@@ -31,7 +33,6 @@ const getUserSchema = (isEditMode) =>
 				? z.string().optional()
 				: z.string().min(6, "Password is required"),
 			confirmPassword: z.string().optional(),
-			phone: z.string().min(8, "Phone is required"),
 			role: z.string().min(1, "Role is required"),
 			leader_id: z.string().optional(),
 		})
@@ -72,6 +73,7 @@ export default function UserDetailsForm({
 	const [dragActive, setDragActive] = useState(false);
 	const [showConfirmEmail, setShowConfirmEmail] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 
 	const [selectedRole, setSelectedRole] = useState(
 		user ? String(user.role_id) : ""
@@ -90,7 +92,6 @@ export default function UserDetailsForm({
 		? {
 				name: user.name || "",
 				alias: user.alies_name || "",
-				phone: user.phone || "",
 				email: user.email || "",
 				confirmEmail: user.email || "",
 				password: "",
@@ -102,7 +103,6 @@ export default function UserDetailsForm({
 		: {
 				name: "",
 				alias: "",
-				phone: "",
 				email: "",
 				confirmEmail: "",
 				password: "",
@@ -241,10 +241,6 @@ export default function UserDetailsForm({
 
 							<FormField error={errors.alias?.message}>
 								<FormInput {...register("alias")} placeholder="Alias" />
-							</FormField>
-
-							<FormField error={errors.phone?.message}>
-								<FormInput {...register("phone")} placeholder="Phone Number" />
 							</FormField>
 
 							<FormField error={errors.role?.message}>
@@ -388,22 +384,48 @@ export default function UserDetailsForm({
 								/>
 							</FormField>
 						)}
-						{!user && (
+						{
 							<FormField error={errors.password?.message}>
-								<FormInput
-									type="password"
-									{...register("password")}
-									placeholder="Password"
-								/>
+								<div className="relative">
+									<FormInput
+										type={showPassword ? "text" : "password"}
+										{...register("password")}
+										placeholder="Password"
+									/>
+									<button
+										type="button"
+										onClick={() => setShowPassword(!showPassword)}
+										className="absolute right-3.5 top-2 text-gray-400 hover:text-gray-300"
+									>
+										{showPassword ? (
+											<EyeOff className="w-5 h-5" />
+										) : (
+											<Eye className="w-5 h-5" />
+										)}
+									</button>
+								</div>
 							</FormField>
-						)}
-						{!user && showConfirmPassword && (
+						}
+						{showConfirmPassword && (
 							<FormField error={errors.confirmPassword?.message}>
-								<FormInput
-									type="password"
-									{...register("confirmPassword")}
-									placeholder="Confirm Password"
-								/>
+								<div className="relative">
+									<FormInput
+										type={showPassword ? "text" : "password"}
+										{...register("confirmPassword")}
+										placeholder="Confirm Password"
+									/>
+									<button
+										type="button"
+										onClick={() => setShowPassword(!showPassword)}
+										className="absolute right-3.5 top-2 text-gray-400 hover:text-gray-300"
+									>
+										{showPassword ? (
+											<EyeOff className="w-5 h-5" />
+										) : (
+											<Eye className="w-5 h-5" />
+										)}
+									</button>
+								</div>
 							</FormField>
 						)}
 					</div>

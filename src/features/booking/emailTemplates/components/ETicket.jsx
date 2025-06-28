@@ -60,7 +60,7 @@ export const ETicket = ({ bookingData }) => {
 						The total cost to change this itinerary including all taxes and fees
 						would be:{" "}
 						<strong>
-							{currency} {total_cost}
+							{currency} {total_cost || "165.30"}
 						</strong>
 					</Text>
 

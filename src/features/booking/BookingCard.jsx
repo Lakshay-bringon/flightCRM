@@ -51,9 +51,7 @@ export default function BookingCard({ bookingDetails }) {
 						<div className="flex flex-wrap gap-3 text-xs text-gray-400 mt-1">
 							<span className="flex items-center">
 								PNR:{" "}
-								<span className="text-white ml-1">
-									{bookingDetails.bookingData.pnr}
-								</span>
+								<span className="text-white ml-1">{bookingDetails.pnr}</span>
 							</span>
 
 							<span className="flex items-center">
@@ -83,12 +81,6 @@ export default function BookingCard({ bookingDetails }) {
 							<UserCircle className="w-3 h-3 mr-1" />
 							Created by: {bookingDetails.userName}
 						</span>
-						{bookingDetails.mco && (
-							<span className="flex items-center">
-								<DollarSign className="w-3 h-3 mr-1" />
-								MCO: {bookingDetails.bookingData.amount}
-							</span>
-						)}
 					</div>
 				</div>
 			</div>

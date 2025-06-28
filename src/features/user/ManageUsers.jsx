@@ -114,7 +114,6 @@ export default function UserMGMT() {
 						{/* <option value="id">ID</option> */}
 						<option value="name">Name</option>
 						<option value="email">Email</option>
-						<option value="phone">Phone</option>
 					</select>
 					<input
 						type="text"

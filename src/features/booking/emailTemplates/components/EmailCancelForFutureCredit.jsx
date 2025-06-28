@@ -57,10 +57,6 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 					</Text>
 					<Text>Thank you for contacting us!</Text>
 					<Text>
-						Your booking has been handled by our travel expert,{" "}
-						<strong>{agent_name}</strong>.
-					</Text>
-					<Text>
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
 					</Text>
@@ -90,7 +86,7 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 						{charge_data.map((item, index) => (
 							<tr key={index}>
 								<td style={td}>
-									{item.amount} {currency}
+									{item.amount} {item.currency}
 								</td>
 								<td style={td}>{item.description}</td>
 							</tr>
@@ -222,10 +218,15 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 						We value your business and hope to serve your travel needs soon.
 					</Text>
 					<Text>
-						I certify that I,{" "}
-						<strong>{card_holder || "CARD HOLDER NAME"}</strong>, am the
-						authorized user of this card and I will not dispute the payment with
-						my credit/debit card company/bank as this amount is being charged
+						Best Regards, <br />
+						<strong>{agent_name}</strong>
+					</Text>
+					<br />
+					<br />
+					<Text>
+						I certify that I, <strong>{card_holder}</strong>, am the authorized
+						user of this card and I will not dispute the payment with my
+						credit/debit card company or bank, as this amount is being charged
 						for my personal travel.
 					</Text>
 					<Text>
@@ -236,7 +237,7 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 							rel="noopener noreferrer"
 							style={ctaLink}
 						>
-							<strong>"I Agree / I Authorize"</strong>
+							<strong>“I Agree / I Authorize”</strong>
 						</a>
 					</Text>
 				</Container>

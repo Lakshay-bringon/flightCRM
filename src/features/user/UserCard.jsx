@@ -1,12 +1,5 @@
 import React from "react";
-import {
-	UserCircle,
-	Phone,
-	Mail,
-	PenSquare,
-	Trash,
-	IdCard,
-} from "lucide-react";
+import { UserCircle, Mail, PenSquare, Trash, IdCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function UserCard({ user, onEdit, onRemove, onStatusChange }) {
@@ -40,14 +33,6 @@ export default function UserCard({ user, onEdit, onRemove, onStatusChange }) {
 				<div>
 					<div className="text-white font-medium text-base">{user.name}</div>
 					<div className="flex flex-wrap gap-3 text-xs text-gray-400">
-						{/* <span className="flex items-center">
-							<IdCard className="w-3 h-3 mr-1" />
-							{user.id}
-						</span> */}
-						<span className="flex items-center">
-							<Phone className="w-3 h-3 mr-1" />
-							{user.phone}
-						</span>
 						<span className="flex items-center">
 							<Mail className="w-3 h-3 mr-1" />
 							{user.email}

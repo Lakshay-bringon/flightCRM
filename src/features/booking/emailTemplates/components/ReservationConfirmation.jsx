@@ -56,10 +56,6 @@ export const ReservationConfirmation = ({ bookingData }) => {
 					</Text>
 					<Text>Thank you for contacting us!</Text>
 					<Text>
-						Your booking has been handled by our travel expert,{" "}
-						<strong>{agent_name}</strong>.
-					</Text>
-					<Text>
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
 					</Text>
@@ -81,7 +77,7 @@ export const ReservationConfirmation = ({ bookingData }) => {
 						{charge_data.map((item, index) => (
 							<tr key={index}>
 								<td style={td}>
-									{item.amount} {currency}
+									{item.amount} {item.currency}
 								</td>
 								<td style={td}>{item.description}</td>
 							</tr>
@@ -188,102 +184,52 @@ export const ReservationConfirmation = ({ bookingData }) => {
 						within 24 hours.
 					</Text>
 					<Text style={subheading}>Important Information:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									• Passenger names must match government ID (Passport for
-									international).
-								</td>
-							</tr>
-							<tr>
-								<td style={td}>• Ensure all travel documents are prepared.</td>
-							</tr>
-							<tr>
-								<td style={td}>
-									• Arrive 3 hours prior (international) or 2 hours prior
-									(domestic).
-								</td>
-							</tr>
-							<tr>
-								<td style={td}>
-									• Confirm international flights 72 hours before departure.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						• Passenger names must match government ID (Passport for
+						international).
+					</Text>
+					<Text>• Ensure all travel documents are prepared.</Text>
+					<Text>
+						• Arrive 3 hours prior (international) or 2 hours prior (domestic).
+					</Text>
+					<Text>
+						• Confirm international flights 72 hours before departure.
+					</Text>
 					<Text>
 						If your credit card is declined, call us immediately at{" "}
 						<strong>+1-877-413-0030</strong>. Children 12+ are considered adults
 						for pricing.
 					</Text>
 					<Text style={subheading}>For Changes:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Call <strong>+1-877-413-0030</strong>. Fees apply due to
-									penalties or fare differences.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Call <strong>+1-877-413-0030</strong>. Fees apply due to penalties
+						or fare differences.
+					</Text>
 					<Text style={subheading}>For Cancellations:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Call at least 3-4 hours before departure to avoid no-show.
-									Cancellation must be over the phone.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Call at least 3-4 hours before departure to avoid no-show.
+						Cancellation must be over the phone.
+					</Text>
 					<Text style={subheading}>Seat Assignments:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Many airlines charge for advance seat assignments. Some allow
-									only during check-in. Contact us for assistance.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Many airlines charge for advance seat assignments. Some allow only
+						during check-in. Contact us for assistance.
+					</Text>
 					<Text style={subheading}>Baggage Policy:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Baggage fees may apply. Refer to the airline for rules.
-									Contact us for more info.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Baggage fees may apply. Refer to the airline for rules. Contact us
+						for more info.
+					</Text>
 					<Text style={subheading}>Visa/Travel Documents:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Ensure required travel documents and visas are ready. We are
-									not responsible for denied boarding due to missing documents.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Ensure required travel documents and visas are ready. We are not
+						responsible for denied boarding due to missing documents.
+					</Text>
 					<Text style={subheading}>Check-In:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Arrive 3 hours before international flights and 2 hours before
-									domestic. Confirm check-in procedures with your airline or
-									TSA.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Arrive 3 hours before international flights and 2 hours before
+						domestic. Confirm check-in procedures with your airline or TSA.
+					</Text>
 					<Text>
 						Still have questions? Call <strong>+1-877-413-0030</strong> or email
 						us at{" "}
@@ -295,6 +241,12 @@ export const ReservationConfirmation = ({ bookingData }) => {
 					<Text>
 						We value your business and look forward to serving you again!
 					</Text>
+					<Text>
+						Best Regards, <br />
+						<strong>{agent_name}</strong>
+					</Text>
+					<br />
+					<br />
 					<Text>
 						I certify that I, <strong>{card_holder}</strong>, am the authorized
 						user of this card and I will not dispute the payment with my

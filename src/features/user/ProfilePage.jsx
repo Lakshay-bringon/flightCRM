@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
 	User,
-	Phone,
 	Mail,
 	Calendar,
 	Building,
@@ -101,7 +100,6 @@ function ProfilePage() {
 		role: getRole(user?.role_id),
 		isActive,
 		email: user?.email || "N/A",
-		phone: user?.phone || "N/A",
 		// Use real dashboard data if available, otherwise fallback to 0
 		monthlyMCO: dashboard?.revenue || 0,
 		totalBookings: dashboard?.totalBookings || 0,
@@ -196,10 +194,6 @@ function ProfilePage() {
 								<div className="flex items-center">
 									<Mail className="w-3 h-3 mr-1" />
 									{userData.email}
-								</div>
-								<div className="flex items-center">
-									<Phone className="w-3 h-3 mr-1" />
-									{userData.phone}
 								</div>
 							</div>
 						</div>

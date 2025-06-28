@@ -21,7 +21,8 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 		isSubmitting,
 		currencies,
 		currency,
-		setCurrency,		itineraryImages,
+		setCurrency,
+		itineraryImages,
 		setItineraryImages,
 		showPreview,
 		setShowPreview,
@@ -52,14 +53,6 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 		// Calculate amount matching for indicator
 		const totalAmount = parseFloat(amount) || 0;
 		const amountsMatch = Math.abs(totalAmount - chargesSum) < 0.01;
-
-		// Utility to get image src for preview (handles base64 and server filename)
-		const BASE_URL = import.meta.env.VITE_UPLOADS_BASE_URL || "";
-		function getImageSrc(image) {
-			if (!image) return "";
-			if (image.startsWith("data:image")) return image;
-			return BASE_URL + image;
-		}
 
 		return (
 			<>
@@ -198,12 +191,14 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 						<ChargesDescription
 							charges={charges}
 							register={register}
+							currencies={currencies}
 							currency={currency}
 							addCharge={addCharge}
 							removeCharge={removeCharge}
 							watch={watch}
 						/>{" "}
-						{/* Itinerary Details Section */}{" "}						<ItineraryDetailsInput
+						{/* Itinerary Details Section */}{" "}
+						<ItineraryDetailsInput
 							register={register}
 							setValue={setValue}
 							images={itineraryImages}
@@ -230,14 +225,14 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 							errors={errors}
 						/>
 						{/* Attachments Section */}
-						<AttachmentsSection
+						{/* <AttachmentsSection
 							images={attachments}
 							setImages={setAttachments}
 							onPreview={(img) => {
 								setPreviewImage(img);
 								setShowPreview(true);
 							}}
-						/>
+						/> */}
 						<div className="p-3 border border-gray-700 rounded-lg leading-loose">
 							<p className="flex flex-wrap items-center gap-2">
 								Make sure that the displayed flight information is as you

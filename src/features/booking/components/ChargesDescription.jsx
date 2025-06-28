@@ -3,6 +3,7 @@ import { Plus, X } from "lucide-react";
 
 function ChargesDescription({
 	charges = [],
+	currencies,
 	currency,
 	register,
 	addCharge,
@@ -48,7 +49,20 @@ function ChargesDescription({
 									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-24"
 									placeholder="Amount"
 								/>
-								{currency}
+								<select
+									{...register(`charge_data.${index}.currency`)}
+									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
+								>
+									{currencies && currencies.length > 0 ? (
+										currencies.map((currency) => (
+											<option key={currency.id} value={currency.Currency}>
+												{currency.Currency}
+											</option>
+										))
+									) : (
+										<option value="">Select Currency</option>
+									)}{" "}
+								</select>{" "}
 							</td>
 							<td className="px-2 py-2">
 								<input

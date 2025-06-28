@@ -1,34 +1,31 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
 	LayoutDashboard,
 	TicketsPlane,
 	Search,
-	Users,
 	UserCircle,
 	FileInput,
 	PieChart,
 	Settings,
-	Clock,
-	Phone,
-} from 'lucide-react';
-import { useAuth } from '../../auth/hooks/useAuth';
+} from "lucide-react";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 function NavLink({ to, children, iconOnly }) {
 	const location = useLocation();
 	// Highlight if current path starts with 'to' (for subroutes)
 	const isActive =
-		location.pathname === to || location.pathname.startsWith(to + '/');
+		location.pathname === to || location.pathname.startsWith(to + "/");
 
 	const childrenWithProps = React.Children.map(children, (child, idx) => {
 		if (React.isValidElement(child)) {
 			return React.cloneElement(child, {
 				className: `w-5 h-5 ${
-					isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'
-				} ${iconOnly ? '' : 'mr-2'}`,
+					isActive ? "text-blue-400" : "text-gray-400 group-hover:text-blue-400"
+				} ${iconOnly ? "" : "mr-2"}`,
 			});
 		}
-		if (!iconOnly && typeof child === 'string') {
+		if (!iconOnly && typeof child === "string") {
 			return child;
 		}
 		return null;
@@ -38,12 +35,12 @@ function NavLink({ to, children, iconOnly }) {
 		<Link
 			to={to}
 			className={`flex items-center ${
-				iconOnly ? 'justify-center' : ''
+				iconOnly ? "justify-center" : ""
 			} px-3 py-2 text-sm rounded-lg transition-all duration-200 group
         ${
 					isActive
-						? 'bg-gray-700 text-white shadow-md border border-gray-600'
-						: 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+						? "bg-gray-700 text-white shadow-md border border-gray-600"
+						: "text-gray-300 hover:bg-gray-700/50 hover:text-white"
 				}`}
 		>
 			{childrenWithProps}
@@ -53,14 +50,14 @@ function NavLink({ to, children, iconOnly }) {
 
 function Navigation({ iconOnly = false }) {
 	const { user } = useAuth();
-	const isAgent = user?.role_id === '3';
-	const isLeader = user?.role_id === '2';
-	const isAdmin = user?.role_id === '1';
+	const isAgent = user?.role_id === "3";
+	const isLeader = user?.role_id === "2";
+	const isAdmin = user?.role_id === "1";
 
 	return (
 		<nav className="mt-2 h-[calc(100vh-152px)] overflow-y-auto">
 			<div className="px-2 space-y-1">
-				{' '}
+				{" "}
 				<NavLink to="/" iconOnly={iconOnly}>
 					<LayoutDashboard /> DASHBOARD
 				</NavLink>

@@ -13,6 +13,7 @@ const passengerSchema = z.object({
 // Charge schema
 const chargeSchema = z.object({
 	amount: z.string().min(1, "Charge amount is required"),
+	currency: z.string().min(1, "Charge currency is required"),
 	description: z.string().min(1, "Description is required"),
 });
 

@@ -61,10 +61,6 @@ export const EmailUpgrade = ({ bookingData }) => {
 					</Text>
 					<Text>Thank you for contacting us!</Text>
 					<Text>
-						Your booking has been handled by our travel expert,{" "}
-						<strong>{agent_name}</strong>.
-					</Text>
-					<Text>
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
 					</Text>
@@ -88,7 +84,7 @@ export const EmailUpgrade = ({ bookingData }) => {
 						{charge_data.map((item, index) => (
 							<tr key={index}>
 								<td style={td}>
-									{item.amount} {currency}
+									{item.amount} {item.currency}
 								</td>
 								<td style={td}>{item.description}</td>
 							</tr>
@@ -226,50 +222,34 @@ export const EmailUpgrade = ({ bookingData }) => {
 						Please review your itinerary carefully to ensure that the following
 						key items are correct:
 					</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									• Passenger names must be the same as on the passport
-									(International travel) OR any government-approved photo ID
-									proof for Domestic travel.
-								</td>
-							</tr>
-							<tr>
-								<td style={td}>
-									• We advise all passengers to ensure to have all travel
-									documents including Passports, and required visas issued and
-									presented at the time of travel.
-								</td>
-							</tr>
-							<tr>
-								<td style={td}>
-									• All passengers are recommended to be present at the airport
-									3 hours before departure for international departures, and 2
-									before domestic travel.
-								</td>
-							</tr>
-							<tr>
-								<td style={td}>
-									• All International flights must be confirmed 72 hours before
-									departure.
-								</td>
-							</tr>
-							<tr>
-								<td style={td}>
-									• Review departure/arrival dates, times, origin/destination
-									cities, stopovers, and connections.
-								</td>
-							</tr>
-							<tr>
-								<td style={td}>
-									• At least one adult must accompany children below the age of
-									18 yrs. Children 12 yrs & above are considered adults for
-									pricing purposes.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						• Passenger names must be the same as on the passport (International
+						travel) OR any government-approved photo ID proof for Domestic
+						travel.
+					</Text>
+					<Text>
+						• We advise all passengers to ensure to have all travel documents
+						including Passports, and required visas issued and presented at the
+						time of travel.
+					</Text>
+					<Text>
+						• All passengers are recommended to be present at the airport 3
+						hours before departure for international departures, and 2 before
+						domestic travel.
+					</Text>
+					<Text>
+						• All International flights must be confirmed 72 hours before
+						departure.
+					</Text>
+					<Text>
+						• Review departure/arrival dates, times, origin/destination cities,
+						stopovers, and connections.
+					</Text>
+					<Text>
+						• At least one adult must accompany children below the age of 18
+						yrs. Children 12 yrs & above are considered adults for pricing
+						purposes.
+					</Text>
 					<Text>
 						In case you get notified that your credit card was declined, please
 						call us right away at <strong>+1-877-413-0030</strong>
@@ -288,90 +268,52 @@ export const EmailUpgrade = ({ bookingData }) => {
 						difference, and fees.
 					</Text>
 					<Text style={subheading}>For Changes Query:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Call us at <strong>+1-877-413-0030</strong> to make any kind
-									of changes to the itinerary. Fees will apply due to airline
-									penalties, fare differences, and other factors to change the
-									itinerary.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Call us at <strong>+1-877-413-0030</strong> to make any kind of
+						changes to the itinerary. Fees will apply due to airline penalties,
+						fare differences, and other factors to change the itinerary.
+					</Text>
 					<Text style={subheading}>For Cancellations:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Call us at <strong>+1-877-413-0030</strong>, Booking should be
-									canceled at least 3 hours before the scheduled departure time
-									of your flight to avoid a no-show. Cancellations can only be
-									processed over the phone.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Call us at <strong>+1-877-413-0030</strong>, Booking should be
+						canceled at least 3 hours before the scheduled departure time of
+						your flight to avoid a no-show. Cancellations can only be processed
+						over the phone.
+					</Text>
 					<Text style={subheading}>Seat Assignments:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Most airlines have restricted rules for advance seat
-									assignment and can only be done with a fee. Some fare
-									restrictions only allow seat assignment with a fee at the
-									airport during the time of check-in. Call us at{" "}
-									<strong>+1-877-413-0030</strong> for seat assignment, if
-									applicable.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Most airlines have restricted rules for advance seat assignment and
+						can only be done with a fee. Some fare restrictions only allow seat
+						assignment with a fee at the airport during the time of check-in.
+						Call us at <strong>+1-877-413-0030</strong> for seat assignment, if
+						applicable.
+					</Text>
 					<Text style={subheading}>Baggage Policy:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									Your reservation may have a restricted baggage allowance and
-									some airlines may charge an additional fee for each allowed
-									checked-in or carry-on bag. Please refer to each operating
-									airline for the most restricted rules. Call us at{" "}
-									<strong>+1-877-413-0030</strong> for baggage, if applicable.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						Your reservation may have a restricted baggage allowance and some
+						airlines may charge an additional fee for each allowed checked-in or
+						carry-on bag. Please refer to each operating airline for the most
+						restricted rules. Call us at <strong>+1-877-413-0030</strong> for
+						baggage, if applicable.
+					</Text>
 					<Text style={subheading}>Visa/Travel Documents:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									All customers are advised to verify travel documents (transit
-									visa/entry visa) for the country through which they are
-									transiting or entering. We will not be responsible if proper
-									travel documents are not available and you are denied entry or
-									transit into a Country. We request you to consult the embassy
-									of the country(s) you are visiting or transiting through.
-									Please visit TSA for any questions regarding this, as well as
-									information on check-in procedures and airport security.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						All customers are advised to verify travel documents (transit
+						visa/entry visa) for the country through which they are transiting
+						or entering. We will not be responsible if proper travel documents
+						are not available and you are denied entry or transit into a
+						Country. We request you to consult the embassy of the country(s) you
+						are visiting or transiting through. Please visit TSA for any
+						questions regarding this, as well as information on check-in
+						procedures and airport security.
+					</Text>
 					<Text style={subheading}>Check-In:</Text>
-					<table style={table}>
-						<tbody>
-							<tr>
-								<td style={td}>
-									We recommend arriving at the airport 3 hours before your
-									departure for international flights and 2 hours before your
-									departure for domestic flights. For the most updated check-in
-									rules, please contact Airlines or TSA directly.
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<Text>
+						We recommend arriving at the airport 3 hours before your departure
+						for international flights and 2 hours before your departure for
+						domestic flights. For the most updated check-in rules, please
+						contact Airlines or TSA directly.
+					</Text>
 					<Text>
 						Still, have questions? Call us at <strong>+1-877-413-0030</strong>.
 						Our agents are available 24 hours a day, 7 days a week to assist
@@ -385,10 +327,15 @@ export const EmailUpgrade = ({ bookingData }) => {
 						in the near future.
 					</Text>
 					<Text>
-						I certify that I,{" "}
-						<strong>{card_holder || "CARD HOLDER NAME"}</strong>, am the
-						authorized user of this card and I will not dispute the payment with
-						my credit/debit card company/bank as this amount is being charged
+						Best Regards, <br />
+						<strong>{agent_name}</strong>
+					</Text>
+					<br />
+					<br />
+					<Text>
+						I certify that I, <strong>{card_holder}</strong>, am the authorized
+						user of this card and I will not dispute the payment with my
+						credit/debit card company or bank, as this amount is being charged
 						for my personal travel.
 					</Text>
 					<Text>
@@ -399,7 +346,7 @@ export const EmailUpgrade = ({ bookingData }) => {
 							rel="noopener noreferrer"
 							style={ctaLink}
 						>
-							<strong>"I Agree / I Authorize"</strong>
+							<strong>“I Agree / I Authorize”</strong>
 						</a>
 					</Text>
 				</Container>

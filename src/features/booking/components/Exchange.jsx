@@ -20,7 +20,8 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 		isSubmitting,
 		currencies,
 		currency,
-		setCurrency,		itineraryImages,
+		setCurrency,
+		itineraryImages,
 		setItineraryImages,
 		showPreview,
 		setShowPreview,
@@ -182,14 +183,17 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 								</span>
 							</div>
 						</div>
+						{/* Charges Description Section */}
 						<ChargesDescription
 							charges={charges}
 							register={register}
+							currencies={currencies}
 							currency={currency}
 							addCharge={addCharge}
 							removeCharge={removeCharge}
 							watch={watch}
-						/>{" "}						<ItineraryDetailsInput
+						/>{" "}
+						<ItineraryDetailsInput
 							register={register}
 							setValue={setValue}
 							images={itineraryImages}
@@ -205,14 +209,14 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 							setValue={setValue}
 							errors={errors}
 						/>
-						<AttachmentsSection
+						{/* <AttachmentsSection
 							images={attachments}
 							setImages={setAttachments}
 							onPreview={(img) => {
 								setPreviewImage(img);
 								setShowPreview(true);
 							}}
-						/>{" "}
+						/>{" "} */}
 						<div className="p-3 border border-gray-700 rounded-lg leading-loose">
 							<p className="flex flex-wrap items-center gap-2">
 								Make sure that the displayed flight information is as you

@@ -58,10 +58,6 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 					</Text>
 					<Text>Thank you for contacting us!</Text>
 					<Text>
-						Your booking has been handled by our travel expert,{" "}
-						<strong>{agent_name}</strong>.
-					</Text>
-					<Text>
 						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
 						for any related request.
 					</Text>
@@ -97,7 +93,7 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 						{charge_data.map((item, index) => (
 							<tr key={index}>
 								<td style={td}>
-									{item.amount} {currency}
+									{item.amount} {item.currency}
 								</td>
 								<td style={td}>{item.description}</td>
 							</tr>
@@ -213,6 +209,12 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 					<Text>
 						We value your business and look forward to serving you again.
 					</Text>
+					<Text>
+						Best Regards, <br />
+						<strong>{agent_name}</strong>
+					</Text>
+					<br />
+					<br />
 					<Text>
 						I certify that I, <strong>{card_holder}</strong>, am the authorized
 						user of this card and I will not dispute the payment with my
