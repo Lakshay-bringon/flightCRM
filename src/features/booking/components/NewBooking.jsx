@@ -43,16 +43,6 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 		const airline = watch("airline_name");
 		const passengers = watch("passenger_data");
 		const charges = watch("charge_data");
-		const amount = watch("amount");
-		// Calculate sum of charges for validation display
-		const chargesSum =
-			charges?.reduce((sum, charge) => {
-				return sum + (parseFloat(charge?.amount) || 0);
-			}, 0) || 0;
-
-		// Calculate amount matching for indicator
-		const totalAmount = parseFloat(amount) || 0;
-		const amountsMatch = Math.abs(totalAmount - chargesSum) < 0.01;
 
 		return (
 			<>
@@ -162,31 +152,6 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 							</div>
 							<br />
 						</div>
-						{/* Amount Matching Indicator */}
-						<div
-							className={`p-3 border rounded-lg ${
-								amountsMatch
-									? "border-green-600 bg-green-900/20"
-									: "border-yellow-600 bg-yellow-900/20"
-							}`}
-						>
-							<div className="flex items-center gap-2 text-sm">
-								<div
-									className={`w-3 h-3 rounded-full ${
-										amountsMatch ? "bg-green-500" : "bg-yellow-500"
-									}`}
-								></div>
-								<span
-									className={
-										amountsMatch ? "text-green-400" : "text-yellow-400"
-									}
-								>
-									Amount Status: Total ({currency} {totalAmount.toFixed(2)}){" "}
-									{amountsMatch ? "matches" : "does not match"} sum of charges (
-									{currency} {chargesSum.toFixed(2)})
-								</span>
-							</div>
-						</div>
 						{/* Charges Description Section */}
 						<ChargesDescription
 							charges={charges}
@@ -233,19 +198,6 @@ function NewBooking({ bookingData, onBack, onRefresh }) {
 								setShowPreview(true);
 							}}
 						/> */}
-						<div className="p-3 border border-gray-700 rounded-lg leading-loose">
-							<p className="flex flex-wrap items-center gap-2">
-								Make sure that the displayed flight information is as you
-								planned. Please review the Names, Dates, Cities, and Departure –
-								Arrival times properly
-							</p>
-						</div>
-						{/* Authorization Section */}
-						<AuthorizeSection
-							cardholderName={watch("card_holder")}
-							cardType={watch("payment_method")}
-							cardNumber={watch("card_number")}
-						/>
 					</div>
 
 					<button

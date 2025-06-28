@@ -121,6 +121,7 @@ function PassengerDetails({
 								<td className="py-2 px-2">
 									<div className="relative">
 										<DatePicker
+											name="dob"
 											selected={getValidDateForPicker(
 												watch(`passenger_data.${index}.dob`)
 											)}

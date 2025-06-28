@@ -85,27 +85,23 @@ export const EmailExchange = ({ bookingData }) => {
 							</tr>
 						))}
 					</table>{" "}
-					{image_itinerary && (
-						<Section>
-							<Text style={subheading}>ITINERARY DETAILS</Text>
-							{Array.isArray(image_itinerary) ? (
-								image_itinerary.map((img, index) => (
-									<Img
-										key={index}
-										src={baseUploadUrl + img}
-										alt={`Itinerary Details ${index + 1}`}
-										style={imgStyle}
-									/>
-								))
-							) : (
+					{image_itinerary &&
+						(Array.isArray(image_itinerary) ? (
+							image_itinerary.map((img, index) => (
 								<Img
-									src={baseUploadUrl + image_itinerary}
-									alt="Itinerary Details"
+									key={index}
+									src={baseUploadUrl + img}
+									alt={`Itinerary ${index + 1}`}
 									style={imgStyle}
 								/>
-							)}
-						</Section>
-					)}
+							))
+						) : (
+							<Img
+								src={baseUploadUrl + image_itinerary}
+								alt="Itinerary"
+								style={imgStyle}
+							/>
+						))}
 					<Text style={note}>
 						<strong>
 							Baggage fee may apply. Check with the airline for the most updated
@@ -237,7 +233,7 @@ export const EmailExchange = ({ bookingData }) => {
 						restricted rules. Call us at <strong>+1-877-413-0030</strong> for
 						baggage, if applicable.
 					</Text>
-					<Text style={subheading}>Visa/Travel Documents:</Text>\
+					<Text style={subheading}>Visa/Travel Documents:</Text>
 					<Text>
 						All customers are advised to verify travel documents (transit
 						visa/entry visa) for the country through which they are transiting
@@ -274,10 +270,10 @@ export const EmailExchange = ({ bookingData }) => {
 					<br />
 					<br />
 					<Text>
-						I certify that I, <strong>{card_holder}</strong>, am the authorized
-						user of this card and I will not dispute the payment with my
-						credit/debit card company or bank, as this amount is being charged
-						for my personal travel.
+						I certify that I, <strong>{card_holder}</strong> is the authorized
+						user of this card and I will not dispute the payment with my credit
+						/debit card company/bank as this amount is being charged for my
+						personal travel.
 					</Text>
 					<Text>
 						Awaiting your acceptance to the declaration{" "}

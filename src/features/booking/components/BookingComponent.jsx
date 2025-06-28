@@ -94,7 +94,7 @@ function BookingComponent({
 					description: "",
 				},
 			],
-			image_itinerary: "", // Fixed: was itinerary_details
+			image_itinerary: [], // Fixed: was itinerary_details
 			attachments: [],
 		},
 	});
@@ -144,7 +144,7 @@ function BookingComponent({
 					{ amount: "", description: "" },
 					{ amount: "", description: "" },
 				],
-				image_itinerary: "", // Fixed: was itinerary_details
+				image_itinerary: [], // Fixed: was itinerary_details
 				attachments: [],
 			});
 			setItineraryImages([]);
