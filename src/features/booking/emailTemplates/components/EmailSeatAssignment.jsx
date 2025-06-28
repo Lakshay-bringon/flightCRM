@@ -68,7 +68,7 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						<strong>
 							{currency} {amount}
 						</strong>{" "}
-						all inclusive of taxes and fees as per the below description:
+						all inclusive of taxes and fees as per the below description.
 					</Text>
 					<Text style={subheading}>Charges Description:</Text>
 					<table style={table}>

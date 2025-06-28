@@ -196,6 +196,10 @@ export const ReservationConfirmation = ({ bookingData }) => {
 					</Text>
 					<Text style={subheading}>Important Information:</Text>
 					<Text>
+						Please review your itinerary carefully to ensure that the following
+						key items are correct:
+					</Text>
+					<Text>
 						• Passenger names must be the same as on the passport (International
 						travel) OR any government-approved photo ID proof for Domestic
 						travel.
