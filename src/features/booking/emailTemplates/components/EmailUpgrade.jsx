@@ -333,10 +333,10 @@ export const EmailUpgrade = ({ bookingData }) => {
 					<br />
 					<br />
 					<Text>
-						I certify that I, <strong>{card_holder}</strong>, am the authorized
-						user of this card and I will not dispute the payment with my
-						credit/debit card company or bank, as this amount is being charged
-						for my personal travel.
+						I certify that I, <strong>{card_holder}</strong> is the authorized
+						user of this card and I will not dispute the payment with my credit
+						/debit card company/bank as this amount is being charged for my
+						personal travel.
 					</Text>
 					<Text>
 						Awaiting your acceptance to the declaration{" "}
