@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Globe, Shield, Plus, X, Edit, Trash } from "lucide-react";
-import { showPromiseToast } from "../../utils/showPromiseToast";
+import React, { useEffect, useState, useRef } from 'react';
+import { Globe, Shield, Plus, X, Edit, Trash } from 'lucide-react';
+import { showPromiseToast } from '../../utils/showPromiseToast';
 import {
 	addIpApi,
 	updateIpApi,
@@ -9,25 +9,25 @@ import {
 	getIpInfoApi,
 	deleteIpApi,
 	toggleIpStatusAdminApi,
-} from "../../api";
-import { useAuth } from "../../auth/hooks/useAuth";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+} from '../../api';
+import { useAuth } from '../../auth/hooks/useAuth';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
 function IPSetting() {
 	const { user } = useAuth();
 	const [ipList, setIpList] = useState([]);
-	const [search, setSearch] = useState("");
-	const [filter, setFilter] = useState("all");
+	const [search, setSearch] = useState('');
+	const [filter, setFilter] = useState('all');
 	const [ipProtectionActive, setIpProtectionActive] = useState(true);
 	const [showDeactivateTooltip, setShowDeactivateTooltip] = useState(false);
 	const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
 	const [form, setForm] = useState({
-		ip: "",
-		allowed_status: "allowed",
-		description: "",
+		ip: '',
+		allowed_status: 'allowed',
+		description: '',
 	});
 	const [editingId, setEditingId] = useState(null);
 	const [ipInfo, setIpInfo] = useState({
@@ -40,7 +40,7 @@ function IPSetting() {
 	// Handle IP protection toggle
 	const handleIpProtectionToggle = async (activate = true) => {
 		if (!user?.id) {
-			console.error("User ID not available");
+			// console.error("User ID not available");
 			return;
 		}
 
@@ -51,43 +51,43 @@ function IPSetting() {
 				toggleIpStatusAdminApi(user.id, status),
 				{
 					loading: activate
-						? "Activating IP protection..."
-						: "Deactivating IP protection...",
+						? 'Activating IP protection...'
+						: 'Deactivating IP protection...',
 					success: activate
-						? "IP protection activated successfully!"
-						: "IP protection deactivated successfully!",
-					error: "Failed to toggle IP protection status",
+						? 'IP protection activated successfully!'
+						: 'IP protection deactivated successfully!',
+					error: 'Failed to toggle IP protection status',
 				}
 			);
 
 			// Use the actual status returned from the server
 			// "1" means active, "2" or anything else means inactive
-			const newStatus = response?.new_ipStatus === "1";
+			const newStatus = response?.new_ipStatus === '1';
 			setIpProtectionActive(newStatus);
 			setShowDeactivateConfirm(false);
 		} catch (error) {
-			console.error("Error toggling IP protection:", error);
+			// console.error('Error toggling IP protection:', error);
 		}
 	};
 
 	// Normalize API data for UI
 	const normalizeIp = (ipObj) => ({
 		id: ipObj.id,
-		ip: ipObj.ip || ipObj.ip_address || "",
+		ip: ipObj.ip || ipObj.ip_address || '',
 		allowed_status:
-			ipObj.allowed_status === "1" || ipObj.allowed_status === 1
-				? "allowed"
-				: ipObj.allowed_status === "0" || ipObj.allowed_status === 0
-				? "blocked"
-				: ipObj.allowed_status === "allowed" ||
-				  ipObj.allowed_status === "blocked"
+			ipObj.allowed_status === '1' || ipObj.allowed_status === 1
+				? 'allowed'
+				: ipObj.allowed_status === '0' || ipObj.allowed_status === 0
+				? 'blocked'
+				: ipObj.allowed_status === 'allowed' ||
+				  ipObj.allowed_status === 'blocked'
 				? ipObj.allowed_status
-				: ipObj.status === "1" || ipObj.status === 1
-				? "allowed"
-				: ipObj.status === "0" || ipObj.status === 0
-				? "blocked"
-				: "blocked",
-		description: ipObj.description || ipObj.desc || "",
+				: ipObj.status === '1' || ipObj.status === 1
+				? 'allowed'
+				: ipObj.status === '0' || ipObj.status === 0
+				? 'blocked'
+				: 'blocked',
+		description: ipObj.description || ipObj.desc || '',
 		status: ipObj.status,
 		datetime: ipObj.datetime,
 	});
@@ -96,7 +96,7 @@ function IPSetting() {
 	const formToApi = (form, editingId) => ({
 		id: editingId,
 		ip: form.ip,
-		allowed_status: form.allowed_status === "allowed" ? 1 : 0, // 1: allowed, 2: blocked
+		allowed_status: form.allowed_status === 'allowed' ? 1 : 0, // 1: allowed, 2: blocked
 		description: form.description,
 	});
 	// Utility to refresh both IP list and IP info
@@ -106,12 +106,12 @@ function IPSetting() {
 			getIpInfoApi().catch(() => ({})),
 		]);
 		setIpList(Array.isArray(list) ? list.map(normalizeIp) : []);
-		if (info && typeof info === "object") {
+		if (info && typeof info === 'object') {
 			setIpInfo(info);
 			// Sync IP protection status based on securityStatus from API
 			if (info.securityStatus !== undefined) {
 				setIpProtectionActive(
-					info.securityStatus === "1" || info.securityStatus === 1
+					info.securityStatus === '1' || info.securityStatus === 1
 				);
 			}
 		}
@@ -120,9 +120,9 @@ function IPSetting() {
 	// Fetch IP list and IP info on mount
 	useEffect(() => {
 		showPromiseToast(getIpListApi(), {
-			loading: "Loading IP list...",
-			success: "IP list loaded!",
-			error: "Failed to load IP list",
+			loading: 'Loading IP list...',
+			success: 'IP list loaded!',
+			error: 'Failed to load IP list',
 		})
 			.then((data) =>
 				setIpList(Array.isArray(data) ? data.map(normalizeIp) : [])
@@ -130,12 +130,12 @@ function IPSetting() {
 			.catch(() => {}); // Fetch IP info
 		getIpInfoApi()
 			.then((res) => {
-				if (res && typeof res === "object") {
+				if (res && typeof res === 'object') {
 					setIpInfo(res);
 					// Sync IP protection status based on securityStatus from API
 					if (res.securityStatus !== undefined) {
 						setIpProtectionActive(
-							res.securityStatus === "1" || res.securityStatus === 1
+							res.securityStatus === '1' || res.securityStatus === 1
 						);
 					}
 				}
@@ -153,19 +153,19 @@ function IPSetting() {
 		const apiPayload = formToApi(form, editingId);
 		if (editingId) {
 			await showPromiseToast(updateIpApi(apiPayload), {
-				loading: "Updating IP...",
-				success: "IP updated!",
-				error: "Failed to update IP",
+				loading: 'Updating IP...',
+				success: 'IP updated!',
+				error: 'Failed to update IP',
 			});
 		} else {
 			await showPromiseToast(addIpApi(apiPayload), {
-				loading: "Adding IP...",
-				success: "IP added!",
-				error: "Failed to add IP",
+				loading: 'Adding IP...',
+				success: 'IP added!',
+				error: 'Failed to add IP',
 			});
 		}
 		await refreshData();
-		setForm({ ip: "", allowed_status: "allowed", description: "" });
+		setForm({ ip: '', allowed_status: 'allowed', description: '' });
 		setEditingId(null);
 	};
 	const handleEdit = (ipObj) => {
@@ -184,32 +184,32 @@ function IPSetting() {
 	};
 	const handleDelete = async (ipObj) => {
 		await showPromiseToast(deleteIpApi(ipObj.id), {
-			loading: "Deleting IP...",
-			success: "IP deleted successfully!",
-			error: "Failed to delete IP",
+			loading: 'Deleting IP...',
+			success: 'IP deleted successfully!',
+			error: 'Failed to delete IP',
 		});
 		await refreshData();
 	};
 
 	const handleToggleStatus = async (ipObj) => {
 		await showPromiseToast(toggleIpStatusApi(ipObj.id), {
-			loading: "Toggling status...",
-			success: "Status updated!",
-			error: "Failed to update status",
+			loading: 'Toggling status...',
+			success: 'Status updated!',
+			error: 'Failed to update status',
 		});
 		await refreshData();
 	};
 
 	const filteredIPs = ipList.filter((ipObj) => {
-		const ipStr = ipObj.ip || "";
-		const descStr = ipObj.description || "";
+		const ipStr = ipObj.ip || '';
+		const descStr = ipObj.description || '';
 		const matchesSearch =
 			ipStr.toLowerCase().includes(search.toLowerCase()) ||
 			descStr.toLowerCase().includes(search.toLowerCase());
 		const matchesFilter =
-			filter === "all" ||
-			(filter === "allowed" && ipObj.allowed_status === "allowed") ||
-			(filter === "blocked" && ipObj.allowed_status === "blocked");
+			filter === 'all' ||
+			(filter === 'allowed' && ipObj.allowed_status === 'allowed') ||
+			(filter === 'blocked' && ipObj.allowed_status === 'blocked');
 		return matchesSearch && matchesFilter;
 	});
 
@@ -227,7 +227,7 @@ function IPSetting() {
 									<Plus className="w-4 h-4 text-blue-400" />
 								)}
 								<h3 className="text-sm font-semibold text-white">
-									{editingId ? "Edit IP Address" : "Add IP Address"}
+									{editingId ? 'Edit IP Address' : 'Add IP Address'}
 								</h3>
 							</div>
 						</div>
@@ -301,9 +301,9 @@ function IPSetting() {
 												type="button"
 												onClick={() => {
 													setForm({
-														ip: "",
-														allowed_status: "allowed",
-														description: "",
+														ip: '',
+														allowed_status: 'allowed',
+														description: '',
 													});
 													setEditingId(null);
 												}}
@@ -327,12 +327,12 @@ function IPSetting() {
 								Security Status
 							</h3>
 							<div className="relative">
-								{" "}
+								{' '}
 								<button
 									className={`px-2 py-1 rounded flex items-center gap-1 text-xs font-semibold transition-all duration-200 ${
 										ipProtectionActive
-											? "bg-green-500/20 text-green-400 hover:bg-green-500/40"
-											: "bg-red-500/20 text-red-400 hover:bg-red-500/40"
+											? 'bg-green-500/20 text-green-400 hover:bg-green-500/40'
+											: 'bg-red-500/20 text-red-400 hover:bg-red-500/40'
 									}`}
 									onClick={() => {
 										if (ipProtectionActive) {
@@ -348,7 +348,7 @@ function IPSetting() {
 									onMouseLeave={() => setShowDeactivateTooltip(false)}
 								>
 									<Shield className="w-3 h-3" />
-									{ipProtectionActive ? "Active" : "Deactivated"}
+									{ipProtectionActive ? 'Active' : 'Deactivated'}
 								</button>
 								{ipProtectionActive && showDeactivateTooltip && (
 									<div className="absolute right-0 top-full mt-1 px-2 py-1 bg-gray-900 text-xs text-gray-200 rounded shadow-lg border border-gray-700 z-10 whitespace-nowrap">
@@ -374,8 +374,8 @@ function IPSetting() {
 								<span className="text-gray-400">Last Updated</span>
 								<span className="text-white text-right">
 									{ipInfo.last_update
-										? dayjs(ipInfo.last_update).format("MMM D, h:mm A")
-										: "N/A"}
+										? dayjs(ipInfo.last_update).format('MMM D, h:mm A')
+										: 'N/A'}
 								</span>
 							</div>
 						</div>
@@ -384,7 +384,7 @@ function IPSetting() {
 
 				{/* IP List */}
 				<div className="lg:col-span-4">
-					{" "}
+					{' '}
 					<div className="rounded-xl bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700 overflow-hidden">
 						<div className="p-4 border-b border-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
 							<h3 className="text-lg font-semibold text-white">
@@ -400,36 +400,36 @@ function IPSetting() {
 								/>
 								<button
 									className={`px-2 py-1 rounded text-xs font-semibold transition-all duration-200 ${
-										filter === "all"
-											? "bg-blue-500/20 text-blue-400"
-											: "bg-gray-700 text-gray-300"
+										filter === 'all'
+											? 'bg-blue-500/20 text-blue-400'
+											: 'bg-gray-700 text-gray-300'
 									}`}
-									onClick={() => setFilter("all")}
+									onClick={() => setFilter('all')}
 								>
 									All
 								</button>
 								<button
 									className={`px-2 py-1 rounded text-xs font-semibold transition-all duration-200 ${
-										filter === "allowed"
-											? "bg-green-500/20 text-green-400"
-											: "bg-gray-700 text-gray-300"
+										filter === 'allowed'
+											? 'bg-green-500/20 text-green-400'
+											: 'bg-gray-700 text-gray-300'
 									}`}
-									onClick={() => setFilter("allowed")}
+									onClick={() => setFilter('allowed')}
 								>
 									Allowed
 								</button>
 								<button
 									className={`px-2 py-1 rounded text-xs font-semibold transition-all duration-200 ${
-										filter === "blocked"
-											? "bg-red-500/20 text-red-400"
-											: "bg-gray-700 text-gray-300"
+										filter === 'blocked'
+											? 'bg-red-500/20 text-red-400'
+											: 'bg-gray-700 text-gray-300'
 									}`}
-									onClick={() => setFilter("blocked")}
+									onClick={() => setFilter('blocked')}
 								>
 									Blocked
 								</button>
 							</div>
-						</div>{" "}
+						</div>{' '}
 						<div className="divide-y divide-gray-700">
 							{filteredIPs.length === 0 ? (
 								<div className="p-3 text-center text-gray-400 text-xs">
@@ -454,19 +454,19 @@ function IPSetting() {
 														</p>
 													)}
 												</div>
-											</div>{" "}
+											</div>{' '}
 											<div className="flex items-center space-x-2">
 												<button
 													className={`px-2 py-0.5 text-xs rounded font-semibold transition-all duration-200 focus:outline-none ${
-														ipObj.allowed_status === "allowed"
-															? "bg-green-500/20 text-green-400 hover:bg-green-500/40"
-															: "bg-red-500/20 text-red-400 hover:bg-red-500/40"
+														ipObj.allowed_status === 'allowed'
+															? 'bg-green-500/20 text-green-400 hover:bg-green-500/40'
+															: 'bg-red-500/20 text-red-400 hover:bg-red-500/40'
 													}`}
 													onClick={() => handleToggleStatus(ipObj)}
 												>
-													{ipObj.allowed_status === "allowed"
-														? "Allowed"
-														: "Blocked"}
+													{ipObj.allowed_status === 'allowed'
+														? 'Allowed'
+														: 'Blocked'}
 												</button>
 												<button
 													className="px-2 py-0.5 text-blue-400 hover:bg-blue-400/20 rounded transition-all duration-200 text-xs"
@@ -517,7 +517,7 @@ function IPSetting() {
 								onClick={() => setShowDeactivateConfirm(false)}
 							>
 								Cancel
-							</button>{" "}
+							</button>{' '}
 							<button
 								className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 font-semibold text-sm"
 								onClick={() => handleIpProtectionToggle(false)}

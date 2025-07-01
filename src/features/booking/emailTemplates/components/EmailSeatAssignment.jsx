@@ -7,42 +7,42 @@ import {
 	Text,
 	Section,
 	Img,
-} from "@react-email/components";
-import { getESTDateForEmails } from "../../../../utils/formatters";
+} from '@react-email/components';
+import { getESTDateForEmails } from '../../../../utils/formatters';
 
 export const EmailSeatAssignment = ({ bookingData }) => {
 	const {
-		airline_name = "",
-		customer_name = "",
-		pnr = "",
-		amount = "",
-		email = "",
-		phone = "",
-		card_holder = "",
-		card_number = "",
-		payment_method = "VISA",
-		purchase_date = "",
-		billing_address = "",
-		city = "",
-		state = "",
-		zip = "",
-		country = "US",
-		currency = "USD",
+		airline_name = '',
+		customer_name = '',
+		pnr = '',
+		amount = '',
+		email = '',
+		phone = '',
+		card_holder = '',
+		card_number = '',
+		payment_method = 'VISA',
+		purchase_date = '',
+		billing_address = '',
+		city = '',
+		state = '',
+		zip = '',
+		country = 'US',
+		currency = 'USD',
 		passenger_data = [],
 		charge_data = [],
-		image_itinerary = "",
-		seat_numbers = "",
+		image_itinerary = '',
+		seat_numbers = '',
 		flight_details = [],
-		bid = "",
-		agent_name = "",
+		bid = '',
+		agent_name = '',
 	} = bookingData;
 	const fullAddress = [billing_address, city, state, zip, country]
 		.filter(Boolean)
-		.join(", ");
+		.join(', ');
 
 	const baseUploadUrl =
 		import.meta.env.VITE_UPLOADS_BASE_URL ||
-		"https://apiskyline.aaditravel.com/uploads/";
+		'https://apiskyline.aaditravel.com/uploads/';
 
 	return (
 		<Html>
@@ -58,16 +58,16 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 					</Text>
 					<Text>Thank you for contacting us!</Text>
 					<Text>
-						You can contact us on this number <strong>+1-877-413-0030</strong>{" "}
+						You can contact us on this number <strong>+1-877-413-0030</strong>{' '}
 						for any related request.
 					</Text>
 					<Text>
 						As per our conversation and as agreed, we have assigned your seats
-						under Confirmation number <strong>{pnr}</strong> booked on{" "}
-						<strong>{airline_name}</strong> with a charge of{" "}
+						under Confirmation number <strong>{pnr}</strong> booked on{' '}
+						<strong>{airline_name}</strong> with a charge of{' '}
 						<strong>
 							{currency} {amount}
-						</strong>{" "}
+						</strong>{' '}
 						all inclusive of taxes and fees as per the below description.
 					</Text>
 					<Text style={subheading}>Charges Description:</Text>
@@ -84,30 +84,22 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 								<td style={td}>{item.description}</td>
 							</tr>
 						))}
-					</table>{" "}
+					</table>{' '}
 					<Text style={subheading}>Passengers Details:</Text>
-					{passenger_data && passenger_data.length > 0 ? (
-						<table style={table}>
-							<tr>
-								<th style={th}>Passenger Name</th>
-								<th style={th}>Date of Birth</th>
-								<th style={th}>Gender</th>
+					<table style={table}>
+						<tr>
+							<th style={th}>{'Name'}</th>
+							<th style={th}>{'DOB'}</th>
+						</tr>
+						{passenger_data.map((item, index) => (
+							<tr key={index}>
+								<td style={td}>
+									{item.firstName + ' ' + item.middleName + ' ' + item.lastName}
+								</td>
+								<td style={td}>{item.dob}</td>
 							</tr>
-							{passenger_data.map((passenger, index) => (
-								<tr key={index}>
-									<td style={td}>
-										{`${passenger.firstName || ""} ${passenger.lastName || ""}`}
-									</td>
-									<td style={td}>{passenger.dateOfBirth || "Not provided"}</td>
-									<td style={td}>{passenger.gender || "Not provided"}</td>
-								</tr>
-							))}
-						</table>
-					) : (
-						<Text>
-							{customer_name || "Passenger information not available"}
-						</Text>
-					)}
+						))}
+					</table>
 					<Text style={subheading}>Flight Details & Seat Numbers:</Text>
 					{image_itinerary && (
 						<Section>
@@ -134,24 +126,24 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						<tbody>
 							<tr>
 								<td style={td}>Name of Card Holder</td>
-								<td style={td}>{card_holder || "Not provided"}</td>
+								<td style={td}>{card_holder || 'Not provided'}</td>
 							</tr>
 							<tr>
 								<td style={td}>Email ID</td>
-								<td style={td}>{email || "Not provided"}</td>
+								<td style={td}>{email || 'Not provided'}</td>
 							</tr>
 							<tr>
 								<td style={td}>Billing Phone Number</td>
-								<td style={td}>{phone || "Not provided"}</td>
+								<td style={td}>{phone || 'Not provided'}</td>
 							</tr>
 							<tr>
 								<td style={td}>Billing Address</td>
-								<td style={td}>{fullAddress || "Not provided"}</td>
+								<td style={td}>{fullAddress || 'Not provided'}</td>
 							</tr>
 							<tr>
 								<td style={td}>Method of Payment</td>
-								<td style={td}>{payment_method || "Not provided"}</td>
-							</tr>{" "}
+								<td style={td}>{payment_method || 'Not provided'}</td>
+							</tr>{' '}
 							<tr>
 								<td style={td}>Date of Purchase</td>
 								<td style={td}>{purchase_date || getESTDateForEmails()}</td>
@@ -204,10 +196,10 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 					<Text>
 						In case of any discrepancy and if an amendment is required, please
 						feel free to contact us at <strong>+1-877-413-0030</strong> or email
-						us at{" "}
+						us at{' '}
 						<a href="mailto:booking@skylinetravelsllc.com">
 							booking@skylinetravelsllc.com
-						</a>{" "}
+						</a>{' '}
 						within 24 hours and we will be happy to assist you.
 					</Text>
 					<Text style={subheading}>Important Information:</Text>
@@ -310,7 +302,7 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 					<Text>
 						Still, have questions? Call us at <strong>+1-877-413-0030</strong>.
 						Our agents are available 24 hours a day, 7 days a week to assist
-						you. You can also email us at{" "}
+						you. You can also email us at{' '}
 						<a href="mailto:booking@skylinetravelsllc.com">
 							booking@skylinetravelsllc.com
 						</a>
@@ -332,7 +324,7 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 						personal travel.
 					</Text>
 					<Text>
-						Awaiting your acceptance to the declaration{" "}
+						Awaiting your acceptance to the declaration{' '}
 						<a
 							href={`https://apiskyline.aaditravel.com/authrizedAuth?bid=${bid}`}
 							target="_blank"
@@ -349,76 +341,76 @@ export const EmailSeatAssignment = ({ bookingData }) => {
 };
 
 const main = {
-	fontFamily: "Arial, sans-serif",
-	backgroundColor: "#f9f9f9",
+	fontFamily: 'Arial, sans-serif',
+	backgroundColor: '#f9f9f9',
 	margin: 0,
 	padding: 0,
 };
 
 const container = {
-	maxWidth: "600px",
-	margin: "0 auto",
-	backgroundColor: "#ffffff",
-	padding: "24px",
-	borderRadius: "8px",
+	maxWidth: '600px',
+	margin: '0 auto',
+	backgroundColor: '#ffffff',
+	padding: '24px',
+	borderRadius: '8px',
 };
 
 const heading = {
-	fontSize: "18px",
-	fontWeight: "bold",
-	marginBottom: "16px",
+	fontSize: '18px',
+	fontWeight: 'bold',
+	marginBottom: '16px',
 };
 
 const subheading = {
-	fontWeight: "bold",
-	marginTop: "20px",
-	marginBottom: "8px",
+	fontWeight: 'bold',
+	marginTop: '20px',
+	marginBottom: '8px',
 };
 
 const note = {
-	fontStyle: "italic",
-	color: "#666",
-	marginTop: "10px",
+	fontStyle: 'italic',
+	color: '#666',
+	marginTop: '10px',
 };
 
 const table = {
-	width: "100%",
-	borderCollapse: "collapse",
-	marginBottom: "12px",
+	width: '100%',
+	borderCollapse: 'collapse',
+	marginBottom: '12px',
 };
 
 const td = {
-	border: "1px solid #ccc",
-	padding: "8px",
-	fontSize: "14px",
-	verticalAlign: "top",
+	border: '1px solid #ccc',
+	padding: '8px',
+	fontSize: '14px',
+	verticalAlign: 'top',
 };
 
 const th = {
-	border: "1px solid #ccc",
-	padding: "8px",
-	fontSize: "14px",
-	fontWeight: "bold",
-	backgroundColor: "#f2f2f2",
-	textAlign: "left",
+	border: '1px solid #ccc',
+	padding: '8px',
+	fontSize: '14px',
+	fontWeight: 'bold',
+	backgroundColor: '#f2f2f2',
+	textAlign: 'left',
 };
 
 const imgStyle = {
-	width: "100%",
-	height: "auto",
-	marginTop: "8px",
-	marginBottom: "16px",
+	width: '100%',
+	height: 'auto',
+	marginTop: '8px',
+	marginBottom: '16px',
 };
 
 const ctaLink = {
-	display: "inline-block",
-	padding: "8px 12px",
-	backgroundColor: "#007BFF",
-	color: "#fff",
-	textDecoration: "none",
-	borderRadius: "4px",
-	fontWeight: "bold",
-	marginLeft: "6px",
+	display: 'inline-block',
+	padding: '8px 12px',
+	backgroundColor: '#007BFF',
+	color: '#fff',
+	textDecoration: 'none',
+	borderRadius: '4px',
+	fontWeight: 'bold',
+	marginLeft: '6px',
 };
 
 export default EmailSeatAssignment;

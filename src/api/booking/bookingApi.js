@@ -1,11 +1,11 @@
-import API from "../axios";
+import API from '../axios';
 
 // Helper to flatten error messages
 function flattenErrorMessages(error) {
 	if (!error) return [];
-	if (typeof error === "string") return [error];
+	if (typeof error === 'string') return [error];
 	if (Array.isArray(error)) return error.flatMap(flattenErrorMessages);
-	if (typeof error === "object") {
+	if (typeof error === 'object') {
 		return Object.values(error).flatMap(flattenErrorMessages);
 	}
 	return [String(error)];
@@ -13,41 +13,41 @@ function flattenErrorMessages(error) {
 
 export const updateBookingApi = async (updateData) => {
 	try {
-		const res = await API.post("/updateBooking", updateData, {
+		const res = await API.post('/updateBooking', updateData, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 		});
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to update booking");
+			throw new Error(errorMsg || 'Failed to update booking');
 		}
 		return data;
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to update booking";
+			errorMsg = errorMsg || 'Failed to update booking';
 
 			const errorDetails = err.response.data?.errors;
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
@@ -55,7 +55,7 @@ export const updateBookingApi = async (updateData) => {
 
 		// Handle network errors
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -64,37 +64,37 @@ export const updateBookingApi = async (updateData) => {
 
 export const createReservationApi = async (reservationData) => {
 	try {
-		const res = await API.post("/createReservation", reservationData, {
+		const res = await API.post('/createReservation', reservationData, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 		});
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to create reservation");
+			throw new Error(errorMsg || 'Failed to create reservation');
 		}
 		return data;
 	} catch (err) {
 		// Handle API errors
 		if (err.response) {
-			const errorMsg = err.response.data?.msg || "Failed to create reservation";
+			const errorMsg = err.response.data?.msg || 'Failed to create reservation';
 			const errorDetails = err.response.data?.errors;
 
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
@@ -102,7 +102,7 @@ export const createReservationApi = async (reservationData) => {
 
 		// Handle network errors
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -111,10 +111,10 @@ export const createReservationApi = async (reservationData) => {
 
 export const updateBookingProviderDetails = async (providerData) => {
 	try {
-		const res = await API.post("/updateBookingProviderDetails", providerData, {
+		const res = await API.post('/updateBookingProviderDetails', providerData, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 		});
 
@@ -122,10 +122,10 @@ export const updateBookingProviderDetails = async (providerData) => {
 
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to update provider details");
+			throw new Error(errorMsg || 'Failed to update provider details');
 		}
 
 		return data;
@@ -133,22 +133,22 @@ export const updateBookingProviderDetails = async (providerData) => {
 		// Handle API errors
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to update provider details";
+			errorMsg = errorMsg || 'Failed to update provider details';
 
 			const errorDetails = err.response.data?.errors;
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
@@ -156,7 +156,7 @@ export const updateBookingProviderDetails = async (providerData) => {
 
 		// Handle network errors
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -165,10 +165,10 @@ export const updateBookingProviderDetails = async (providerData) => {
 
 export const updateRefundDetails = async (refundData) => {
 	try {
-		const res = await API.post("/updateRefundDetails", refundData, {
+		const res = await API.post('/updateRefundDetails', refundData, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 		});
 
@@ -176,10 +176,10 @@ export const updateRefundDetails = async (refundData) => {
 
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to update refund details");
+			throw new Error(errorMsg || 'Failed to update refund details');
 		}
 
 		return data;
@@ -187,22 +187,22 @@ export const updateRefundDetails = async (refundData) => {
 		// Handle API errors
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to update refund details";
+			errorMsg = errorMsg || 'Failed to update refund details';
 
 			const errorDetails = err.response.data?.errors;
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
@@ -210,7 +210,7 @@ export const updateRefundDetails = async (refundData) => {
 
 		// Handle network errors
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -219,10 +219,10 @@ export const updateRefundDetails = async (refundData) => {
 
 export const updateChargebackDetails = async (chargebackData) => {
 	try {
-		const res = await API.post("/updateChargebackDetails", chargebackData, {
+		const res = await API.post('/updateChargebackDetails', chargebackData, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 		});
 
@@ -230,10 +230,10 @@ export const updateChargebackDetails = async (chargebackData) => {
 
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to update chargeback details");
+			throw new Error(errorMsg || 'Failed to update chargeback details');
 		}
 
 		return data;
@@ -241,22 +241,22 @@ export const updateChargebackDetails = async (chargebackData) => {
 		// Handle API errors
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to update chargeback details";
+			errorMsg = errorMsg || 'Failed to update chargeback details';
 
 			const errorDetails = err.response.data?.errors;
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
@@ -264,7 +264,7 @@ export const updateChargebackDetails = async (chargebackData) => {
 
 		// Handle network errors
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -273,10 +273,10 @@ export const updateChargebackDetails = async (chargebackData) => {
 
 export const updateBookingChargingDetails = async (chargingData) => {
 	try {
-		const res = await API.post("/updateBookingChargingDetails", chargingData, {
+		const res = await API.post('/updateBookingChargingDetails', chargingData, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 		});
 
@@ -284,10 +284,10 @@ export const updateBookingChargingDetails = async (chargingData) => {
 
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to update charging details");
+			throw new Error(errorMsg || 'Failed to update charging details');
 		}
 
 		return data;
@@ -295,28 +295,28 @@ export const updateBookingChargingDetails = async (chargingData) => {
 		// Handle API errors
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to update charging details";
+			errorMsg = errorMsg || 'Failed to update charging details';
 			const errorDetails = err.response.data?.errors;
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
 		// Handle network errors
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -325,10 +325,10 @@ export const updateBookingChargingDetails = async (chargingData) => {
 
 export const findBookingApi = async (searchData) => {
 	try {
-		const res = await API.post("/findBooking", searchData, {
+		const res = await API.post('/findBooking', searchData, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 		});
 		// Handle different response structures
@@ -336,10 +336,10 @@ export const findBookingApi = async (searchData) => {
 			const { status, msg, data } = res.data;
 			if (status !== 200 && status !== 201) {
 				let errorMsg = msg;
-				if (msg && typeof msg === "object") {
-					errorMsg = flattenErrorMessages(msg).join(" ");
+				if (msg && typeof msg === 'object') {
+					errorMsg = flattenErrorMessages(msg).join(' ');
 				}
-				throw new Error(errorMsg || "Failed to find bookings");
+				throw new Error(errorMsg || 'Failed to find bookings');
 			} // Return the raw data array
 			const resultData = Array.isArray(data) ? data : [];
 			return resultData;
@@ -352,28 +352,28 @@ export const findBookingApi = async (searchData) => {
 		// Handle API errors
 		if (err.response) {
 			let errorMsg = err.response.data?.msg || err.response.data?.message;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to find bookings";
+			errorMsg = errorMsg || 'Failed to find bookings';
 			const errorDetails = err.response.data?.errors;
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				// Handle validation errors from server
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
 		// Handle network errors
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -384,8 +384,8 @@ export const getBookingByBid = async (bid) => {
 	try {
 		const res = await API.get(`/getBookingByBid`, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 			params: {
 				bid: bid,
@@ -396,10 +396,10 @@ export const getBookingByBid = async (bid) => {
 
 		if (status !== 200) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to fetch booking details");
+			throw new Error(errorMsg || 'Failed to fetch booking details');
 		}
 
 		// Return the mapped booking data
@@ -408,16 +408,16 @@ export const getBookingByBid = async (bid) => {
 		// Handle API errors
 		if (err.response) {
 			let errorMsg = err.response.data?.msg || err.response.data?.message;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to fetch booking details";
+			errorMsg = errorMsg || 'Failed to fetch booking details';
 			throw new Error(errorMsg);
 		}
 
 		// Handle network errors
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -426,10 +426,10 @@ export const getBookingByBid = async (bid) => {
 
 export const dispatchEmailApi = async (emailData) => {
 	try {
-		const res = await API.post("/dispatchEmail", emailData, {
+		const res = await API.post('/dispatchEmail', emailData, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 		});
 
@@ -437,10 +437,10 @@ export const dispatchEmailApi = async (emailData) => {
 
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to dispatch email");
+			throw new Error(errorMsg || 'Failed to dispatch email');
 		}
 
 		return data;
@@ -448,28 +448,28 @@ export const dispatchEmailApi = async (emailData) => {
 		// Handle API errors
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to dispatch email";
+			errorMsg = errorMsg || 'Failed to dispatch email';
 
 			const errorDetails = err.response.data?.errors;
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
 
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -478,10 +478,10 @@ export const dispatchEmailApi = async (emailData) => {
 
 export const addCommentApi = async (payload) => {
 	try {
-		const res = await API.post("/addComment", payload, {
+		const res = await API.post('/addComment', payload, {
 			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
 			},
 		});
 
@@ -489,38 +489,38 @@ export const addCommentApi = async (payload) => {
 
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to add comment");
+			throw new Error(errorMsg || 'Failed to add comment');
 		}
 
 		return data;
 	} catch (err) {
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to add comment";
+			errorMsg = errorMsg || 'Failed to add comment';
 
 			const errorDetails = err.response.data?.errors;
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(validationErrors);
 			}
 			throw new Error(errorMsg);
 		}
 
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		throw new Error(err.message);
@@ -532,29 +532,29 @@ export const getCommentsByBidApi = async (bid) => {
 		const res = await API.get(`/getCommentsByBid`, {
 			params: { bid },
 			headers: {
-				Accept: "application/json",
+				Accept: 'application/json',
 			},
 		});
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to fetch comments");
+			throw new Error(errorMsg || 'Failed to fetch comments');
 		}
 		return data;
 	} catch (err) {
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to fetch comments";
+			errorMsg = errorMsg || 'Failed to fetch comments';
 			throw new Error(errorMsg);
 		}
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 		throw new Error(err.message);
 	}
@@ -565,29 +565,29 @@ export const getActivityByBidApi = async (bid) => {
 		const res = await API.get(`/getActivityByBid`, {
 			params: { bid },
 			headers: {
-				Accept: "application/json",
+				Accept: 'application/json',
 			},
 		});
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to fetch activity");
+			throw new Error(errorMsg || 'Failed to fetch activity');
 		}
 		return data;
 	} catch (err) {
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to fetch activity";
+			errorMsg = errorMsg || 'Failed to fetch activity';
 			throw new Error(errorMsg);
 		}
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 		throw new Error(err.message);
 	}
@@ -595,19 +595,19 @@ export const getActivityByBidApi = async (bid) => {
 
 export const getRecentBookingsApi = async () => {
 	try {
-		const res = await API.get("/recentBooking", {
+		const res = await API.get('/recentBooking', {
 			headers: {
-				Accept: "application/json",
+				Accept: 'application/json',
 			},
 		});
 
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to fetch recent bookings");
+			throw new Error(errorMsg || 'Failed to fetch recent bookings');
 		}
 		// Return the raw data if data exists
 		if (Array.isArray(data)) {
@@ -618,14 +618,14 @@ export const getRecentBookingsApi = async () => {
 	} catch (err) {
 		if (err.response) {
 			let errorMsg = err.response.data?.msg;
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
-			errorMsg = errorMsg || "Failed to fetch recent bookings";
+			errorMsg = errorMsg || 'Failed to fetch recent bookings';
 			throw new Error(errorMsg);
 		}
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 		throw new Error(err.message);
 	}
@@ -635,21 +635,21 @@ export const dispatchEticketApi = async (eticketData) => {
 	try {
 		// Determine if we're sending FormData or JSON
 
-		const res = await API.post("/dispatchEticket", eticketData);
+		const res = await API.post('/dispatchEticket', eticketData);
 		const { status, msg, data } = res.data;
 		if (status !== 200 && status !== 201) {
 			let errorMsg = msg;
-			if (msg && typeof msg === "object") {
-				errorMsg = flattenErrorMessages(msg).join(" ");
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
 			}
-			throw new Error(errorMsg || "Failed to dispatch e-ticket");
+			throw new Error(errorMsg || 'Failed to dispatch e-ticket');
 		}
 		return data;
 	} catch (err) {
-		// Handle API errors
-		console.log("Error dispatching e-ticket:", err);
-		console.log("Error response:", err.response);
-		console.log("Error response data:", err.response?.data);
+		// // Handle API errors
+		// console.log('Error dispatching e-ticket:', err);
+		// console.log('Error response:', err.response);
+		// console.log('Error response data:', err.response?.data);
 
 		if (err.response) {
 			// Get status code and status text
@@ -663,29 +663,29 @@ export const dispatchEticketApi = async (eticketData) => {
 				err.response.data?.error;
 
 			// If errorMsg is an object, flatten it
-			if (typeof errorMsg === "object") {
-				errorMsg = flattenErrorMessages(errorMsg).join(" ");
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
 			}
 
 			// If no specific error message, use status-based message
 			if (!errorMsg) {
 				switch (status) {
 					case 400:
-						errorMsg = "Bad request - Invalid data provided";
+						errorMsg = 'Bad request - Invalid data provided';
 						break;
 					case 401:
-						errorMsg = "Unauthorized - Please check your credentials";
+						errorMsg = 'Unauthorized - Please check your credentials';
 						break;
 					case 403:
 						errorMsg =
 							"Forbidden - You don't have permission to perform this action";
 						break;
 					case 404:
-						errorMsg = "Not found - The requested resource was not found";
+						errorMsg = 'Not found - The requested resource was not found';
 						break;
 					case 500:
 						errorMsg =
-							"Internal server error - Please try again later or contact support";
+							'Internal server error - Please try again later or contact support';
 						break;
 					default:
 						errorMsg = `Server error (${status}): ${statusText}`;
@@ -694,15 +694,15 @@ export const dispatchEticketApi = async (eticketData) => {
 
 			// Handle validation errors
 			const errorDetails = err.response.data?.errors;
-			if (errorDetails && typeof errorDetails === "object") {
+			if (errorDetails && typeof errorDetails === 'object') {
 				const validationErrors = Object.entries(errorDetails)
 					.map(
 						([field, messages]) =>
 							`${field}: ${
-								Array.isArray(messages) ? messages.join(", ") : messages
+								Array.isArray(messages) ? messages.join(', ') : messages
 							}`
 					)
-					.join("; ");
+					.join('; ');
 				throw new Error(`${errorMsg}. Validation errors: ${validationErrors}`);
 			}
 
@@ -711,10 +711,159 @@ export const dispatchEticketApi = async (eticketData) => {
 
 		// Handle network errors
 		if (err.request) {
-			throw new Error("Network error: Unable to connect to server");
+			throw new Error('Network error: Unable to connect to server');
 		}
 
 		// Handle other errors
-		throw new Error(err.message || "An unexpected error occurred");
+		throw new Error(err.message || 'An unexpected error occurred');
+	}
+};
+
+export const createReservationApiFormData = async (reservationData) => {
+	try {
+		const formData = new FormData();
+
+		// Loop through all keys in reservationData
+		for (const key in reservationData) {
+			if (key === 'itinerary' && Array.isArray(reservationData[key])) {
+				// Append each file in the itinerary array
+				reservationData[key].forEach((file, index) => {
+					formData.append('itinerary[]', file);
+				});
+				// Remove image_itinerary from reservationData to avoid sending twice
+				delete reservationData.bookingData.image_itinerary;
+				continue;
+			} else if (key === 'bookingData') {
+				// Defer appending bookingData until after image_itinerary is removed
+				formData.append(
+					'bookingData',
+					JSON.stringify(reservationData.bookingData)
+				);
+				continue;
+			} else {
+				formData.append(key, reservationData[key]);
+			}
+		}
+
+		const res = await API.post('/createReservationFormData', formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
+
+		const { status, msg, data } = res.data;
+
+		if (status !== 200 && status !== 201) {
+			let errorMsg = msg;
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
+			}
+			throw new Error(errorMsg || 'Failed to create reservation');
+		}
+
+		return data;
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			const errorMsg = err.response.data?.msg || 'Failed to create reservation';
+			const errorDetails = err.response.data?.errors;
+
+			if (errorDetails && typeof errorDetails === 'object') {
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(', ') : messages
+							}`
+					)
+					.join('; ');
+				throw new Error(validationErrors);
+			}
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error('Network error: Unable to connect to server');
+		}
+
+		throw new Error(err.message);
+	}
+};
+
+export const updateBookingApiFormData = async (reservationData) => {
+	try {
+		const formData = new FormData();
+
+		// Loop through all keys in reservationData
+		for (const key in reservationData) {
+			if (key === 'itinerary' && Array.isArray(reservationData[key])) {
+				// Append each file in the itinerary array
+				reservationData[key].forEach((file, index) => {
+					formData.append('itinerary[]', file);
+				});
+				// Remove image_itinerary from reservationData to avoid sending twice
+				delete reservationData.bookingData.image_itinerary;
+				continue;
+			} else if (key === 'bookingData') {
+				// Defer appending bookingData until after image_itinerary is removed
+				formData.append(
+					'bookingData',
+					JSON.stringify(reservationData.bookingData)
+				);
+				continue;
+			} else {
+				formData.append(key, reservationData[key]);
+			}
+		}
+
+		const res = await API.post('/updateBookingFormData', formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
+
+		const { status, msg, data } = res.data;
+
+		if (status !== 200 && status !== 201) {
+			let errorMsg = msg;
+			if (msg && typeof msg === 'object') {
+				errorMsg = flattenErrorMessages(msg).join(' ');
+			}
+			throw new Error(errorMsg || 'Failed to create reservation');
+		}
+
+		return data;
+	} catch (err) {
+		// Handle API errors
+		if (err.response) {
+			let errorMsg = err.response.data?.msg;
+			if (typeof errorMsg === 'object') {
+				errorMsg = flattenErrorMessages(errorMsg).join(' ');
+			}
+			errorMsg = errorMsg || 'Failed to update booking';
+
+			const errorDetails = err.response.data?.errors;
+
+			if (errorDetails && typeof errorDetails === 'object') {
+				const validationErrors = Object.entries(errorDetails)
+					.map(
+						([field, messages]) =>
+							`${field}: ${
+								Array.isArray(messages) ? messages.join(', ') : messages
+							}`
+					)
+					.join('; ');
+				throw new Error(validationErrors);
+			}
+			throw new Error(errorMsg);
+		}
+
+		// Handle network errors
+		if (err.request) {
+			throw new Error('Network error: Unable to connect to server');
+		}
+
+		throw new Error(err.message);
 	}
 };

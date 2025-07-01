@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useCallback } from "react";
-import Section from "../Section";
-import { useEditingContext } from "../context/EditingContext";
+import React, { useState, useEffect, useCallback } from 'react';
+import Section from '../Section';
+import { useEditingContext } from '../context/EditingContext';
 import {
 	formatSafeDate,
 	formatLocalDateString,
 	formatESTDateForInput,
-} from "../../../utils/formatters";
-import { CHARGING_STATUS, CHARGING_TYPE } from "../../../constants";
-import { useNavigate } from "react-router-dom";
-const SECTION_ID = "charging-details";
+} from '../../../utils/formatters';
+import { CHARGING_STATUS, CHARGING_TYPE } from '../../../constants';
+import { useNavigate } from 'react-router-dom';
+const SECTION_ID = 'charging-details';
 
 const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 	const navigate = useNavigate();
 	const { startEditing, stopEditing } = useEditingContext();
 	const [chargingDetails, setChargingDetails] = useState([
 		{
-			type: "MCO",
-			amount: "0.00",
+			type: 'MCO',
+			amount: '0.00',
 			status: 0,
-			chargedOn: "",
-			chargedBy: "",
-			merchantName: "",
-			refundedOn: "",
-			transactionId: "",
-			description: "",
+			chargedOn: '',
+			chargedBy: '',
+			merchantName: '',
+			refundedOn: '',
+			transactionId: '',
+			description: '',
 		},
 	]); // Update state when booking data is loaded
 	useEffect(() => {
@@ -31,7 +31,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 			// Check if new data structure exists (chargingDetailsData)
 			if (apiData.chargingDetailsData) {
 				const chargingDetailsData = JSON.parse(apiData.chargingDetailsData);
-				console.log("Charging Details Data:", chargingDetailsData["MCO"]);
+				// console.log("Charging Details Data:", chargingDetailsData["MCO"]);
 				setChargingDetails([
 					...(Array.isArray(chargingDetailsData?.airlineCharge)
 						? chargingDetailsData.airlineCharge
@@ -45,7 +45,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 	}, [apiData]);
 
 	useEffect(() => {
-		console.log("Charging Details Updated:", chargingDetails);
+		// console.log('Charging Details Updated:', chargingDetails);
 	}, [chargingDetails]);
 
 	const handleEmailAction = (emailType, detail) => {
@@ -64,7 +64,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 		if (onSave) {
 			// Group transactions by type
 			const groupedDetails = chargingDetails.reduce((acc, detail) => {
-				const key = detail.type === "Airline Charge" ? "airlineCharge" : "MCO";
+				const key = detail.type === 'Airline Charge' ? 'airlineCharge' : 'MCO';
 				if (!acc[key]) acc[key] = [];
 				acc[key].push({
 					type: detail.type,
@@ -79,10 +79,10 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 				return acc;
 			}, {}); // Construct the payload
 			const saveData = {
-				bid: apiData?.bid || "",
+				bid: apiData?.bid || '',
 				chargingDetailsData: groupedDetails,
 			};
-			console.log("Save Data:", saveData);
+			// console.log('Save Data:', saveData);
 
 			await onSave(saveData);
 		}
@@ -103,15 +103,15 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 		setChargingDetails((prev) => [
 			...prev,
 			{
-				type: "MCO",
-				amount: "0.00",
+				type: 'MCO',
+				amount: '0.00',
 				status: 0,
-				chargedOn: "",
-				chargedBy: "",
-				merchantName: "",
-				refundedOn: "",
-				transactionId: "",
-				description: "",
+				chargedOn: '',
+				chargedBy: '',
+				merchantName: '',
+				refundedOn: '',
+				transactionId: '',
+				description: '',
 			},
 		]);
 	}, []);
@@ -174,10 +174,10 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 								)}
 								{!isEditing &&
 									detail.status ===
-										CHARGING_STATUS.indexOf("Declined").toString() && (
+										CHARGING_STATUS.indexOf('Declined').toString() && (
 										<button
 											type="button"
-											onClick={() => handleEmailAction("declined", detail)}
+											onClick={() => handleEmailAction('declined', detail)}
 											className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs flex items-center gap-1"
 										>
 											Send Card Decline Email
@@ -187,7 +187,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 							{/* Send Card Decline Email Button */}
 
 							<div className="grid text-white grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-								{" "}
+								{' '}
 								{/* Type Field */}
 								<div>
 									<label className="block text-gray-400 text-xs mb-1">
@@ -199,7 +199,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 												className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
 												value={detail.type}
 												onChange={(e) =>
-													updateChargingDetail(index, "type", e.target.value)
+													updateChargingDetail(index, 'type', e.target.value)
 												}
 											>
 												<option value="">Select type</option>
@@ -214,7 +214,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 												<div className="text-white">
 													{detail.type !== undefined && detail.type !== null
 														? CHARGING_TYPE[detail.type] || detail.type
-														: "N/A"}
+														: 'N/A'}
 												</div>
 											</div>
 										)}
@@ -230,11 +230,11 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 											<input
 												type="text"
 												className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
-												value={detail.transactionId || ""}
+												value={detail.transactionId || ''}
 												onChange={(e) =>
 													updateChargingDetail(
 														index,
-														"transactionId",
+														'transactionId',
 														e.target.value
 													)
 												}
@@ -243,7 +243,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 										) : (
 											<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-xs">
 												<div className="text-white">
-													{detail.transactionId || "N/A"}
+													{detail.transactionId || 'N/A'}
 												</div>
 											</div>
 										)}
@@ -261,16 +261,16 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 												step="0.01"
 												min="0"
 												className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
-												value={detail.amount || ""}
+												value={detail.amount || ''}
 												onChange={(e) =>
-													updateChargingDetail(index, "amount", e.target.value)
+													updateChargingDetail(index, 'amount', e.target.value)
 												}
 												placeholder="0.00"
 											/>
 										) : (
 											<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-xs">
 												<div className="text-white">
-													${detail.amount || "0.00"}
+													${detail.amount || '0.00'}
 												</div>
 											</div>
 										)}
@@ -285,9 +285,9 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 										{isEditing ? (
 											<select
 												className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
-												value={detail.status ?? ""}
+												value={detail.status ?? ''}
 												onChange={(e) =>
-													updateChargingDetail(index, "status", e.target.value)
+													updateChargingDetail(index, 'status', e.target.value)
 												}
 											>
 												<option value="">Select Status</option>
@@ -302,7 +302,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 												<div className="text-white">
 													{detail.status !== undefined && detail.status !== null
 														? CHARGING_STATUS[detail.status] || detail.status
-														: "N/A"}
+														: 'N/A'}
 												</div>
 											</div>
 										)}
@@ -322,7 +322,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 												onChange={(e) =>
 													updateChargingDetail(
 														index,
-														"chargedOn",
+														'chargedOn',
 														e.target.value
 													)
 												}
@@ -347,11 +347,11 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 											<input
 												type="text"
 												className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
-												value={detail.chargedBy || ""}
+												value={detail.chargedBy || ''}
 												onChange={(e) =>
 													updateChargingDetail(
 														index,
-														"chargedBy",
+														'chargedBy',
 														e.target.value
 													)
 												}
@@ -360,7 +360,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 										) : (
 											<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-xs">
 												<div className="text-white">
-													{detail.chargedBy || "N/A"}
+													{detail.chargedBy || 'N/A'}
 												</div>
 											</div>
 										)}
@@ -376,11 +376,11 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 											<input
 												type="text"
 												className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
-												value={detail.merchantName || ""}
+												value={detail.merchantName || ''}
 												onChange={(e) =>
 													updateChargingDetail(
 														index,
-														"merchantName",
+														'merchantName',
 														e.target.value
 													)
 												}
@@ -389,12 +389,12 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 										) : (
 											<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-xs">
 												<div className="text-white">
-													{detail.merchantName || "N/A"}
+													{detail.merchantName || 'N/A'}
 												</div>
 											</div>
 										)}
 									</div>
-								</div>{" "}
+								</div>{' '}
 								{/* Description Field */}
 								<div>
 									<label className="block text-gray-400 text-xs mb-1">
@@ -405,11 +405,11 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 											<input
 												type="text"
 												className="w-full h-full bg-gray-700 text-white rounded px-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
-												value={detail.description || ""}
+												value={detail.description || ''}
 												onChange={(e) =>
 													updateChargingDetail(
 														index,
-														"description",
+														'description',
 														e.target.value
 													)
 												}
@@ -418,7 +418,7 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 										) : (
 											<div className="h-full flex items-center px-2 bg-gray-700/50 rounded text-xs">
 												<div className="text-white">
-													{detail.description || "N/A"}
+													{detail.description || 'N/A'}
 												</div>
 											</div>
 										)}
@@ -433,6 +433,6 @@ const ChargingDetailsSection = React.memo(({ apiData, onSave }) => {
 	);
 });
 
-ChargingDetailsSection.displayName = "ChargingDetailsSection";
+ChargingDetailsSection.displayName = 'ChargingDetailsSection';
 
 export default ChargingDetailsSection;

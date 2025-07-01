@@ -38,7 +38,7 @@ export default function Section({
 			setIsEditing(false);
 			if (onEditSave) onEditSave();
 		} catch (error) {
-			console.error('Error saving:', error);
+			// console.error('Error saving:', error);
 			// Keep editing mode active if save fails
 		}
 	};

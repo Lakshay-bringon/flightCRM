@@ -1,15 +1,16 @@
-import React from "react";
-import BookingComponent from "./BookingComponent.jsx";
-import ChargesDescription from "./ChargesDescription.jsx";
-import ItineraryDetailsInput from "./ItineraryDetailsInput.jsx";
-import PurchaseSummary from "./PurchaseSummary.jsx";
-import AttachmentsSection from "./AttachmentsSection.jsx";
-import AuthorizeSection from "./AuthorizeSection.jsx";
-import exchangeSchema from "../schemas/exchangeSchema.js";
+import React from 'react';
+import BookingComponent from './BookingComponent.jsx';
+import ChargesDescription from './ChargesDescription.jsx';
+import ItineraryDetailsInput from './ItineraryDetailsInput.jsx';
+import PurchaseSummary from './PurchaseSummary.jsx';
+import AttachmentsSection from './AttachmentsSection.jsx';
+import AuthorizeSection from './AuthorizeSection.jsx';
+import exchangeSchema from '../schemas/exchangeSchema.js';
 
 function Exchange({ bookingData, onBack, onRefresh }) {
 	// The actual form content - now with aligned field names
 	const ExchangeForm = ({
+		trigger,
 		register,
 		handleSubmit,
 		watch,
@@ -34,35 +35,36 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 		onBack,
 		isEditMode,
 		type,
+		hidePurchaseSummary,
 	}) => {
 		// Watch values for dynamic updates - using the correct field names
-		const pnr = watch("pnr");
-		const airline = watch("airline_name");
-		const charges = watch("charge_data");
+		const pnr = watch('pnr');
+		const airline = watch('airline_name');
+		const charges = watch('charge_data');
 
 		return (
 			<>
 				<div className="flex justify-between items-center mb-4">
 					<h2
 						className={`text-xl font-bold text-white flex items-center gap-2 ${
-							isEditMode ? "justify-center w-full" : ""
+							isEditMode ? 'justify-center w-full' : ''
 						}`}
 					>
 						<input
-							{...register("airline_name")} // Using the schema-matched field name
+							{...register('airline_name')} // Using the schema-matched field name
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-40 font-bold text-white mr-2"
-							style={{ textTransform: "uppercase" }}
+							style={{ textTransform: 'uppercase' }}
 							placeholder="Airline Name"
 							value={airline}
-							onChange={(e) => setValue("airline_name", e.target.value)}
+							onChange={(e) => setValue('airline_name', e.target.value)}
 						/>
 						EXCHANGE CONFIRMATION –
 						<input
-							{...register("pnr")}
+							{...register('pnr')}
 							className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-32 font-bold text-white ml-2"
 							style={{ minWidth: 60 }}
 							value={pnr}
-							onChange={(e) => setValue("pnr", e.target.value)}
+							onChange={(e) => setValue('pnr', e.target.value)}
 							placeholder="PNR"
 						/>
 					</h2>
@@ -83,11 +85,11 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 				>
 					<div className="space-y-6">
 						<div className="p-3 border border-gray-700 rounded-lg">
-							{" "}
+							{' '}
 							<div className="leading-loose">
 								Dear
 								<input
-									{...register("customer_name")} // Using the schema-matched field name
+									{...register('customer_name')} // Using the schema-matched field name
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 60 }}
 									placeholder="Customer Name"
@@ -106,29 +108,29 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 								As per our conversation and as agreed, we have made the changes
 								to your reservation under Confirmation number
 								<input
-									{...register("pnr")}
+									{...register('pnr')}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 60 }}
 									value={pnr}
-									onChange={(e) => setValue("pnr", e.target.value)}
+									onChange={(e) => setValue('pnr', e.target.value)}
 									placeholder="PNR"
 								/>
 								on
 								<input
-									{...register("airline_name")}
+									{...register('airline_name')}
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
-									style={{ minWidth: 60, textTransform: "uppercase" }}
+									style={{ minWidth: 60, textTransform: 'uppercase' }}
 									placeholder="Airline Name"
 									value={airline}
-									onChange={(e) => setValue("airline_name", e.target.value)}
-								/>{" "}
+									onChange={(e) => setValue('airline_name', e.target.value)}
+								/>{' '}
 								with a charge of
 								<input
-									{...register("amount")} // Using the schema-matched field name
+									{...register('amount')} // Using the schema-matched field name
 									className="bg-transparent border-0 border-b border-dashed border-gray-400 focus:border-blue-400 outline-none px-1 w-auto inline-block align-middle mx-1 text-white placeholder-gray-400"
 									style={{ minWidth: 40 }}
 									placeholder="Amount"
-								/>{" "}
+								/>{' '}
 								<select
 									className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white ml-2"
 									value={currency}
@@ -142,9 +144,9 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 										))
 									) : (
 										<option value="">Select Currency</option>
-									)}{" "}
-								</select>{" "}
-								(Including all taxes and fees) as per the below description.{" "}
+									)}{' '}
+								</select>{' '}
+								(Including all taxes and fees) as per the below description.{' '}
 							</div>
 							<br />
 						</div>
@@ -157,11 +159,12 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 							addCharge={addCharge}
 							removeCharge={removeCharge}
 							watch={watch}
-						/>{" "}
+						/>{' '}
 						<ItineraryDetailsInput
 							register={register}
 							setValue={setValue}
 							images={itineraryImages}
+							trigger={trigger}
 							setImages={setItineraryImages}
 							onImageClick={(imageUrl) => {
 								setPreviewImage(imageUrl);
@@ -173,6 +176,7 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 							watch={watch}
 							setValue={setValue}
 							errors={errors}
+							hidePurchaseSummary={hidePurchaseSummary}
 						/>
 						{/* <AttachmentsSection
 							images={attachments}
@@ -182,7 +186,7 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 								setShowPreview(true);
 							}}
 						/>{" "} */}
-					</div>{" "}
+					</div>{' '}
 					<button
 						type="submit"
 						disabled={isSubmitting}
@@ -190,11 +194,11 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 					>
 						{isSubmitting
 							? isEditMode
-								? "Updating Exchange..."
-								: "Processing Exchange..."
+								? 'Updating Exchange...'
+								: 'Processing Exchange...'
 							: isEditMode
-							? "Update"
-							: "Confirm Exchange"}
+							? 'Update'
+							: 'Confirm Exchange'}
 					</button>
 				</form>
 			</>
@@ -208,15 +212,15 @@ function Exchange({ bookingData, onBack, onRefresh }) {
 			type="EXCHANGE"
 			schema={exchangeSchema} // Use the exchange-specific schema
 			loadingMessage={
-				bookingData ? "Updating exchange..." : "Creating exchange..."
+				bookingData ? 'Updating exchange...' : 'Creating exchange...'
 			}
 			successMessage={
 				bookingData
-					? "Exchange updated successfully!"
-					: "Exchange created successfully!"
+					? 'Exchange updated successfully!'
+					: 'Exchange created successfully!'
 			}
 			errorMessage={
-				bookingData ? "Failed to update exchange" : "Failed to create exchange"
+				bookingData ? 'Failed to update exchange' : 'Failed to create exchange'
 			}
 			isEditMode={!!bookingData}
 		>

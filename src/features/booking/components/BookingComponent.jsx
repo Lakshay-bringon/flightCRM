@@ -1,28 +1,30 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, useLocation } from "react-router-dom";
-import ImagePreviewModal from "../ImagePreviewModal.jsx";
-import { useDataContext } from "../../../context/DataContext.jsx";
-import { showPromiseToast } from "../../../utils/showPromiseToast.js";
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate, useLocation } from 'react-router-dom';
+import ImagePreviewModal from '../ImagePreviewModal.jsx';
+import { useDataContext } from '../../../context/DataContext.jsx';
+import { showPromiseToast } from '../../../utils/showPromiseToast.js';
 import {
 	createReservationApi,
 	updateBookingApi,
-} from "../../../api/booking/bookingApi.js";
-import { bookingSchema } from "../schemas/bookingSchema.js";
-import toast from "react-hot-toast";
-import { useAuth } from "../../../auth/hooks/useAuth.jsx";
-import { formatESTDateForInput } from "../../../utils/formatters.js";
+	createReservationApiFormData,
+	updateBookingApiFormData,
+} from '../../../api/booking/bookingApi.js';
+import { bookingSchema } from '../schemas/bookingSchema.js';
+import toast from 'react-hot-toast';
+import { useAuth } from '../../../auth/hooks/useAuth.jsx';
+import { formatESTDateForInput } from '../../../utils/formatters.js';
 
 function BookingComponent({
 	children,
 	defaultValues,
 	onRefresh,
 	onBack,
-	type = "NEW BOOKING",
-	loadingMessage = "Processing...",
-	successMessage = "Processed successfully!",
-	errorMessage = "Processing failed",
+	type = 'NEW BOOKING',
+	loadingMessage = 'Processing...',
+	successMessage = 'Processed successfully!',
+	errorMessage = 'Processing failed',
 	schema = bookingSchema, // Use the base bookingSchema as default
 	isEditMode = false,
 }) {
@@ -46,52 +48,55 @@ function BookingComponent({
 	const [previewImage, setPreviewImage] = useState(null);
 	const [attachments, setAttachments] = useState([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [currency, setCurrency] = useState("USD"); // Form setup
+	const [currency, setCurrency] = useState('USD'); // Form setup
 	const {
 		register,
 		handleSubmit,
 		watch,
 		setValue,
 		reset,
+		trigger,
 		formState: { errors },
 	} = useForm({
 		resolver: zodResolver(schema), // Use the passed schema instead of hardcoding bookingSchema
 		defaultValues: {
-			pnr: "",
-			customer_name: "",
-			amount: "",
-			cancellation_refund_amount: "", // Add the new field for refund components
-			future_credit_amount: "", // Add the new field for future credit components
-			rebooking_penalty: "", // Add the new field for future credit rebooking penalty
-			card_number: "", // Fixed: was cardNumber
-			airline_name: "",
+			pnr: '',
+			customer_name: '',
+			amount: '',
+			cancellation_refund_amount: '', // Add the new field for refund components
+			future_credit_amount: '', // Add the new field for future credit components
+			rebooking_penalty: '', // Add the new field for future credit rebooking penalty
+			card_number: '', // Fixed: was cardNumber
+			airline_name: '',
 			purchase_date: formatESTDateForInput(),
-			email: "",
-			phone: "",
-			card_holder: "",
-			payment_method: "",
-			billing_address: "",
-			city: "",
-			state: "",
-			zip: "",
-			country: "",
+			email: '',
+			phone: '',
+			card_holder: '',
+			payment_method: '',
+			billing_address: '',
+			city: '',
+			state: '',
+			zip: '',
+			country: '',
 			passenger_data: [
 				{
-					type: "",
-					firstName: "",
-					middleName: "",
-					lastName: "",
-					dob: "",
+					type: '',
+					firstName: '',
+					middleName: '',
+					lastName: '',
+					dob: '',
 				},
 			],
 			charge_data: [
 				{
-					amount: "",
-					description: "",
+					amount: '',
+					currency: '',
+					description: '',
 				},
 				{
-					amount: "",
-					description: "",
+					amount: '',
+					currency: '',
+					description: '',
 				},
 			],
 			image_itinerary: [], // Fixed: was itinerary_details
@@ -122,84 +127,84 @@ function BookingComponent({
 			}
 		} else {
 			reset({
-				pnr: "",
-				customer_name: "",
-				amount: "",
-				card_number: "", // Fixed: was cardNumber
-				airline_name: "",
+				pnr: '',
+				customer_name: '',
+				amount: '',
+				card_number: '', // Fixed: was cardNumber
+				airline_name: '',
 				purchase_date: formatESTDateForInput(),
-				email: "",
-				phone: "",
-				card_holder: "",
-				payment_method: "",
-				billing_address: "",
-				city: "",
-				state: "",
-				zip: "",
-				country: "",
+				email: '',
+				phone: '',
+				card_holder: '',
+				payment_method: '',
+				billing_address: '',
+				city: '',
+				state: '',
+				zip: '',
+				country: '',
 				passenger_data: [
-					{ type: "", firstName: "", middleName: "", lastName: "", dob: "" },
+					{ type: '', firstName: '', middleName: '', lastName: '', dob: '' },
 				],
 				charge_data: [
-					{ amount: "", description: "" },
-					{ amount: "", description: "" },
+					{ amount: '', currency: '', description: '' },
+					{ amount: '', currency: '', description: '' },
 				],
 				image_itinerary: [], // Fixed: was itinerary_details
 				attachments: [],
 			});
 			setItineraryImages([]);
 			setAttachments([]);
-			setCurrency("USD");
+			setCurrency('USD');
 		}
 	}, [formDefaultValues, reset]);
 
 	// Passenger management
 	const addPassenger = () => {
-		const currentPassengers = watch("passenger_data") || [];
-		setValue("passenger_data", [
+		const currentPassengers = watch('passenger_data') || [];
+		setValue('passenger_data', [
 			...currentPassengers,
 			{
-				type: "",
-				firstName: "",
-				middleName: "",
-				lastName: "",
-				dob: "",
+				type: '',
+				firstName: '',
+				middleName: '',
+				lastName: '',
+				dob: '',
 			},
 		]);
 	};
 
 	const removePassenger = (index) => {
-		const currentPassengers = watch("passenger_data") || [];
+		const currentPassengers = watch('passenger_data') || [];
 		if (currentPassengers.length > 1) {
 			const newPassengers = currentPassengers.filter((_, i) => i !== index);
-			setValue("passenger_data", newPassengers);
+			setValue('passenger_data', newPassengers);
 		}
 	};
 
 	// Charge management
 	const addCharge = () => {
-		const currentCharges = watch("charge_data") || [];
-		setValue("charge_data", [
+		const currentCharges = watch('charge_data') || [];
+		setValue('charge_data', [
 			...currentCharges,
 			{
-				amount: "",
-				currency: "",
-				description: "",
+				amount: '',
+				currency: '',
+				description: '',
 			},
 		]);
 	};
 
 	const removeCharge = (index) => {
-		const currentCharges = watch("charge_data") || [];
+		const currentCharges = watch('charge_data') || [];
 		if (currentCharges.length > 1) {
 			const newCharges = currentCharges.filter((_, i) => i !== index);
-			setValue("charge_data", newCharges);
+			setValue('charge_data', newCharges);
 		}
 	}; // Form submission
 	const onSubmit = async (data) => {
 		if (!user) {
 			toast.error(
-				`You must be logged in to ${isEditMode ? "update" : "create"} a ${type}`
+				`You must be logged in to ${isEditMode ? 'update' : 'create'} a ${type}`
 			);
 			return;
 		}
@@ -208,13 +213,15 @@ function BookingComponent({
 		try {
 			// For itinerary: process array of images
 			const processedItinerary = (itineraryImages || []).map((img) =>
-				typeof img === "string" && img.startsWith("data:image/") ? img : img
+				typeof img === 'string' && img.startsWith('data:image/') ? img : img
 			);
 
 			// For attachments: map each image to base64 if new, or filename if unchanged
 			const processedAttachments = (attachments || []).map((img) =>
-				typeof img === "string" && img.startsWith("data:image/") ? img : img
+				typeof img === 'string' && img.startsWith('data:image/') ? img : img
 			);
+
+			// console.log(data);
 
 			if (isEditMode) {
 				const {
@@ -232,11 +239,11 @@ function BookingComponent({
 					attachments: processedAttachments,
 					bookingData: { ...cleanBookingData, currency: currency },
 				};
-				await showPromiseToast(updateBookingApi(updateData), {
+				await showPromiseToast(updateBookingApiFormData(updateData), {
 					loading: loadingMessage,
 					success: successMessage,
 					error: (err) => {
-						console.error("Update booking error:", err);
+						// console.error('Update booking error:', err);
 						setIsSubmitting(false);
 						return err.message || errorMessage;
 					},
@@ -248,7 +255,7 @@ function BookingComponent({
 						}
 					})
 					.catch((error) => {
-						console.error("Promise toast error:", error);
+						// console.error('Promise toast error:', error);
 						setIsSubmitting(false);
 					});
 			} else {
@@ -269,11 +276,11 @@ function BookingComponent({
 					attachments: processedAttachments,
 					bookingData: { ...cleanBookingData, currency: currency },
 				};
-				showPromiseToast(createReservationApi(completeData), {
+				showPromiseToast(createReservationApiFormData(completeData), {
 					loading: loadingMessage,
 					success: successMessage,
 					error: (err) => {
-						console.error("Create booking error:", err);
+						// console.error('Create booking error:', err);
 						setIsSubmitting(false);
 						return err.message || errorMessage;
 					},
@@ -284,21 +291,21 @@ function BookingComponent({
 						}
 					})
 					.catch((error) => {
-						console.error("Promise toast error:", error);
+						// console.error('Promise toast error:', error);
 						setIsSubmitting(false);
 					});
 			}
 		} catch (error) {
-			console.error(
-				`Error ${isEditMode ? "updating" : "creating"} ${type}:`,
-				error
-			);
-			if (error.message && error.message.includes("Validation errors:")) {
+			// console.error(
+			// 	`Error ${isEditMode ? 'updating' : 'creating'} ${type}:`,
+			// 	error
+			// );
+			if (error.message && error.message.includes('Validation errors:')) {
 				toast.error(error.message);
 			} else if (error.message) {
 				toast.error(error.message);
 			} else {
-				toast.error(`Failed to ${isEditMode ? "update" : "create"} ${type}`);
+				toast.error(`Failed to ${isEditMode ? 'update' : 'create'} ${type}`);
 			}
 			setIsSubmitting(false);
 		}
@@ -307,7 +314,7 @@ function BookingComponent({
 	// Show only the first error and focus on that field
 	const showAllErrors = (errors) => {
 		// Helper function to flatten nested errors and get the first one
-		const getFirstError = (errorsObj, parentPath = "") => {
+		const getFirstError = (errorsObj, parentPath = '') => {
 			for (const [key, value] of Object.entries(errorsObj)) {
 				const currentPath = parentPath ? `${parentPath}.${key}` : key;
 
@@ -324,7 +331,7 @@ function BookingComponent({
 				if (Array.isArray(value)) {
 					for (let i = 0; i < value.length; i++) {
 						const arrayItem = value[i];
-						if (arrayItem && typeof arrayItem === "object") {
+						if (arrayItem && typeof arrayItem === 'object') {
 							const arrayPath = `${currentPath}.${i}`;
 							const nestedError = getFirstError(arrayItem, arrayPath);
 							if (nestedError) {
@@ -335,7 +342,7 @@ function BookingComponent({
 				}
 
 				// If this is a nested object
-				if (value && typeof value === "object" && !value.message) {
+				if (value && typeof value === 'object' && !value.message) {
 					const nestedError = getFirstError(value, currentPath);
 					if (nestedError) {
 						return nestedError;
@@ -360,19 +367,41 @@ function BookingComponent({
 			if (firstError.ref) {
 				// Use the ref if available
 				field = firstError.ref;
+			} else if (firstError.fieldName === 'image_itinerary') {
+				// Special case for itinerary drop zone
+				field = document.getElementById('image-itinerary-dropzone');
+			} else if (/^passenger_data\.\d+\.dob$/.test(firstError.fieldName)) {
+				// Special case for passenger DOB field
+				const match = firstError.fieldName.match(
+					/^passenger_data\.(\d+)\.dob$/
+				);
+				if (match) {
+					const idx = match[1];
+					// Try to find the DatePicker input for this passenger
+					field = document.querySelector(
+						`[name="dob"]:nth-of-type(${parseInt(idx, 10) + 1})`
+					);
+					// Fallback: try to find by placeholder and index
+					if (!field) {
+						const allDobs = Array.from(
+							document.querySelectorAll('input[placeholder="MM/DD/YYYY"]')
+						);
+						field = allDobs[parseInt(idx, 10)] || null;
+					}
+				}
 			} else {
 				// Try to find by name attribute (for array fields like charge_data.0.amount)
 				field = document.querySelector(`[name="${firstError.fieldName}"]`);
 
 				if (!field) {
 					// Try simpler name patterns
-					const simpleName = firstError.fieldName.replace(/\.\d+\./g, ".");
+					const simpleName = firstError.fieldName.replace(/\.\d+\./g, '.');
 					field = document.querySelector(`[name="${simpleName}"]`);
 				}
 
 				if (!field) {
 					// Try to find the first field that contains part of the field name
-					const fieldNameParts = firstError.fieldName.split(".");
+					const fieldNameParts = firstError.fieldName.split('.');
 					for (const part of fieldNameParts) {
 						field = document.querySelector(`[name*="${part}"]`);
 						if (field) break;
@@ -383,24 +412,24 @@ function BookingComponent({
 			if (field) {
 				// Scroll the field into view
 				field.scrollIntoView({
-					behavior: "smooth",
-					block: "center",
+					behavior: 'smooth',
+					block: 'center',
 				});
 
-				// Focus the field
-				field.focus();
+				// Focus the field if possible
+				if (typeof field.focus === 'function') field.focus();
 
 				// Add a temporary highlight effect
-				field.style.outline = "2px solid #ef4444";
-				field.style.outlineOffset = "2px";
+				field.style.outline = '2px solid #ef4444';
+				field.style.outlineOffset = '2px';
 
 				// Remove highlight after 3 seconds
 				setTimeout(() => {
-					field.style.outline = "";
-					field.style.outlineOffset = "";
+					field.style.outline = '';
+					field.style.outlineOffset = '';
 				}, 3000);
 			} else {
-				console.log(`Could not find field for: ${firstError.fieldName}`);
+				// console.log(`Could not find field for: ${firstError.fieldName}`);
 			}
 		}, 100); // Small delay to ensure DOM is ready
 	};
@@ -409,6 +438,7 @@ function BookingComponent({
 		showAllErrors(formErrors);
 	}; // Create props to pass to the children
 	const childrenProps = {
+		trigger,
 		register,
 		handleSubmit,
 		watch,
@@ -435,6 +465,7 @@ function BookingComponent({
 		onBack,
 		isEditMode,
 		type,
+		hidePurchaseSummary: formDefaultValues?.hidePurchaseSummary || false,
 	}; // Render the wrapper with children components
 	return (
 		<div className="space-y-4" data-form-section="true">

@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useState } from "react";
-import { User, Settings, LogOut, Mail, Phone, Shield } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/hooks/useAuth";
-import ChangePasswordModal from "./ChangePasswordModal";
+import React, { useRef, useEffect, useState } from 'react';
+import { User, Settings, LogOut, Mail, Phone, Shield } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/hooks/useAuth';
+import ChangePasswordModal from './ChangePasswordModal';
 
 function UserProfile({ showMenu, setShowMenu }) {
 	const menuRef = useRef(null);
@@ -16,17 +16,17 @@ function UserProfile({ showMenu, setShowMenu }) {
 				setShowMenu(false);
 			}
 		}
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => document.removeEventListener("mousedown", handleClickOutside);
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
 	}, []);
 
 	const handleLogout = async () => {
 		try {
 			await logout();
 			setShowMenu(false);
-			navigate("/login");
+			navigate('/login');
 		} catch (error) {
-			console.error("Logout failed:", error);
+			// console.error("Logout failed:", error);
 		}
 	};
 

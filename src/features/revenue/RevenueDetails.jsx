@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
 	ArrowLeft,
 	Download,
@@ -8,13 +8,13 @@ import {
 	ChevronDown,
 	ChevronUp,
 	FileText,
-} from "lucide-react";
-import { BOOKING_STATUS } from "../../constants";
+} from 'lucide-react';
+import { BOOKING_STATUS } from '../../constants';
 import {
 	getRevenueListApi,
 	downloadReportApi,
-} from "../../api/revenue/revenueApi";
-import { showPromiseToast } from "../../utils/showPromiseToast";
+} from '../../api/revenue/revenueApi';
+import { showPromiseToast } from '../../utils/showPromiseToast';
 
 function BookingDetailRow({ data }) {
 	const navigate = useNavigate();
@@ -41,13 +41,13 @@ function BookingDetailRow({ data }) {
 				{data.chargeback || 0}
 			</td>
 			<td className="w-[15%] py-3 px-4 text-gray-300 truncate border-r border-gray-700/50 text-center">
-				{BOOKING_STATUS[data.bid_status] || "-"}
+				{BOOKING_STATUS[data.bid_status] || '-'}
 			</td>
 			<td className="w-[18%] py-3 px-4 text-gray-300 truncate border-r border-gray-700/50 text-center">
 				{data.datetime}
 			</td>
 			<td className="w-[16%] py-3 px-4 text-gray-300 truncate text-center">
-				{data.agent_name || "-"}
+				{data.agent_name || '-'}
 			</td>
 		</tr>
 	);
@@ -70,8 +70,8 @@ function RevenueDetails() {
 	const [exportLoading, setExportLoading] = useState(false);
 
 	// Sorting state
-	const [sortBy, setSortBy] = useState("datetime");
-	const [sortDir, setSortDir] = useState("desc");
+	const [sortBy, setSortBy] = useState('datetime');
+	const [sortDir, setSortDir] = useState('desc');
 
 	// Pagination state - default limit changed to 10
 	const [currentPage, setCurrentPage] = useState(1);
@@ -98,11 +98,11 @@ function RevenueDetails() {
 				total_chargeback_refund: response.total_chargeback_refund || 0,
 			});
 		} catch (error) {
-			console.error("Failed to fetch revenue details:", error);
+			// console.error("Failed to fetch revenue details:", error);
 			showPromiseToast(Promise.reject(error), {
-				loading: "Loading...",
-				success: "Data loaded!",
-				error: "Failed to load data",
+				loading: 'Loading...',
+				success: 'Data loaded!',
+				error: 'Failed to load data',
 			});
 		} finally {
 			setLoading(false);
@@ -130,14 +130,14 @@ function RevenueDetails() {
 	// Local sorting function
 	const sortRecords = (records, field, direction) => {
 		return [...records].sort((a, b) => {
-			let aVal = a[field] || "";
-			let bVal = b[field] || "";
+			let aVal = a[field] || '';
+			let bVal = b[field] || '';
 
 			// Handle different data types
-			if (field === "revenue" || field === "refund" || field === "chargeback") {
+			if (field === 'revenue' || field === 'refund' || field === 'chargeback') {
 				aVal = Number(aVal) || 0;
 				bVal = Number(bVal) || 0;
-			} else if (field === "datetime") {
+			} else if (field === 'datetime') {
 				aVal = new Date(aVal).getTime() || 0;
 				bVal = new Date(bVal).getTime() || 0;
 			} else {
@@ -145,7 +145,7 @@ function RevenueDetails() {
 				bVal = String(bVal).toLowerCase();
 			}
 
-			if (direction === "asc") {
+			if (direction === 'asc') {
 				return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
 			} else {
 				return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
@@ -158,7 +158,7 @@ function RevenueDetails() {
 
 	// Handle sorting (local only, no API call)
 	const handleSort = (col) => {
-		const newSortDir = sortBy === col && sortDir === "asc" ? "desc" : "asc";
+		const newSortDir = sortBy === col && sortDir === 'asc' ? 'desc' : 'asc';
 		setSortBy(col);
 		setSortDir(newSortDir);
 	};
@@ -177,7 +177,7 @@ function RevenueDetails() {
 	};
 	function SortIcon({ active, dir }) {
 		if (!active) return <span className="inline-block w-3" />;
-		return dir === "asc" ? (
+		return dir === 'asc' ? (
 			<ChevronUp className="inline w-3 h-3 ml-1" />
 		) : (
 			<ChevronDown className="inline w-3 h-3 ml-1" />
@@ -202,16 +202,16 @@ function RevenueDetails() {
 			const result = await downloadReportApi(exportParams);
 
 			showPromiseToast(Promise.resolve(), {
-				loading: "Generating report...",
+				loading: 'Generating report...',
 				success: `Report "${result.filename}" downloaded successfully!`,
-				error: "Failed to download report",
+				error: 'Failed to download report',
 			});
 		} catch (error) {
-			console.error("Failed to export data:", error);
+			// console.error('Failed to export data:', error);
 			showPromiseToast(Promise.reject(error), {
-				loading: "Generating report...",
-				success: "Report downloaded successfully!",
-				error: "Failed to download report",
+				loading: 'Generating report...',
+				success: 'Report downloaded successfully!',
+				error: 'Failed to download report',
 			});
 		} finally {
 			setExportLoading(false);
@@ -225,7 +225,7 @@ function RevenueDetails() {
 				<div className="flex items-center justify-between p-4 border-b border-gray-700 gap-2 bg-gray-800/80">
 					<div className="flex items-center gap-3">
 						<button
-							onClick={() => navigate("/revenue")}
+							onClick={() => navigate('/revenue')}
 							className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors px-2 py-1 rounded-md"
 						>
 							<ArrowLeft className="w-5 h-5" />
@@ -240,7 +240,7 @@ function RevenueDetails() {
 						className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-lg flex items-center gap-2 text-sm transition-colors"
 					>
 						<Download className="w-4 h-4" />
-						{exportLoading ? "Generating..." : "Export CSV"}
+						{exportLoading ? 'Generating...' : 'Export CSV'}
 					</button>
 				</div>
 				{/* Summary Bar */}
@@ -268,8 +268,10 @@ function RevenueDetails() {
 						<div>
 							<div className="text-xs text-gray-400">Net Revenue</div>
 							<div className="text-sm font-medium text-purple-400">
-								{(Number(data.total_revenue) || 0) * 0.95 -
-									(Number(data.total_chargeback_refund) || 0)}
+								{(
+									(Number(data.total_revenue) || 0) * 0.95 -
+									(Number(data.total_chargeback_refund) || 0)
+								).toFixed(2)}
 							</div>
 						</div>
 					</div>
@@ -295,52 +297,52 @@ function RevenueDetails() {
 										</th>
 										<th
 											className="w-[12%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
-											onClick={() => handleSort("revenue")}
+											onClick={() => handleSort('revenue')}
 										>
 											MCO
-											<SortIcon active={sortBy === "revenue"} dir={sortDir} />
+											<SortIcon active={sortBy === 'revenue'} dir={sortDir} />
 										</th>
 										<th
 											className="w-[12%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
-											onClick={() => handleSort("refund")}
+											onClick={() => handleSort('refund')}
 										>
 											Refund
-											<SortIcon active={sortBy === "refund"} dir={sortDir} />
+											<SortIcon active={sortBy === 'refund'} dir={sortDir} />
 										</th>
 										<th
 											className="w-[12%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
-											onClick={() => handleSort("chargeback")}
+											onClick={() => handleSort('chargeback')}
 										>
 											Chargeback
 											<SortIcon
-												active={sortBy === "chargeback"}
+												active={sortBy === 'chargeback'}
 												dir={sortDir}
 											/>
 										</th>
 										<th
 											className="w-[15%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
-											onClick={() => handleSort("bid_status")}
+											onClick={() => handleSort('bid_status')}
 										>
 											Booking status
 											<SortIcon
-												active={sortBy === "bid_status"}
+												active={sortBy === 'bid_status'}
 												dir={sortDir}
 											/>
 										</th>
 										<th
 											className="w-[18%] pb-3 px-4 font-medium cursor-pointer select-none text-center border-r border-gray-700 hover:text-white transition-colors"
-											onClick={() => handleSort("datetime")}
+											onClick={() => handleSort('datetime')}
 										>
 											Date
-											<SortIcon active={sortBy === "datetime"} dir={sortDir} />
+											<SortIcon active={sortBy === 'datetime'} dir={sortDir} />
 										</th>
 										<th
 											className="w-[16%] pb-3 px-4 font-medium cursor-pointer select-none text-center hover:text-white transition-colors"
-											onClick={() => handleSort("agent_name")}
+											onClick={() => handleSort('agent_name')}
 										>
 											Agent
 											<SortIcon
-												active={sortBy === "agent_name"}
+												active={sortBy === 'agent_name'}
 												dir={sortDir}
 											/>
 										</th>
@@ -402,8 +404,8 @@ function RevenueDetails() {
 														disabled={loading}
 														className={`w-8 h-8 text-sm rounded-lg ${
 															currentPage === p
-																? "bg-blue-500 text-white"
-																: "bg-gray-700 text-gray-300 hover:bg-gray-600"
+																? 'bg-blue-500 text-white'
+																: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
 														} disabled:opacity-50 disabled:cursor-not-allowed`}
 													>
 														{p}
