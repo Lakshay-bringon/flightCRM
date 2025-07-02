@@ -11,7 +11,7 @@ export default function FindBookings() {
 	const [search, setSearch] = useState("");
 	const [searchBy, setSearchBy] = useState("cchName");
 	const [bookingPage, setBookingPage] = useState(1);
-	const [bookingPerPage, setBookingPerPage] = useState(5);
+	const [bookingPerPage, setBookingPerPage] = useState(10);
 	const [bookings, setBookings] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasSearched, setHasSearched] = useState(false);

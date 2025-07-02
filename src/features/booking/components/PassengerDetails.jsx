@@ -122,6 +122,7 @@ function PassengerDetails({
 									<div className="relative">
 										<DatePicker
 											name="dob"
+											id="passengerDobInput"
 											selected={getValidDateForPicker(
 												watch(`passenger_data.${index}.dob`)
 											)}
