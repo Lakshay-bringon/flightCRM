@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logoFull from "../assets/SkylineTravelLLC.png";
-import { LoadingSpinner } from "../components/ui";
 import { useAuth } from "../auth/hooks/useAuth";
-import { loginApi } from "../api/auth/authApi";
 
 function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -49,12 +47,6 @@ function Login() {
 			}
 		}
 	};
-	if (isLoading) {
-		const loadingLabel = isResetMode
-			? "Sending reset link..."
-			: "Logging you in...";
-		return <LoadingSpinner label={loadingLabel} fullPage />;
-	}
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -124,9 +116,10 @@ function Login() {
 							)}
 							<button
 								type="submit"
+								disabled={isLoading}
 								className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
 							>
-								Sign In
+								{isLoading ? "Signing you in..." : "Sign In"}
 							</button>
 						</>
 					) : (

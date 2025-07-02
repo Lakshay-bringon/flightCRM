@@ -27,7 +27,7 @@ const ChargebackDetailsSection = React.memo(({ apiData, onSave }) => {
 				{
 					amount: apiData.chargebackDetailsAmount || "0.00",
 					chargebackDate: apiData.chargebackDetailsChargedOn || "",
-					status: apiData.chargebackDetailsStatus,
+					status: apiData.chargebackDetailsStatus || 0,
 				},
 			]);
 		}

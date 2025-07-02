@@ -30,5 +30,5 @@ export const CHARGING_TYPE = ["MCO", "Airline Charge"];
 
 export const REFUND_STATUS = ["Pending", "Approved", "Rejected"];
 
-export const CHARGEBACK_STATUS = ["Pending", "Won", "Lost"];
+export const CHARGEBACK_STATUS = ["Pending", "Lost", "Won"];
 //

@@ -1,35 +1,35 @@
-import { useParams } from 'react-router-dom';
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import BookingDetailsHeader from './BookingDetailsHeader';
-import ImagePreviewModal from './ImagePreviewModal';
-import { LoadingSpinner } from '../../components/ui';
+import { useParams } from "react-router-dom";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import BookingDetailsHeader from "./BookingDetailsHeader";
+import ImagePreviewModal from "./ImagePreviewModal";
+import { LoadingSpinner } from "../../components/ui";
 import {
 	getBookingByBid,
 	updateBookingProviderDetails,
 	updateRefundDetails,
 	updateChargebackDetails,
 	updateBookingChargingDetails,
-} from '../../api/booking/bookingApi';
-import { showPromiseToast } from '../../utils/showPromiseToast';
-import { useAuth } from '../../auth/hooks/useAuth';
+} from "../../api/booking/bookingApi";
+import { showPromiseToast } from "../../utils/showPromiseToast";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 // Import section components
-import ProviderDetailsSection from './sections/ProviderDetailsSection';
-import ChargingDetailsSection from './sections/ChargingDetailsSection';
-import RefundDetailsSection from './sections/RefundDetailsSection';
-import ChargebackDetailsSection from './sections/ChargebackDetailsSection';
-import FormSection from './sections/FormSection';
+import ProviderDetailsSection from "./sections/ProviderDetailsSection";
+import ChargingDetailsSection from "./sections/ChargingDetailsSection";
+import RefundDetailsSection from "./sections/RefundDetailsSection";
+import ChargebackDetailsSection from "./sections/ChargebackDetailsSection";
+import FormSection from "./sections/FormSection";
 
 // Import context
-import { EditingProvider, useEditingContext } from './context/EditingContext';
+import { EditingProvider, useEditingContext } from "./context/EditingContext";
 
 // Import form components
-import NewBooking from './components/NewBooking';
-import Exchange from './components/Exchange';
-import CancelForFutureCredit from './components/CancelForFutureCredit';
-import CancelForRefund from './components/CancelForRefund';
-import Upgrade from './components/Upgrade';
-import SeatAssignment from './components/SeatAssignment';
+import NewBooking from "./components/NewBooking";
+import Exchange from "./components/Exchange";
+import CancelForFutureCredit from "./components/CancelForFutureCredit";
+import CancelForRefund from "./components/CancelForRefund";
+import Upgrade from "./components/Upgrade";
+import SeatAssignment from "./components/SeatAssignment";
 
 // Inner component that has access to editing context
 function BookingDetailsContent() {
@@ -45,7 +45,7 @@ function BookingDetailsContent() {
 	// Fetch booking details function
 	const fetchBookingDetails = async () => {
 		if (!bid) {
-			setError('No booking ID provided');
+			setError("No booking ID provided");
 			setLoading(false);
 			return;
 		}
@@ -54,14 +54,14 @@ function BookingDetailsContent() {
 		setError(null);
 		try {
 			const data = await showPromiseToast(getBookingByBid(bid), {
-				loading: 'Loading booking details...',
-				success: 'Booking details loaded successfully!',
-				error: 'Failed to load booking details',
+				loading: "Loading booking details...",
+				success: "Booking details loaded successfully!",
+				error: "Failed to load booking details",
 			});
 			// console.log(data);
 			setApiData(data);
 		} catch (err) {
-			setError(err.message || 'Failed to load booking details');
+			setError(err.message || "Failed to load booking details");
 			// console.error("Error fetching booking details:", err);
 		} finally {
 			setLoading(false);
@@ -88,9 +88,9 @@ function BookingDetailsContent() {
 			};
 
 			await showPromiseToast(updateBookingProviderDetails(payload), {
-				loading: 'Updating provider details...',
-				success: 'Provider details updated successfully!',
-				error: 'Failed to update provider details',
+				loading: "Updating provider details...",
+				success: "Provider details updated successfully!",
+				error: "Failed to update provider details",
 			});
 
 			// Refresh booking data after successful update
@@ -112,9 +112,9 @@ function BookingDetailsContent() {
 			};
 
 			await showPromiseToast(updateRefundDetails(payload), {
-				loading: 'Updating refund details...',
-				success: 'Refund details updated successfully!',
-				error: 'Failed to update refund details',
+				loading: "Updating refund details...",
+				success: "Refund details updated successfully!",
+				error: "Failed to update refund details",
 			});
 
 			// Refresh booking data after successful update
@@ -136,9 +136,9 @@ function BookingDetailsContent() {
 			};
 
 			await showPromiseToast(updateChargebackDetails(payload), {
-				loading: 'Updating chargeback details...',
-				success: 'Chargeback details updated successfully!',
-				error: 'Failed to update chargeback details',
+				loading: "Updating chargeback details...",
+				success: "Chargeback details updated successfully!",
+				error: "Failed to update chargeback details",
 			});
 
 			// Refresh booking data after successful update
@@ -163,9 +163,9 @@ function BookingDetailsContent() {
 			// console.log('BookingDetails - Sending payload to API:', payload);
 
 			await showPromiseToast(updateBookingChargingDetails(payload), {
-				loading: 'Updating charging details...',
-				success: 'Charging details updated successfully!',
-				error: 'Failed to update charging details',
+				loading: "Updating charging details...",
+				success: "Charging details updated successfully!",
+				error: "Failed to update charging details",
 			});
 
 			// Refresh booking data after successful update
@@ -174,6 +174,7 @@ function BookingDetailsContent() {
 			// console.error('Error updating charging details:', err);
 		}
 	};
+
 	// Memoize bookingDataForForm to avoid new object reference on every render
 	const bookingDataForForm = useMemo(() => {
 		if (!apiData) return null;
@@ -184,7 +185,7 @@ function BookingDetailsContent() {
 			if (Array.isArray(apiData.itinerary_details)) {
 				// If it's already a JS array, use it directly
 				processedItinerary = apiData.itinerary_details;
-			} else if (typeof apiData.itinerary_details === 'string') {
+			} else if (typeof apiData.itinerary_details === "string") {
 				try {
 					// console.log(apiData.itinerary_details);
 					// Parse the JSON string to get the array
@@ -209,7 +210,7 @@ function BookingDetailsContent() {
 		}
 
 		const hidePurchaseSummary =
-			(user?.role_id === 3 || user?.role_id === '3') &&
+			(user?.role_id === 3 || user?.role_id === "3") &&
 			user?.id &&
 			apiData?.agent_id &&
 			String(user.id) !== String(apiData?.agent_id);
@@ -241,17 +242,17 @@ function BookingDetailsContent() {
 		};
 
 		switch (apiData?.transaction_type) {
-			case 'new_booking':
+			case "new_booking":
 				return <NewBooking {...commonProps} />;
-			case 'exchange':
+			case "exchange":
 				return <Exchange {...commonProps} />;
-			case 'cancel_for_future_credit':
+			case "cancel_for_future_credit":
 				return <CancelForFutureCredit {...commonProps} />;
-			case 'cancel_for_refund':
+			case "cancel_for_refund":
 				return <CancelForRefund {...commonProps} />;
-			case 'upgrade':
+			case "upgrade":
 				return <Upgrade {...commonProps} />;
-			case 'seat_assignment':
+			case "seat_assignment":
 				return <SeatAssignment {...commonProps} />;
 			default:
 				return <NewBooking {...commonProps} />;
@@ -335,7 +336,7 @@ function BookingDetailsContent() {
 					<ChargebackDetailsSection
 						apiData={apiData}
 						onSave={saveChargebackDetails}
-					/>{' '}
+					/>{" "}
 					{/* Form Section */}
 					<FormSection renderFormComponent={renderFormComponent} />
 				</div>
