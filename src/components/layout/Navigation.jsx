@@ -10,6 +10,7 @@ import {
 	Settings,
 } from "lucide-react";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { KeyRound } from "lucide-react";
 
 function NavLink({ to, children, iconOnly }) {
 	const location = useLocation();
@@ -89,6 +90,13 @@ function Navigation({ iconOnly = false }) {
 					<NavLink to="/ip-setting" iconOnly={iconOnly}>
 						<Settings />
 						IP SETTING
+					</NavLink>
+				)}
+				{/* OTP Management always visible */}
+				{(isAdmin || isLeader) && (
+					<NavLink to="/otp-management" iconOnly={iconOnly}>
+						<KeyRound />
+						OTP MANAGEMENT
 					</NavLink>
 				)}
 			</div>

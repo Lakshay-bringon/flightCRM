@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	DollarSign,
 	AlertTriangle,
@@ -8,36 +8,36 @@ import {
 	Filter,
 	FileText,
 	BarChart2,
-} from 'lucide-react';
-import { StatsCard } from '../../features/dashboard/widgets/StatsCard';
-import { TimelineSelector } from '../../components/common';
-import { getUserListApi, getTeamApi } from '../../api/user/userApi';
-import { getProvidersApi } from '../../api/provider/providerApi';
+} from "lucide-react";
+import { StatsCard } from "../../features/dashboard/widgets/StatsCard";
+import { TimelineSelector } from "../../components/common";
+import { getUserListApi, getTeamApi } from "../../api/user/userApi";
+import { getProvidersApi } from "../../api/provider/providerApi";
 import {
 	getRevenueDashboardApi,
 	getRevenueListApi,
-} from '../../api/revenue/revenueApi';
-import { useAuth } from '../../auth/hooks/useAuth';
-import { useHasRole } from '../../auth/hooks/useRole';
-import { showPromiseToast } from '../../utils/showPromiseToast';
+} from "../../api/revenue/revenueApi";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { useHasRole } from "../../auth/hooks/useRole";
+import { showPromiseToast } from "../../utils/showPromiseToast";
 import {
 	formatESTDateForInput,
 	getCurrentESTDate,
-} from '../../utils/formatters';
-import toast from 'react-hot-toast';
+} from "../../utils/formatters";
+import toast from "react-hot-toast";
 
 function Revenue() {
 	const navigate = useNavigate();
 	const { user } = useAuth();
-	const isAgent = useHasRole('agent');
-	const isLeader = useHasRole('leader');
+	const isAgent = useHasRole("agent");
+	const isLeader = useHasRole("leader");
 	const [dateRange, setDateRange] = useState({
 		start: getCurrentESTDate(),
 		end: getCurrentESTDate(),
 	});
 	const [filters, setFilters] = useState({
-		agent: '',
-		provider: '',
+		agent: "",
+		provider: "",
 		includeRefund: false,
 		includeChargeback: false,
 	});
@@ -75,7 +75,7 @@ function Revenue() {
 		const { name, value, type, checked } = e.target;
 		setFilters((prev) => ({
 			...prev,
-			[name]: type === 'checkbox' ? checked : value,
+			[name]: type === "checkbox" ? checked : value,
 		}));
 	};
 
@@ -85,8 +85,8 @@ function Revenue() {
 		const formatDateForAPI = (date) => {
 			if (!date) return null;
 			const year = date.getFullYear();
-			const month = String(date.getMonth() + 1).padStart(2, '0');
-			const day = String(date.getDate()).padStart(2, '0');
+			const month = String(date.getMonth() + 1).padStart(2, "0");
+			const day = String(date.getDate()).padStart(2, "0");
 			return `${year}-${month}-${day}`;
 		};
 
@@ -102,13 +102,13 @@ function Revenue() {
 
 		try {
 			const data = await showPromiseToast(getRevenueListApi(payload), {
-				loading: 'Fetching detailed revenue...',
-				success: 'Revenue data loaded!',
-				error: 'Failed to fetch detailed revenue',
+				loading: "Fetching detailed revenue...",
+				success: "Revenue data loaded!",
+				error: "Failed to fetch detailed revenue",
 			});
 
-			if (Array.isArray(data['records']) && data['records'].length > 0) {
-				navigate('/revenue/details', {
+			if (Array.isArray(data["records"]) && data["total"] > 0) {
+				navigate("/revenue/details", {
 					state: {
 						searchParams: payload,
 						results: data,
@@ -116,8 +116,8 @@ function Revenue() {
 					replace: true,
 				});
 			}
-			if (data['records'].length === 0) {
-				toast.error('No records found.');
+			if (data["records"].length === 0) {
+				toast.error("No records found.");
 			}
 		} catch (err) {
 			// console.error('Failed to fetch detailed revenue:', err);
@@ -133,19 +133,19 @@ function Revenue() {
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 					<StatsCard
 						title="Total Revenue"
-						value={dashboard ? dashboard.totalRevenue : '$0'}
+						value={dashboard ? dashboard.totalRevenue : "$0"}
 						icon={DollarSign}
 						color="blue"
 					/>
 					<StatsCard
 						title="Chargeback"
-						value={dashboard ? dashboard.chargeBack : '$0'}
+						value={dashboard ? dashboard.chargeBack : "$0"}
 						icon={AlertTriangle}
 						color="red"
 					/>
 					<StatsCard
 						title="Refund"
-						value={dashboard ? dashboard.totalRefund : '$0'}
+						value={dashboard ? dashboard.totalRefund : "$0"}
 						icon={RotateCcw}
 						color="orange"
 					/>
@@ -157,19 +157,19 @@ function Revenue() {
 										dashboard.totalRevenue * 0.95 -
 										(dashboard.totalRefund + dashboard.chargeBack)
 								  ).toFixed(2)
-								: '$0'
+								: "$0"
 						}
 						icon={FileText}
 						color="green"
 					/>
 				</div>
-			</div>{' '}
+			</div>{" "}
 			{/* Search Form Container */}
 			<div className="rounded-xl bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700 overflow-hidden">
 				<div className="p-4">
 					<form onSubmit={handleSearch}>
 						<div className="space-y-4">
-							{' '}
+							{" "}
 							{/* Compact Form Layout */}
 							<div className="flex flex-col lg:flex-row gap-4 items-end">
 								{/* Date Range - takes all available space */}
@@ -192,12 +192,12 @@ function Revenue() {
 										Search
 									</button>
 								</div>
-							</div>{' '}
+							</div>{" "}
 							{/* Filters Row - spread across full width */}
 							<div className="flex flex-wrap items-center justify-between gap-4 bg-gray-700/30 px-4 py-3 rounded-lg w-full">
 								<span className="text-sm font-medium text-gray-400">
 									Filters:
-								</span>{' '}
+								</span>{" "}
 								{/* Agent Filter - hidden for agent role */}
 								{!isAgent && (
 									<div className="flex items-center gap-2">

@@ -23,6 +23,7 @@ import OtpScreen from "../pages/OtpScreen";
 import RoleProtectedRoute from "../auth/RoleProtectedRoute";
 import AccessDenied from "../pages/AccessDenied";
 import ProtectedRoute from "../auth/ProtectedRoute";
+import OtpManagement from "../features/user/OtpManagement";
 
 export default function AppRoutes() {
 	const navigate = useNavigate();
@@ -128,6 +129,10 @@ export default function AppRoutes() {
 														<ManageData />
 													</RoleProtectedRoute>
 												}
+											/>
+											<Route
+												path="otp-management"
+												element={<OtpManagement />}
 											/>
 											<Route
 												path="ip-setting"
