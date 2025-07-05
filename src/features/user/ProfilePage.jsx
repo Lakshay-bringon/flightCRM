@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
 	User,
 	Mail,
@@ -12,14 +12,14 @@ import {
 	Ticket,
 	DollarSign,
 	AlertCircle,
-} from 'lucide-react';
-import { useAuth } from '../../auth/hooks/useAuth';
-import { useDataContext } from '../../context/DataContext';
-import { dashboardOverviewApi } from '../../api/dashboard/dashboardApi';
+} from "lucide-react";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { useDataContext } from "../../context/DataContext";
+import { dashboardOverviewApi } from "../../api/dashboard/dashboardApi";
 import {
 	getCurrentESTDate,
 	formatESTDateForInput,
-} from '../../utils/formatters';
+} from "../../utils/formatters";
 
 function ProfilePage() {
 	const location = useLocation();
@@ -41,10 +41,10 @@ function ProfilePage() {
 				const now = new Date();
 				// Convert to EST timezone (UTC-5, or UTC-4 during daylight saving time)
 				const estNow = new Date(
-					now.toLocaleString('en-US', { timeZone: 'America/New_York' })
+					now.toLocaleString("en-US", { timeZone: "America/New_York" })
 				);
 				const currentYear = estNow.getFullYear();
-				const currentMonth = String(estNow.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-11, so add 1
+				const currentMonth = String(estNow.getMonth() + 1).padStart(2, "0"); // getMonth() returns 0-11, so add 1
 				const firstDay = `${currentYear}-${currentMonth}-01`;
 				const lastDay = new Date(
 					currentYear,
@@ -54,7 +54,7 @@ function ProfilePage() {
 				const date_from = firstDay;
 				const date_to = `${currentYear}-${currentMonth}-${String(
 					lastDay
-				).padStart(2, '0')}`;
+				).padStart(2, "0")}`;
 
 				const dashboardData = await dashboardOverviewApi({
 					userId: user.id,
@@ -77,35 +77,35 @@ function ProfilePage() {
 	// Map role_id and status to display values
 	const getRole = (role_id) => {
 		switch (role_id) {
-			case '1':
+			case "1":
 			case 1:
-				return 'Admin';
-			case '2':
+				return "Admin";
+			case "2":
 			case 2:
-				return 'Leader';
-			case '3':
+				return "Leader";
+			case "3":
 			case 3:
-				return 'Agent';
+				return "Agent";
 			default:
-				return 'Unknown';
+				return "Unknown";
 		}
 	};
-	const isActive = user?.status === '1' || user?.status === 1;
-	const joinedDate = user?.created_at ? user.created_at.split(' ')[0] : 'N/A';
+	const isActive = user?.status === "1" || user?.status === 1;
+	const joinedDate = user?.created_at ? user.created_at.split(" ")[0] : "N/A";
 	const team =
-		user?.role_id === '3' || user?.role_id === 3
+		user?.role_id === "3" || user?.role_id === 3
 			? `${user?.alias || user?.email}'s Team`
-			: 'Not Assigned';
+			: "Not Assigned";
 	const userData = {
-		name: user?.alies_name || user?.name || 'Guest',
+		name: user?.alies_name || user?.name || "Guest",
 		role: getRole(user?.role_id),
 		isActive,
-		email: user?.email || 'N/A',
+		email: user?.email || "N/A",
 		// Use real dashboard data if available, otherwise fallback to 0
 		monthlyMCO: dashboard?.revenue || 0,
 		totalBookings: dashboard?.totalBookings || 0,
 		monthlyChargeback: Number(dashboard?.chargeback_refund || 0),
-		alias: user?.id || 'N/A',
+		alias: user?.id || "N/A",
 		team,
 		joinedDate,
 		permissions: user?.permissions || [],
@@ -123,7 +123,7 @@ function ProfilePage() {
 		icon: Icon,
 		label,
 		value,
-		valueColor = 'text-white',
+		valueColor = "text-white",
 	}) => (
 		<div className="p-4 rounded-lg bg-gray-700/50 border border-gray-600">
 			<div className="flex items-center space-x-3">
@@ -184,11 +184,11 @@ function ProfilePage() {
 								<span
 									className={`px-2 py-0.5 text-xs rounded-full ${
 										userData.isActive
-											? 'bg-green-500/20 text-green-400'
-											: 'bg-red-500/20 text-red-400'
+											? "bg-green-500/20 text-green-400"
+											: "bg-red-500/20 text-red-400"
 									}`}
 								>
-									{userData.isActive ? 'Active' : 'Inactive'}
+									{userData.isActive ? "Active" : "Inactive"}
 								</span>
 							</div>
 							<div className="mt-2 flex items-center space-x-3 text-xs text-gray-400">
@@ -206,8 +206,8 @@ function ProfilePage() {
 				<div className="p-4 border-b border-gray-700 flex justify-between items-center">
 					<h3 className="text-base font-semibold text-white">Stats</h3>
 					<span className="text-xs text-gray-400">{`Monthly Stats (${new Date().toLocaleString(
-						'en-US',
-						{ month: 'long' }
+						"en-US",
+						{ month: "long" }
 					)})`}</span>
 				</div>
 				{/* Stats Grid */}
@@ -218,7 +218,7 @@ function ProfilePage() {
 						</div>
 					) : (
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-							{' '}
+							{" "}
 							<StatCard
 								icon={DollarSign}
 								label="MCO"
@@ -229,7 +229,7 @@ function ProfilePage() {
 								icon={Ticket}
 								label="Total Bookings"
 								value={userData.totalBookings}
-							/>{' '}
+							/>{" "}
 							<StatCard
 								icon={AlertCircle}
 								label="Chargeback + Refund"

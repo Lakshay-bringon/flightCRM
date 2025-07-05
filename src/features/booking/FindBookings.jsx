@@ -23,6 +23,7 @@ export default function FindBookings() {
 		cchName: "cchName",
 		email: "email",
 		billingPhone: "billingPhone",
+		pnr: "pnr",
 	};
 
 	// Fetch recent bookings function
@@ -60,6 +61,7 @@ export default function FindBookings() {
 
 		try {
 			const searchData = {
+				userId: user?.id,
 				type: searchTypeMap[searchBy],
 				value: search.trim(),
 			};
@@ -109,7 +111,7 @@ export default function FindBookings() {
 						<option value="cchName">CCH NAME</option>
 						<option value="email">EMAIL</option>
 						<option value="billingPhone">BILLING PHONE</option>
-						{/* <option value="PNR">PNR</option> */}
+						<option value="pnr">PNR</option>
 					</select>
 					<input
 						type="text"

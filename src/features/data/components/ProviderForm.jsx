@@ -12,6 +12,7 @@ const createProviderSchema = (isEditMode) => {
 			: z.string().min(1, "Logo is required"), // Required in create mode
 		// status removed
 		datetime: z.string(),
+		heading: z.string().optional(), // Optional in edit mode
 		support_email: z.string().email("Support email is required"),
 		smtp_host: z.string().min(1, "SMTP Host is required"),
 		smtp_email: z.string().email("SMTP Email is required"),
@@ -38,6 +39,7 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 		datetime:
 			initialData.datetime ||
 			new Date().toISOString().slice(0, 19).replace("T", " "),
+		heading: initialData.heading || "",
 		support_email: initialData.support_email || "",
 		smtp_host: initialData.smtp_host || "",
 		smtp_email: initialData.smtp_email || "",
@@ -136,6 +138,20 @@ export default function ProviderForm({ initialData = {}, onSubmit, onCancel }) {
 						</p>
 					)}
 				</div>
+				<div>
+					<label className="block text-sm text-gray-300">Email Heading</label>
+					<input
+						{...register("heading")}
+						// ref={nameRef} // Remove ref to avoid double registration
+						className="w-full px-3 py-2 rounded bg-gray-700 text-white"
+						required
+					/>
+					{errors.emailHeading && (
+						<p className="text-xs text-red-400 mt-1">
+							{errors.emailHeading.message}
+						</p>
+					)}
+				</div>{" "}
 				<div className="mb-2">
 					<label className="block text-sm text-gray-300">SMTP Host</label>
 					<input

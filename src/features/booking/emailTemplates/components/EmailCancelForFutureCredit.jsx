@@ -25,16 +25,19 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 		city = "",
 		state = "",
 		zip = "",
-		country = "US",
+		country = "",
 		passenger_data = [],
 		charge_data = [],
 		image_itinerary = "",
 		currency = "",
 		bid = "",
-		agent_name = "",
-		future_credit_amount = "",
-		rebooking_penalty = "",
+		agent_name,
+		future_credit_amount,
+		rebooking_penalty,
+		providerName,
+		providerEmail,
 	} = bookingData;
+
 	const fullAddress = [billing_address, city, state, zip, country]
 		.filter(Boolean)
 		.join(", ");
@@ -172,9 +175,9 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 					</Text>
 					<Text style={subheading}>Disclaimer:</Text>
 					<Text>
-						SkylineTravels LLC is an independent travel agency and is not
-						affiliated with any airline. SkylineTravels may appear as a charge
-						on your card. Service fees are non-refundable.
+						{providerName} is an independent travel agency and is not affiliated
+						with any airline. {providerName} may appear as a charge on your
+						card. Service fees are non-refundable.
 					</Text>
 					<Text>
 						Airline changes are not confirmed until finalized by the airline. If
@@ -190,10 +193,8 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 					<Text>
 						For discrepancies or amendments, contact{" "}
 						<strong>+1-877-413-0030</strong> or{" "}
-						<a href="mailto:booking@skylinetravelsllc.com">
-							booking@skylinetravelsllc.com
-						</a>{" "}
-						within 24 hours.
+						<a href={`mailto:${providerEmail}`}>{providerEmail}</a> within 24
+						hours.
 					</Text>
 					<Text style={subheading}>Important Information:</Text>
 					<Text>
@@ -209,10 +210,7 @@ export const EmailCancelForFutureCredit = ({ bookingData }) => {
 					<Text style={subheading}>Still have questions?</Text>
 					<Text>
 						Call <strong>+1-877-413-0030</strong> or email{" "}
-						<a href="mailto:booking@skylinetravelsllc.com">
-							booking@skylinetravelsllc.com
-						</a>
-						.
+						<a href={`mailto:${providerEmail}`}>{providerEmail}</a>.
 					</Text>
 					<Text>
 						We value your business and hope to serve your travel needs soon.

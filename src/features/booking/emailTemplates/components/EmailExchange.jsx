@@ -13,7 +13,6 @@ export const EmailExchange = ({ bookingData }) => {
 	const {
 		airline_name = "",
 		customer_name = "",
-		agent_name = "",
 		pnr = "",
 		amount = "",
 		email = "",
@@ -27,13 +26,14 @@ export const EmailExchange = ({ bookingData }) => {
 		state = "",
 		zip = "",
 		country = "",
-		currency = "",
 		passenger_data = [],
 		charge_data = [],
 		image_itinerary = "",
-		charge_1_amount = "",
-		charge_2_amount = "",
+		currency = "",
 		bid = "",
+		agent_name,
+		providerName,
+		providerEmail,
 	} = bookingData;
 
 	const fullAddress = [billing_address, city, state, zip, country]
@@ -115,14 +115,14 @@ export const EmailExchange = ({ bookingData }) => {
 					</Text>
 					<Text style={subheading}>Disclaimer:</Text>
 					<Text>
-						SkylineTravels LLC is an independent travel Agency with no
-						third-party association. We shall not be associated or considered as
-						an airline or an ally of any of the airlines or brands.
-						SkylineTravels is shown on your bank account details in most cases.
-						However, sometimes we have to split the payment with the airline.
-						SkylineTravels and the airline or another company of that
-						organization both will appear as recipients on your account. All the
-						service fee and convenience fee is non-refundable.
+						{providerName} is an independent travel Agency with no third-party
+						association. We shall not be associated or considered as an airline
+						or an ally of any of the airlines or brands. {providerName} is shown
+						on your bank account details in most cases. However, sometimes we
+						have to split the payment with the airline. {providerName} and the
+						airline or another company of that organization both will appear as
+						recipients on your account. All the service fee and convenience fee
+						is non-refundable.
 					</Text>
 					<Text style={subheading}>Important:</Text>
 					<Text>
@@ -148,11 +148,8 @@ export const EmailExchange = ({ bookingData }) => {
 					<Text>
 						In case of any discrepancy and if an amendment is required, please
 						feel free to contact us at <strong>+1-877-413-0030</strong> or email
-						us at{" "}
-						<a href="mailto:booking@skylinetravelsllc.com">
-							booking@skylinetravelsllc.com
-						</a>{" "}
-						within 24 hours and we will be happy to assist you.
+						us at <a href={`mailto:${providerEmail}`}>{providerEmail}</a> within
+						24 hours and we will be happy to assist you.
 					</Text>
 					<Text style={subheading}>Important Information:</Text>
 					<Text>
@@ -255,9 +252,7 @@ export const EmailExchange = ({ bookingData }) => {
 						Still, have questions? Call us at <strong>+1-877-413-0030</strong>.
 						Our agents are available 24 hours a day, 7 days a week to assist
 						you. You can also email us at{" "}
-						<a href="mailto:booking@skylinetravelsllc.com">
-							booking@skylinetravelsllc.com
-						</a>
+						<a href={`mailto:${providerEmail}`}>{providerEmail}</a>
 					</Text>
 					<Text>
 						We value your business and look forward to serving your travel needs

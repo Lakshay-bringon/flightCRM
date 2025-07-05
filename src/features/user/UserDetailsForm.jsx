@@ -30,8 +30,12 @@ const getUserSchema = (isEditMode) =>
 			email: z.string().email("Invalid email"),
 			confirmEmail: z.string().optional(),
 			password: isEditMode
-				? z.string().optional()
-				: z.string().min(6, "Password is required"),
+				? z.string().min(6, "Password must be at least 6 characters").optional()
+				: z
+						.string({
+							required_error: "Password is required",
+						})
+						.min(6, "Password must be at least 6 characters"),
 			confirmPassword: z.string().optional(),
 			role: z.string().min(1, "Role is required"),
 			leader_id: z.string().optional(),

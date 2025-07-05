@@ -16,23 +16,27 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 		pnr = "",
 		refund_amount = "",
 		new_charge_amount = "",
-		charge_data = [],
-		image_itinerary = "",
-		passenger_data = [],
-		card_holder = "",
+
+		amount = "",
 		email = "",
 		phone = "",
+		card_holder = "",
+		card_number = "",
+		payment_method = "",
+		purchase_date = "",
 		billing_address = "",
 		city = "",
 		state = "",
 		zip = "",
-		country = "US",
-		purchase_date = "",
-		payment_method = "",
+		country = "",
+		passenger_data = [],
+		charge_data = [],
+		image_itinerary = "",
+		currency = "",
 		bid = "",
-		currency = "USD",
-		agent_name = "",
-		amount = "",
+		agent_name,
+		providerName,
+		providerEmail,
 		cancellation_refund_amount = "",
 	} = bookingData;
 
@@ -165,9 +169,9 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 					</Text>
 					<Text style={subheading}>Disclaimer:</Text>
 					<Text>
-						SkylineTravels LLC is an independent travel agency and is not
-						affiliated with any airline. SkylineTravels may appear as a charge
-						on your card. Sometimes the payment may be split between Skyline and
+						{providerName} is an independent travel agency and is not affiliated
+						with any airline. {providerName} may appear as a charge on your
+						card. Sometimes the payment may be split between {providerName} and
 						the airline. All service and convenience fees are non-refundable.
 					</Text>
 					<Text>
@@ -201,10 +205,7 @@ export const EmailCancelForRefund = ({ bookingData }) => {
 					</Text>
 					<Text>
 						Still have questions? Call <strong>+1-877-413-0030</strong> or email{" "}
-						<a href="mailto:booking@skylinetravelsllc.com">
-							booking@skylinetravelsllc.com
-						</a>
-						.
+						<a href={`mailto:${providerEmail}`}>{providerEmail}</a>.
 					</Text>
 					<Text>
 						We value your business and look forward to serving you again.

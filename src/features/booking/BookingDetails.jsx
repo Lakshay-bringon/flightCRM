@@ -223,6 +223,8 @@ function BookingDetailsContent() {
 			bid: apiData?.bid,
 			agent_name: apiData?.userName,
 			hidePurchaseSummary: hidePurchaseSummary,
+			providerName: apiData?.providerName,
+			providerEmail: apiData?.supportEmail,
 		};
 	}, [apiData]);
 
