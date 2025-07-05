@@ -116,9 +116,6 @@ function Revenue() {
 					replace: true,
 				});
 			}
-			if (data["records"].length === 0) {
-				toast.error("No records found.");
-			}
 		} catch (err) {
 			// console.error('Failed to fetch detailed revenue:', err);
 		}
