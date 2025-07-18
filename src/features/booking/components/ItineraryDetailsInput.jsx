@@ -1,13 +1,13 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { CloudUpload, Trash, Plus } from 'lucide-react';
-import { useCallback } from 'react';
-import toast from 'react-hot-toast';
+import React, { useRef, useState, useEffect } from "react";
+import { CloudUpload, Trash, Plus } from "lucide-react";
+import { useCallback } from "react";
+import toast from "react-hot-toast";
 
 export default function ItineraryDetailsInput({
 	images = [],
 	setImages,
 	onImageClick,
-	heading = 'Itinerary Details',
+	heading = "Itinerary Details",
 	register,
 	trigger,
 	setValue,
@@ -18,9 +18,9 @@ export default function ItineraryDetailsInput({
 	useEffect(() => {
 		const newPreviews = images
 			.map((img) => {
-				if (typeof img === 'string') {
+				if (typeof img === "string") {
 					// existing uploaded image (string URL)
-					const baseRoute = import.meta.env.VITE_UPLOADS_BASE_URL || '';
+					const baseRoute = import.meta.env.VITE_UPLOADS_BASE_URL || "";
 					return img.startsWith(baseRoute) ? img : `${baseRoute}${img}`;
 				} else if (img instanceof File) {
 					return URL.createObjectURL(img);
@@ -34,14 +34,14 @@ export default function ItineraryDetailsInput({
 		// Clean up object URLs on unmount
 		return () => {
 			newPreviews.forEach((preview) => {
-				if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview);
+				if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
 			});
 		};
 	}, [images]);
 
 	// Helper to format file size
 	const formatFileSize = (size) => {
-		if (!size && size !== 0) return '';
+		if (!size && size !== 0) return "";
 		if (size < 1024) return `${size} B`;
 		if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
 		return `${(size / (1024 * 1024)).toFixed(2)} MB`;
@@ -83,15 +83,15 @@ export default function ItineraryDetailsInput({
 		const newImages = [...images, ...validImages];
 		setImages && setImages(newImages);
 		if (setValue) {
-			setValue('image_itinerary', newImages);
-			trigger && trigger('image_itinerary');
+			setValue("image_itinerary", newImages);
+			trigger && trigger("image_itinerary");
 		}
 		// Reset the input so the same file can be picked again if needed
-		if (fileInputRef.current) fileInputRef.current.value = '';
+		if (fileInputRef.current) fileInputRef.current.value = "";
 	};
 
 	const handleImageRemove = (index) => {
-		if (images[index] instanceof File && previews[index]?.startsWith('blob:')) {
+		if (images[index] instanceof File && previews[index]?.startsWith("blob:")) {
 			URL.revokeObjectURL(previews[index]);
 		}
 
@@ -99,25 +99,25 @@ export default function ItineraryDetailsInput({
 		setImages && setImages(newImages);
 
 		if (setValue) {
-			setValue('image_itinerary', newImages);
-			trigger && trigger('image_itinerary');
+			setValue("image_itinerary", newImages);
+			trigger && trigger("image_itinerary");
 		}
 
-		if (fileInputRef.current) fileInputRef.current.value = '';
+		if (fileInputRef.current) fileInputRef.current.value = "";
 	};
 
 	const handleDrop = (e) => {
 		e.preventDefault();
 		const files = Array.from(e.dataTransfer.files).filter((file) =>
-			file.type.startsWith('image/')
+			file.type.startsWith("image/")
 		);
 		const validImages = files.filter(Boolean);
 		if (!canAddImages(validImages)) return;
 		const newImages = [...images, ...validImages];
 		setImages && setImages(newImages);
 		if (setValue) {
-			setValue('image_itinerary', newImages);
-			trigger && trigger('image_itinerary');
+			setValue("image_itinerary", newImages);
+			trigger && trigger("image_itinerary");
 		}
 	};
 
@@ -131,7 +131,7 @@ export default function ItineraryDetailsInput({
 			if (!items) return;
 
 			const imageFiles = Array.from(items)
-				.filter((item) => item.type.startsWith('image/'))
+				.filter((item) => item.type.startsWith("image/"))
 				.map((item) => item.getAsFile())
 				.filter(Boolean); // remove nulls
 
@@ -140,8 +140,8 @@ export default function ItineraryDetailsInput({
 			const newImages = [...images, ...imageFiles];
 			setImages && setImages(newImages);
 			if (setValue) {
-				setValue('image_itinerary', newImages);
-				trigger && trigger('image_itinerary');
+				setValue("image_itinerary", newImages);
+				trigger && trigger("image_itinerary");
 			}
 		},
 		[images, setImages, setValue, trigger]
@@ -150,8 +150,8 @@ export default function ItineraryDetailsInput({
 	// Attach global paste listener so paste works even if container isn't focused
 	useEffect(() => {
 		const onGlobalPaste = (e) => handlePaste(e);
-		window.addEventListener('paste', onGlobalPaste);
-		return () => window.removeEventListener('paste', onGlobalPaste);
+		window.addEventListener("paste", onGlobalPaste);
+		return () => window.removeEventListener("paste", onGlobalPaste);
 	}, [handlePaste]);
 
 	const handleAddImageClick = () => {
@@ -204,7 +204,7 @@ export default function ItineraryDetailsInput({
 								/>
 								<div className="flex flex-col min-w-0">
 									<p className="truncate">
-										{heading.split(' ')[0]} Image {index + 1}
+										{heading.split(" ")[0]} Image {index + 1}
 									</p>
 									{images[index] instanceof File && (
 										<span className="text-xs text-gray-400">
@@ -229,7 +229,6 @@ export default function ItineraryDetailsInput({
 				className="border-dashed border-2 border-gray-400 p-6 text-center rounded cursor-pointer hover:border-blue-400 transition-colors"
 				onDrop={handleDrop}
 				onDragOver={handleDragOver}
-				onPaste={handlePaste}
 				tabIndex={0}
 				onClick={handleAddImageClick}
 				id="image-itinerary-dropzone"

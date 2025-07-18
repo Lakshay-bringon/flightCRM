@@ -222,7 +222,7 @@ function ProfilePage() {
 							<StatCard
 								icon={DollarSign}
 								label="MCO"
-								value={`${userData.monthlyMCO || 0}`}
+								value={`${userData.monthlyMCO.toFixed(2) || 0}`}
 								valueColor="text-green-400"
 							/>
 							<StatCard
@@ -233,7 +233,7 @@ function ProfilePage() {
 							<StatCard
 								icon={AlertCircle}
 								label="Chargeback + Refund"
-								value={`${userData.monthlyChargeback || 0}`}
+								value={`${userData.monthlyChargeback.toFixed(2) || 0}`}
 								valueColor="text-red-400"
 							/>
 						</div>

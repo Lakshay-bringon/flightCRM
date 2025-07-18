@@ -130,19 +130,19 @@ function Revenue() {
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 					<StatsCard
 						title="Total Revenue"
-						value={dashboard ? dashboard.totalRevenue : "$0"}
+						value={dashboard ? dashboard.totalRevenue.toFixed(2) : "$0"}
 						icon={DollarSign}
 						color="blue"
 					/>
 					<StatsCard
 						title="Chargeback"
-						value={dashboard ? dashboard.chargeBack : "$0"}
+						value={dashboard ? dashboard.chargeBack.toFixed(2) : "$0"}
 						icon={AlertTriangle}
 						color="red"
 					/>
 					<StatsCard
 						title="Refund"
-						value={dashboard ? dashboard.totalRefund : "$0"}
+						value={dashboard ? dashboard.totalRefund.toFixed(2) : "$0"}
 						icon={RotateCcw}
 						color="orange"
 					/>

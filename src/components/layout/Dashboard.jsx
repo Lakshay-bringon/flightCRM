@@ -1,19 +1,19 @@
-import { useState, useEffect, useCallback } from 'react';
-import { StatsCard } from '../../features/dashboard/widgets/StatsCard';
-import { TopPerformers } from '../../features/dashboard/widgets/TopPerformers';
-import { Plane, Users, TrendingUp, AlertTriangle } from 'lucide-react';
-import { TimelineSelector } from '../common';
-import { useAuth } from '../../auth/hooks/useAuth';
-import { useHasRole } from '../../auth/hooks/useRole';
-import { dashboardOverviewApi } from '../../api/dashboard/dashboardApi';
-import { showPromiseToast } from '../../utils/showPromiseToast';
+import { useState, useEffect, useCallback } from "react";
+import { StatsCard } from "../../features/dashboard/widgets/StatsCard";
+import { TopPerformers } from "../../features/dashboard/widgets/TopPerformers";
+import { Plane, Users, TrendingUp, AlertTriangle } from "lucide-react";
+import { TimelineSelector } from "../common";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { useHasRole } from "../../auth/hooks/useRole";
+import { dashboardOverviewApi } from "../../api/dashboard/dashboardApi";
+import { showPromiseToast } from "../../utils/showPromiseToast";
 
 export default function AdminDashboard() {
 	const [dateRange, setDateRange] = useState(null); // Start with null, let TimelineSelector initialize it
 	const [summary, setSummary] = useState(null);
 	// const [topBottom, setTopBottom] = useState(null);
 	const { user } = useAuth();
-	const isAgent = useHasRole('agent');
+	const isAgent = useHasRole("agent");
 
 	// Memoize the date range change handler to prevent unnecessary re-renders
 	const handleDateRangeChange = useCallback((range) => {
@@ -30,8 +30,8 @@ export default function AdminDashboard() {
 			const formatDateForAPI = (date) => {
 				if (!date) return null;
 				const year = date.getFullYear();
-				const month = String(date.getMonth() + 1).padStart(2, '0');
-				const day = String(date.getDate()).padStart(2, '0');
+				const month = String(date.getMonth() + 1).padStart(2, "0");
+				const day = String(date.getDate()).padStart(2, "0");
 				return `${year}-${month}-${day}`;
 			};
 
@@ -39,7 +39,7 @@ export default function AdminDashboard() {
 				userId: user?.id,
 				date_to: formatDateForAPI(range.end),
 				date_from: formatDateForAPI(range.start),
-				dateFilter: 'custom',
+				dateFilter: "custom",
 				startDate: formatDateForAPI(range.start),
 				endDate: formatDateForAPI(range.end),
 			};
@@ -47,9 +47,9 @@ export default function AdminDashboard() {
 				const summaryRes = await showPromiseToast(
 					dashboardOverviewApi(payload),
 					{
-						loading: 'Loading dashboard...',
-						success: 'Dashboard loaded!',
-						error: 'Failed to load dashboard',
+						loading: "Loading dashboard...",
+						success: "Dashboard loaded!",
+						error: "Failed to load dashboard",
 					}
 				);
 				// console.log('Dashboard Summary:', summaryRes);
@@ -75,25 +75,27 @@ export default function AdminDashboard() {
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 						<StatsCard
 							title="Total Bookings"
-							value={summary ? summary.totalBookings : '-'}
+							value={summary ? summary.totalBookings : "-"}
 							icon={Plane}
 							color="blue"
 						/>
 						<StatsCard
 							title="Active Agents"
-							value={summary ? summary.activeAgents : '-'}
+							value={summary ? summary.activeAgents : "-"}
 							icon={Users}
 							color="green"
 						/>
 						<StatsCard
 							title="Revenue"
-							value={summary ? summary.revenue : '-'}
+							value={summary ? summary.revenue.toFixed(2) : "-"}
 							icon={TrendingUp}
 							color="purple"
 						/>
 						<StatsCard
 							title="Chargeback + Refund"
-							value={summary ? Number(summary.chargeback_refund) : '-'}
+							value={
+								summary ? Number(summary.chargeback_refund).toFixed(2) : "-"
+							}
 							icon={AlertTriangle}
 							color="red"
 						/>
@@ -107,9 +109,9 @@ export default function AdminDashboard() {
 									? summary.topPerformers.map((agent) => ({
 											id: agent.agent_id,
 											name: agent.agent_name,
-											revenue: agent.totalRevenue,
+											revenue: agent.totalRevenue.toFixed(2),
 											bookings: agent.totalBookings,
-											badge: 'Top Performer',
+											badge: "Top Performer",
 									  }))
 									: []
 							}
@@ -122,9 +124,9 @@ export default function AdminDashboard() {
 										? summary.bottomPerformers.map((agent) => ({
 												id: agent.agent_id,
 												name: agent.agent_name,
-												revenue: agent.totalRevenue,
+												revenue: agent.totalRevenue.toFixed(2),
 												bookings: agent.totalBookings,
-												badge: 'Bottom Performer',
+												badge: "Bottom Performer",
 										  }))
 										: []
 								}
